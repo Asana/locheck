@@ -1,3 +1,3 @@
 # locheck
 
-A description of this package.
+An Xcode localization file validator.
