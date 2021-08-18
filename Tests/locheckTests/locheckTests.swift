@@ -3,46 +3,63 @@ import class Foundation.Bundle
 import XCTest
 
 final class LocheckTests: XCTestCase {
-  func testExample() throws {
+  fileprivate let packageRootPath = URL(fileURLWithPath: #file)
+    .pathComponents
+    .prefix(while: { $0 != "Tests" })
+    .joined(separator: "/")
+    .dropFirst()
+
+  /// Returns path to the built products directory.
+  var productsDirectory: URL {
+    for bundle in Bundle.allBundles where bundle.bundlePath.hasSuffix(".xctest") {
+      return bundle.bundleURL.deletingLastPathComponent()
+    }
+    fatalError("couldn't find the products directory")
+  }
+
+  override func setUp() {
+    FileManager.default.changeCurrentDirectoryPath(String(packageRootPath))
+  }
+
+  func testExampleOutput() throws {
     // This is an example of a functional test case.
     // Use XCTAssert and related functions to verify your tests produce the correct
     // results.
 
     // Some of the APIs that we use below are available in macOS 10.13 and above.
     guard #available(macOS 10.13, *) else {
+      XCTFail("Only runs on macOS 10.13+")
       return
     }
 
-    // Mac Catalyst won't have `Process`, but it is supported for executables.
-    #if !targetEnvironment(macCatalyst)
+    let fooBinary = productsDirectory.appendingPathComponent("locheck")
 
-      let fooBinary = productsDirectory.appendingPathComponent("locheck")
+    let process = Process()
+    process.executableURL = fooBinary
+    process.arguments = ["strings", "Examples/Demo1.strings", "Examples/Demo2.strings"]
 
-      let process = Process()
-      process.executableURL = fooBinary
+    let stdoutPipe = Pipe()
+    let stderrPipe = Pipe()
+    process.standardOutput = stdoutPipe
+    process.standardError = stderrPipe
 
-      let pipe = Pipe()
-      process.standardOutput = pipe
+    try process.run()
+    process.waitUntilExit()
 
-      try process.run()
-      process.waitUntilExit()
+    let stdout = String(data: stdoutPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
+    let stderr = String(data: stderrPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
 
-      let data = pipe.fileHandleForReading.readDataToEndOfFile()
-      let output = String(data: data, encoding: .utf8)
+    XCTAssertEqual(stdout, """
+    Validating Examples/Demo2.strings against Examples/Demo1.strings
+    Errors found
 
-      XCTAssertEqual(output, "Hello, world!\n")
-    #endif
-  }
+    """)
 
-  /// Returns path to the built products directory.
-  var productsDirectory: URL {
-    #if os(macOS)
-      for bundle in Bundle.allBundles where bundle.bundlePath.hasSuffix(".xctest") {
-        return bundle.bundleURL.deletingLastPathComponent()
-      }
-      fatalError("couldn't find the products directory")
-    #else
-      return Bundle.main.bundleURL
-    #endif
+    XCTAssertEqual(stderr, """
+    Examples/Demo1.strings:3: warning: This string is missing from Demo2
+    Examples/Demo2.strings:5: error: Number or value of positions do not match
+    Examples/Demo2.strings:7: error: Specifiers do not match. Original: @,d; translated: d,@
+
+    """)
   }
 }
