@@ -9,7 +9,7 @@ import Files
 import Foundation
 
 extension File {
-  var lines: [String] {
-    try! readAsString().split(omittingEmptySubsequences: false, whereSeparator: \.isNewline).map { String($0) }
-  }
+    var lines: [String] {
+        try! readAsString().split(omittingEmptySubsequences: false, whereSeparator: \.isNewline).map { String($0) }
+    }
 }
