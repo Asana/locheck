@@ -4,29 +4,6 @@ import Files
 import Foundation
 import LocheckLogic
 
-private struct FileArg: ExpressibleByArgument {
-    let argument: String
-
-    /// Creates a new instance of this type from a command-line-specified
-    /// argument.
-    init?(argument: String) {
-        self.argument = argument
-    }
-
-    /// The description of this instance to show as a default value in a
-    /// command-line tool's help screen.
-    let defaultValueDescription = "/path/to/Localizable.strings"
-
-    func validate(ext: String? = nil) throws {
-        guard FileManager.default.fileExists(atPath: argument) else {
-            throw ValidationError("File does not exist at \(argument)")
-        }
-        if let ext = ext, !argument.hasSuffix(".\(ext)") {
-            throw ValidationError("That's not a .\(ext) file")
-        }
-    }
-}
-
 private func withProblemReporter(_ block: (ProblemReporter) -> Void) {
     let problemReporter = ProblemReporter()
     block(problemReporter)
@@ -63,6 +40,7 @@ struct Strings: ParsableCommand {
     }
 }
 
+// We have an internal task tracking this functionality.
 // struct Stringsdict: ParsableCommand {
 //  @Argument(help: "An authoritative .stringsdict file")
 //  private var primary: FileArg
@@ -164,8 +142,13 @@ struct Discover: ParsableCommand {
 
 struct Locheck: ParsableCommand {
     static let configuration = CommandConfiguration(
-        abstract: "Validate your Xcode localization files",
-        subcommands: [Strings.self, /* Stringsdict.self, */ Lproj.self, Discover.self])
+        abstract: """
+          Validate your Xcode localization files. Currently only works on .strings. The different
+          commands have different amounts of automation. `discover` operates on a directory of
+          .lproj files, `lproj` operates on specific .lproj files, and `strings` operates on\
+          specific .strings files.
+          """,
+      subcommands: [Discover.self, Lproj.self, Strings.self/*,  Stringsdict.self*/])
 }
 
 Locheck.main()
