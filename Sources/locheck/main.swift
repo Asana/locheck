@@ -135,19 +135,19 @@ struct Discover: ParsableCommand {
   func run() {
     print("Discovering .lproj files in \(directory.argument)")
 
-    var primaryLproj: LprojFiles!
+    var maybePrimaryLproj: LprojFiles!
     var secondaryLproj = [LprojFiles]()
 
     for folder in try! Folder(path: directory.argument).subfolders {
       if folder.extension != "lproj" { continue }
       if folder.name == "\(primary).lproj" {
-        primaryLproj = LprojFiles(folder: folder)
+        maybePrimaryLproj = LprojFiles(folder: folder)
       } else {
         secondaryLproj.append(LprojFiles(folder: folder))
       }
     }
 
-    guard let primaryLproj = primaryLproj else {
+    guard let primaryLproj = maybePrimaryLproj else {
       return // caught by validation already
     }
 
