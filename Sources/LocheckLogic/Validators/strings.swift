@@ -46,7 +46,6 @@ func validateStrings(
     secondaryStrings: [LocalizedString],
     secondaryFileName: String,
     problemReporter: ProblemReporter) {
-
     // MARK: Ensure all base strings appear in this translation
 
     var secondaryStringMap = [String: LocalizedString]()
@@ -68,25 +67,52 @@ func validateStrings(
     // MARK: Validate arguments
 
     for secondaryString in secondaryStrings {
-        let hasSamePositions = Set(secondaryString.baseArguments.map(\.position)) ==
-            Set(secondaryString.translationArguments.map(\.position))
-        if !hasSamePositions {
+        let secondaryArgumentPositions = Set(secondaryString.baseArguments.map(\.position))
+        let primaryArgumentPositions = Set(secondaryString.translationArguments.map(\.position))
+
+        let missingArgumentPositions = primaryArgumentPositions.subtracting(secondaryArgumentPositions)
+        let extraArgumentPositions = secondaryArgumentPositions.subtracting(primaryArgumentPositions)
+        let hasDuplicates = secondaryArgumentPositions.count != secondaryString.translationArguments.count
+
+        if !missingArgumentPositions.isEmpty {
+            let args = missingArgumentPositions.sorted().map { String($0) }.joined(separator: ",")
             problemReporter.report(
-                .error,
+                .warning,
                 path: secondaryString.file.path,
                 lineNumber: secondaryString.line,
-                message: "Number or value of argument positions do not match")
+                message: "Does not include arguments \(args)")
         }
 
-        let primaryTypes = secondaryString.baseArguments.sorted(by: { $0.position < $1.position }).map(\.specifier)
-        let secondaryTypes = secondaryString
-            .translationArguments.sorted(by: { $0.position < $1.position }).map(\.specifier)
-        if primaryTypes != secondaryTypes {
+        if !extraArgumentPositions.isEmpty {
+            let args = extraArgumentPositions.sorted().map { String($0) }.joined(separator: ",")
             problemReporter.report(
                 .error,
                 path: secondaryString.file.path,
                 lineNumber: secondaryString.line,
-                message: "Specifiers do not match. Original: \(primaryTypes.joined(separator: ",")); translated: \(secondaryTypes.joined(separator: ","))")
+                message: "Translation includes arguments that don't exist in the source: \(args) (original has \(primaryArgumentPositions))")
+        }
+
+        if hasDuplicates {
+            problemReporter.report(
+                .warning,
+                path: secondaryString.file.path,
+                lineNumber: secondaryString.line,
+                message: "Some arguments appear more than once in this translation")
+        }
+
+        let primaryArgs = secondaryString.baseArguments.sorted(by: { $0.position < $1.position })
+
+        for arg in secondaryString.translationArguments {
+            guard let primaryArg = primaryArgs.first(where: { $0.position == arg.position }) else {
+                continue
+            }
+            if arg.specifier != primaryArg.specifier {
+                problemReporter.report(
+                    .error,
+                    path: secondaryString.file.path,
+                    lineNumber: secondaryString.line,
+                    message: "Specifier for argument \(arg.position) does not match (should be \(primaryArg.specifier), is \(arg.specifier))")
+            }
         }
     }
 }

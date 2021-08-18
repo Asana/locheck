@@ -15,7 +15,7 @@ protocol Filing {
 
 extension File: Filing {}
 
-struct FormatArgument {
+struct FormatArgument: Equatable {
     let specifier: String
     let position: Int
 }
@@ -26,6 +26,46 @@ private extension FormatArgument {
         position = NumberFormatter().number(from: positionString)!.intValue
     }
 }
+
+// https://developer.apple.com/library/archive/documentation/CoreFoundation/Conceptual/CFStrings/formatSpecifiers.html#//apple_ref/doc/uid/TP40004265
+private let lengthModifiers: [String] = [
+    "h",
+    "hh",
+    "l",
+    "ll",
+    "q",
+    "L",
+    "z",
+    "t",
+    "j",
+]
+
+// https://developer.apple.com/library/archive/documentation/CoreFoundation/Conceptual/CFStrings/formatSpecifiers.html#//apple_ref/doc/uid/TP40004265
+private let specifiers: [String] = [
+    // omit %%, it doesn't affect interpolation
+    "@",
+    "d",
+    "D",
+    "u",
+    "U",
+    "x",
+    "X",
+    "o",
+    "O",
+    "f",
+    "e",
+    "E",
+    "g",
+    "G",
+    "c",
+    "C",
+    "s",
+    "S",
+    "p",
+    "a",
+    "A",
+    "F",
+]
 
 struct LocalizedString {
     let key: String
@@ -48,7 +88,7 @@ struct LocalizedString {
             pattern: pattern,
             options: .anchorsMatchLines)
         guard let strings = stringLiteralRegex
-            .matches(in: string, options: [], range: NSRange(location: 0, length: string.count))
+            .matches(in: string, options: [], range: NSRange(string.startIndex ..< string.endIndex, in: string))
             .first?
             .getGroupStrings(original: string) else {
             return nil
@@ -72,29 +112,25 @@ struct LocalizedString {
     }
 
     static func parseArguments(string: String, problemReporter: ProblemReporter) -> [FormatArgument] {
-        if string.contains("$") {
-            return try! NSRegularExpression(pattern: "%(\\d+)\\$([@a-z]+)", options: [])
-                .matches(in: string, options: [], range: NSRange(location: 0, length: string.count))
-                .compactMap { (match: NSTextCheckingResult) -> FormatArgument? in
-                    let groupStrings = match.getGroupStrings(original: string)
+        return try! NSRegularExpression(pattern: "%((\\d+)\\$)?([@a-z]+)", options: [])
+            .matches(in: string, options: [], range: NSRange(string.startIndex ..< string.endIndex, in: string))
+            .enumerated()
+            .compactMap { (i: Int, match: NSTextCheckingResult) -> FormatArgument? in
+                let groupStrings = match.getGroupStrings(original: string)
+
+                if groupStrings.count == 2 {
                     return FormatArgument(
-                        specifier: groupStrings[2],
-                        positionString: groupStrings[1])
-                }
-        } else {
-            return try! NSRegularExpression(pattern: "%([@a-z]+)", options: [])
-                .matches(in: string, options: [], range: NSRange(location: 0, length: string.count))
-                .enumerated()
-                .compactMap { (i: Int, match: NSTextCheckingResult) -> FormatArgument? in
-                    let groupStrings = match.getGroupStrings(original: string)
-                    guard !groupStrings.isEmpty else {
-                        problemReporter.logInfo("XXX \(string.debugDescription) \(groupStrings.debugDescription)")
-                        return nil
-                    }
-                    return FormatArgument(
-                        specifier: groupStrings.last!,
+                        specifier: groupStrings[1],
                         position: i + 1)
+                } else if groupStrings.count == 4 {
+                    return FormatArgument(
+                        specifier: groupStrings[3],
+                        positionString: groupStrings[2])
+                } else {
+                    // ???
+                    print("You found a bug! Check this string:", string)
+                    return nil
                 }
-        }
+            }
     }
 }

@@ -8,7 +8,7 @@
 @testable import LocheckLogic
 import XCTest
 
-struct FakeFile: Filing {
+private struct FakeFile: Filing {
     let path: String
     let nameExcludingExtension: String
 }
@@ -89,8 +89,13 @@ class ValidateStringsTests: XCTestCase {
                 ProblemReporter.Problem(
                     path: "def",
                     lineNumber: 0,
-                    message: "Specifiers do not match. Original: d,@; translated: @,d",
+                    message: "Specifier for argument 1 does not match (should be d, is @)",
                     severity: .error),
+                ProblemReporter.Problem(
+                    path: "def",
+                    lineNumber: 0,
+                    message: "Specifier for argument 2 does not match (should be @, is d)",
+                    severity: .error)
             ])
     }
 
