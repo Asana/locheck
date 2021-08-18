@@ -39,7 +39,7 @@ func validateLproj(primary: LprojFiles, secondary: LprojFiles) {
       print("error: \(stringsFile.name) missing from translation \(secondary.name)")
       continue
     }
-    validateStrings(primary: stringsFile, secondary: secondaryStringsFile)
+    validateStrings(primary: stringsFile, secondary: secondaryStringsFile, secondaryName: secondary.name)
   }
 
   for stringsdictFile in primary.stringsdict {

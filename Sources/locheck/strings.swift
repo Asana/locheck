@@ -62,7 +62,9 @@ struct LocalizedString {
       return nil
     }
     guard strings.count == 2 else {
-      assert(strings.count == 0)
+//      print(string)
+//      print(strings.debugDescription)
+//      assert(strings.count == 0)
       return nil
     }
     let key = String(strings[0].dropFirst().dropLast())
@@ -89,8 +91,12 @@ struct LocalizedString {
         .enumerated()
         .compactMap { (i: Int, match: NSTextCheckingResult) -> FormatArgument? in
           let groupStrings = match.getGroupStrings(original: string)
+          guard !groupStrings.isEmpty else {
+            print("XXX", string.debugDescription, groupStrings.debugDescription)
+            return nil
+          }
           return FormatArgument(
-            specifier: groupStrings[1],
+            specifier: groupStrings.last!,
             position: i + 1)
         }
     }
@@ -103,7 +109,7 @@ extension File {
   }
 }
 
-func validateStrings(primary: File, secondary: File) {
+func validateStrings(primary: File, secondary: File, secondaryName: String) {
   print("Validating \(secondary.path) against \(primary.path)")
   var secondaryStrings = [String: LocalizedString]()
   for (i, line) in secondary.lines.enumerated() {
@@ -115,7 +121,7 @@ func validateStrings(primary: File, secondary: File) {
     guard let primaryString = LocalizedString(string: line, line: i) else { continue }
 
     guard let secondaryString = secondaryStrings[primaryString.key] else {
-      print("\(primary.path):\(i):error:This string is missing from \(secondary.nameExcludingExtension)")
+      print("\(primary.path):\(i):error:This string is missing from \(secondaryName) \(primaryString.string.debugDescription)")
       continue
     }
 

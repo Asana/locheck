@@ -39,7 +39,11 @@ struct Strings: ParsableCommand {
 
   func run() {
     for file in secondary {
-      validateStrings(primary: try! File(path: primary.argument), secondary: try! File(path: file.argument))
+      let secondaryFile = try! File(path: file.argument)
+      validateStrings(
+        primary: try! File(path: primary.argument),
+        secondary: secondaryFile,
+        secondaryName: secondaryFile.nameExcludingExtension)
     }
   }
 }
