@@ -8,13 +8,13 @@
 import Files
 import Foundation
 
-struct LprojFiles {
-  let name: String
-  let path: String
-  let strings: [File]
-  let stringsdict: [File]
+public struct LprojFiles {
+  public let name: String
+  public let path: String
+  public let strings: [File]
+  public let stringsdict: [File]
 
-  init(folder: Folder) {
+  public init(folder: Folder) {
     name = folder.nameExcludingExtension
     path = folder.path
     var strings = [File]()

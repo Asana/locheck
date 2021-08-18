@@ -6,7 +6,6 @@
 //
 
 import class Foundation.Bundle
-@testable import locheck
 import XCTest
 
 class ExecutableTests: XCTestCase {

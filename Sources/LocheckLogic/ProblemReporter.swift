@@ -15,24 +15,29 @@ private struct StderrOutputStream: TextOutputStream {
   }
 }
 
-class ProblemReporter {
-  struct Problem: Error {
-    enum Severity: String {
+public class ProblemReporter {
+  public struct Problem: Error {
+    public enum Severity: String {
       case warning
       case error
     }
 
-    let path: String
-    let lineNumber: Int
-    let message: String
-    let severity: Severity
+    public let path: String
+    public let lineNumber: Int
+    public let message: String
+    public let severity: Severity
   }
 
   private var standardError = StderrOutputStream()
   private var problems = [Problem]()
-  var log = true
+  
+  public var log: Bool
 
-  func report(_ severity: Problem.Severity, path: String, lineNumber: Int, message: String) {
+  public init(log: Bool = true) {
+    self.log = log
+  }
+
+  public func report(_ severity: Problem.Severity, path: String, lineNumber: Int, message: String) {
     problems.append(Problem(path: path, lineNumber: lineNumber, message: message, severity: severity))
 
     guard log else { return }
@@ -40,9 +45,9 @@ class ProblemReporter {
     print("\(path):\(lineNumber): \(severity.rawValue): \(message)", to: &standardError)
   }
 
-  var hasError: Bool { problems.contains(where: { $0.severity == .error }) }
+  public var hasError: Bool { problems.contains(where: { $0.severity == .error }) }
 
-  func logInfo(_ string: String) {
+  public func logInfo(_ string: String) {
     guard log else { return }
     print(string)
   }

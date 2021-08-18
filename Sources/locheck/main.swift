@@ -2,6 +2,7 @@ import ArgumentParser
 import Darwin
 import Files
 import Foundation
+import LocheckLogic
 
 private struct FileArg: ExpressibleByArgument {
   let argument: String
@@ -52,7 +53,7 @@ struct Strings: ParsableCommand {
     withProblemReporter { problemReporter in
       for file in secondary {
         let secondaryFile = try! File(path: file.argument)
-        validateStrings(
+        parseAndValidateStrings(
           primary: try! File(path: primary.argument),
           secondary: secondaryFile,
           secondaryName: secondaryFile.nameExcludingExtension,

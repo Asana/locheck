@@ -8,7 +8,7 @@
 import Files
 import Foundation
 
-func validateLproj(primary: LprojFiles, secondary: LprojFiles, problemReporter: ProblemReporter) {
+public func validateLproj(primary: LprojFiles, secondary: LprojFiles, problemReporter: ProblemReporter) {
   for stringsFile in primary.strings {
     guard let secondaryStringsFile = secondary.strings.first(where: { $0.name == stringsFile.name }) else {
       problemReporter.report(
@@ -18,7 +18,7 @@ func validateLproj(primary: LprojFiles, secondary: LprojFiles, problemReporter: 
         message: "\(stringsFile.name) missing from translation \(secondary.name)")
       continue
     }
-    validateStrings(
+    parseAndValidateStrings(
       primary: stringsFile,
       secondary: secondaryStringsFile,
       secondaryName: secondary.name,

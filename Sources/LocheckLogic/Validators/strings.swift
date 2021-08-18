@@ -8,6 +8,13 @@
 import Files
 import Foundation
 
+protocol Filing {
+  var nameExcludingExtension: String { get }
+  var path: String { get }
+}
+
+extension File: Filing {}
+
 struct FormatArgument {
   let specifier: String
   let position: Int
@@ -24,18 +31,18 @@ struct LocalizedString {
   let key: String
   let string: String
   let arguments: [FormatArgument]
-  let file: File
+  let file: Filing
   let line: Int
 
-  init(key: String, string: String, file: File, line: Int, problemReporter: ProblemReporter) {
+  init(key: String, string: String, file: Filing, line: Int, arguments: [FormatArgument]) {
     self.key = key
     self.string = string
     self.file = file
     self.line = line
-    arguments = LocalizedString.parseArguments(string: string, problemReporter: problemReporter)
+    self.arguments = arguments
   }
 
-  init?(string: String, file: File, line: Int, problemReporter: ProblemReporter) {
+  init?(string: String, file: Filing, line: Int, problemReporter: ProblemReporter) {
     // https://stackoverflow.com/a/37032779
     let stringPattern = "\"[^\"\\\\]*(\\\\.[^\"\\\\]*)*\""
     let pattern = "^(\(stringPattern)) = (\(stringPattern));$"
@@ -91,7 +98,7 @@ struct LocalizedString {
   }
 }
 
-func validateStrings(primary: File, secondary: File, secondaryName: String, problemReporter: ProblemReporter) {
+public func parseAndValidateStrings(primary: File, secondary: File, secondaryName: String, problemReporter: ProblemReporter) {
   problemReporter.logInfo("Validating \(secondary.path) against \(primary.path)")
 
   validateStrings(

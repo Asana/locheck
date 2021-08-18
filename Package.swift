@@ -17,8 +17,12 @@ let package = Package(
       name: "locheck",
       dependencies: [
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
-        // error: product dependency 'Files' in package 'files' not found
-        // warning: dependency 'Files' is not used by any target
+        .product(name: "Files", package: "Files"),
+        .target(name: "LocheckLogic"),
+      ]),
+    .target(
+      name: "LocheckLogic",
+      dependencies: [
         .product(name: "Files", package: "Files"),
       ]),
     .testTarget(
