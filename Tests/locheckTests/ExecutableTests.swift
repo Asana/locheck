@@ -1,8 +1,15 @@
+//
+//  ExecutableTests.swift
+//
+//
+//  Created by Steve Landey on 8/17/21.
+//
+
 import class Foundation.Bundle
 @testable import locheck
 import XCTest
 
-final class LocheckTests: XCTestCase {
+class ExecutableTests: XCTestCase {
   fileprivate let packageRootPath = URL(fileURLWithPath: #file)
     .pathComponents
     .prefix(while: { $0 != "Tests" })
@@ -57,8 +64,8 @@ final class LocheckTests: XCTestCase {
 
     XCTAssertEqual(stderr, """
     Examples/Demo1.strings:3: warning: This string is missing from Demo2
-    Examples/Demo2.strings:5: error: Number or value of positions do not match
-    Examples/Demo2.strings:7: error: Specifiers do not match. Original: @,d; translated: d,@
+    Examples/Demo2.strings:3: error: Number or value of positions do not match
+    Examples/Demo2.strings:5: error: Specifiers do not match. Original: @,d; translated: d,@
 
     """)
   }

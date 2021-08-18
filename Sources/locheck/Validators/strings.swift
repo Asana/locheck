@@ -8,7 +8,7 @@
 import Files
 import Foundation
 
-private struct FormatArgument {
+struct FormatArgument {
   let specifier: String
   let position: Int
 }
@@ -20,20 +20,22 @@ private extension FormatArgument {
   }
 }
 
-private struct LocalizedString {
+struct LocalizedString {
   let key: String
   let string: String
   let arguments: [FormatArgument]
+  let file: File
   let line: Int
 
-  init(key: String, string: String, line: Int, problemReporter: ProblemReporter) {
+  init(key: String, string: String, file: File, line: Int, problemReporter: ProblemReporter) {
     self.key = key
     self.string = string
+    self.file = file
     self.line = line
     arguments = LocalizedString.parseArguments(string: string, problemReporter: problemReporter)
   }
 
-  init?(string: String, line: Int, problemReporter: ProblemReporter) {
+  init?(string: String, file: File, line: Int, problemReporter: ProblemReporter) {
     // https://stackoverflow.com/a/37032779
     let stringPattern = "\"[^\"\\\\]*(\\\\.[^\"\\\\]*)*\""
     let pattern = "^(\(stringPattern)) = (\(stringPattern));$"
@@ -56,6 +58,7 @@ private struct LocalizedString {
     let value = String(strings[1].dropFirst().dropLast())
     self.key = key
     self.string = string
+    self.file = file
     self.line = line
     arguments = LocalizedString.parseArguments(string: value, problemReporter: problemReporter)
   }
@@ -90,22 +93,35 @@ private struct LocalizedString {
 
 func validateStrings(primary: File, secondary: File, secondaryName: String, problemReporter: ProblemReporter) {
   problemReporter.logInfo("Validating \(secondary.path) against \(primary.path)")
-  var secondaryStrings = [String: LocalizedString]()
-  for (i, line) in secondary.lines.enumerated() {
-    guard let localizedString = LocalizedString(string: line, line: i, problemReporter: problemReporter)
-    else { continue }
-    secondaryStrings[localizedString.key] = localizedString
+
+  validateStrings(
+    primaryStrings: primary.lines.enumerated().compactMap {
+      LocalizedString(string: $0.1, file: primary, line: $0.0 + 1, problemReporter: problemReporter)
+    },
+    secondaryStrings: secondary.lines.enumerated().compactMap {
+      LocalizedString(string: $0.1, file: secondary, line: $0.0 + 1, problemReporter: problemReporter)
+    },
+    secondaryFileName: secondary.nameExcludingExtension,
+    problemReporter: problemReporter)
+}
+
+func validateStrings(
+  primaryStrings: [LocalizedString],
+  secondaryStrings: [LocalizedString],
+  secondaryFileName: String,
+  problemReporter: ProblemReporter) {
+  var secondaryStringMap = [String: LocalizedString]()
+  for localizedString in secondaryStrings {
+    secondaryStringMap[localizedString.key] = localizedString
   }
 
-  for (i, line) in primary.lines.enumerated() {
-    guard let primaryString = LocalizedString(string: line, line: i, problemReporter: problemReporter) else { continue }
-
-    guard let secondaryString = secondaryStrings[primaryString.key] else {
+  for primaryString in primaryStrings {
+    guard let secondaryString = secondaryStringMap[primaryString.key] else {
       problemReporter.report(
         .warning,
-        path: primary.path,
-        lineNumber: i + 1,
-        message: "This string is missing from \(secondaryName)")
+        path: primaryString.file.path,
+        lineNumber: primaryString.line,
+        message: "This string is missing from \(secondaryFileName)")
       continue
     }
 
@@ -114,8 +130,8 @@ func validateStrings(primary: File, secondary: File, secondaryName: String, prob
     if !hasSamePositions {
       problemReporter.report(
         .error,
-        path: secondary.path,
-        lineNumber: i + 1,
+        path: secondaryString.file.path,
+        lineNumber: secondaryString.line,
         message: "Number or value of positions do not match")
     }
 
@@ -125,8 +141,8 @@ func validateStrings(primary: File, secondary: File, secondaryName: String, prob
     if primaryTypes != secondaryTypes {
       problemReporter.report(
         .error,
-        path: secondary.path,
-        lineNumber: i + 1,
+        path: secondaryString.file.path,
+        lineNumber: secondaryString.line,
         message: "Specifiers do not match. Original: \(primaryTypes.joined(separator: ",")); translated: \(secondaryTypes.joined(separator: ","))")
     }
   }
