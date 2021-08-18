@@ -30,12 +30,17 @@ private extension FormatArgument {
 struct LocalizedString {
     let key: String
     let string: String
-    let keyArguments: [FormatArgument]
-    let valueArguments: [FormatArgument]
+    let baseArguments: [FormatArgument]
+    let translationArguments: [FormatArgument]
     let file: Filing
     let line: Int
 
-    init?(string: String, file: Filing, line: Int, problemReporter: ProblemReporter) {
+    init?(
+        string: String,
+        file: Filing,
+        line: Int,
+        primaryStringMap: [String: LocalizedString]? = nil, // only pass for secondary strings
+        problemReporter: ProblemReporter) {
         // https://stackoverflow.com/a/37032779
         let stringPattern = "\"[^\"\\\\]*(\\\\.[^\"\\\\]*)*\""
         let pattern = "^(\(stringPattern)) = (\(stringPattern));$"
@@ -57,8 +62,13 @@ struct LocalizedString {
         self.string = string
         self.file = file
         self.line = line
-        keyArguments = LocalizedString.parseArguments(string: key, problemReporter: problemReporter)
-        valueArguments = LocalizedString.parseArguments(string: value, problemReporter: problemReporter)
+
+        if let primaryStringMap = primaryStringMap, let primaryString = primaryStringMap[key] {
+            baseArguments = primaryString.translationArguments
+        } else {
+            baseArguments = LocalizedString.parseArguments(string: key, problemReporter: problemReporter)
+        }
+        translationArguments = LocalizedString.parseArguments(string: value, problemReporter: problemReporter)
     }
 
     static func parseArguments(string: String, problemReporter: ProblemReporter) -> [FormatArgument] {

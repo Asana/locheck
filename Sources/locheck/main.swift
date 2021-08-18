@@ -85,11 +85,11 @@ struct Lproj: ParsableCommand {
 }
 
 struct Discover: ParsableCommand {
+    @Option(help: "The authoritative language. Defaults to 'en'.")
+    private var primary = "en"
+
     @Argument(help: "A directory full of .lproj files, with one of them being authoritative.")
     private var directories: [FileArg]
-
-    @Argument(help: "The authoritative language. Defaults to 'en'.")
-    private var primary = "en"
 
     func validate() throws {
         for directory in directories {
