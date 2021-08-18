@@ -3,7 +3,7 @@ import Darwin
 import Files
 import Foundation
 
-struct FileArg: ExpressibleByArgument {
+private struct FileArg: ExpressibleByArgument {
   let argument: String
 
   /// Creates a new instance of this type from a command-line-specified
@@ -26,6 +26,16 @@ struct FileArg: ExpressibleByArgument {
   }
 }
 
+private func withProblemReporter(_ block: (ProblemReporter) -> Void) {
+  let problemReporter = ProblemReporter()
+  block(problemReporter)
+  if problemReporter.hasError {
+    print("Errors found")
+    Darwin.exit(1)
+  }
+  print("Finished validating")
+}
+
 struct Strings: ParsableCommand {
   @Argument(help: "An authoritative .strings file")
   private var primary: FileArg
@@ -39,38 +49,35 @@ struct Strings: ParsableCommand {
   }
 
   func run() {
-    let problemReporter = ProblemReporter()
-    for file in secondary {
-      let secondaryFile = try! File(path: file.argument)
-      validateStrings(
-        primary: try! File(path: primary.argument),
-        secondary: secondaryFile,
-        secondaryName: secondaryFile.nameExcludingExtension,
-        problemReporter: problemReporter)
-    }
-    if problemReporter.hasError {
-      print("Errors found")
-      Darwin.exit(1)
+    withProblemReporter { problemReporter in
+      for file in secondary {
+        let secondaryFile = try! File(path: file.argument)
+        validateStrings(
+          primary: try! File(path: primary.argument),
+          secondary: secondaryFile,
+          secondaryName: secondaryFile.nameExcludingExtension,
+          problemReporter: problemReporter)
+      }
     }
   }
 }
 
-struct Stringsdict: ParsableCommand {
-  @Argument(help: "An authoritative .stringsdict file")
-  private var primary: FileArg
-
-  @Argument(help: "Non-authoritative .stringsdict files that need to be validated")
-  private var secondary: [FileArg]
-
-  func validate() throws {
-    try primary.validate(ext: "stringsdict")
-    try secondary.forEach { try $0.validate(ext: "stringsdict") }
-  }
-
-  func run() {
-    print("STRINGSDICT!")
-  }
-}
+// struct Stringsdict: ParsableCommand {
+//  @Argument(help: "An authoritative .stringsdict file")
+//  private var primary: FileArg
+//
+//  @Argument(help: "Non-authoritative .stringsdict files that need to be validated")
+//  private var secondary: [FileArg]
+//
+//  func validate() throws {
+//    try primary.validate(ext: "stringsdict")
+//    try secondary.forEach { try $0.validate(ext: "stringsdict") }
+//  }
+//
+//  func run() {
+//    print("STRINGSDICT!")
+//  }
+// }
 
 struct Lproj: ParsableCommand {
   @Argument(help: "An authoritative .lproj directory")
@@ -85,7 +92,16 @@ struct Lproj: ParsableCommand {
   }
 
   func run() {
-    print("LPROJ!")
+    print("Validating \(secondary.count) lproj files against \(try! Folder(path: primary.argument).name)")
+
+    withProblemReporter { problemReporter in
+      for secondary in secondary {
+        validateLproj(
+          primary: LprojFiles(folder: try! Folder(path: primary.argument)),
+          secondary: LprojFiles(folder: try! Folder(path: secondary.argument)),
+          problemReporter: problemReporter)
+      }
+    }
   }
 }
 
@@ -137,25 +153,18 @@ struct Discover: ParsableCommand {
     print("Source of truth: \(primaryLproj.path)")
     print("Translations to check: \(secondaryLproj.count)")
 
-    let problemReporter = ProblemReporter()
-
-    for secondary in secondaryLproj {
-      validateLproj(primary: primaryLproj, secondary: secondary, problemReporter: problemReporter)
+    withProblemReporter { problemReporter in
+      for secondary in secondaryLproj {
+        validateLproj(primary: primaryLproj, secondary: secondary, problemReporter: problemReporter)
+      }
     }
-
-    if problemReporter.hasError {
-      print("Errors found")
-      Darwin.exit(1)
-    }
-
-    print("Finished validating")
   }
 }
 
 struct Locheck: ParsableCommand {
   static let configuration = CommandConfiguration(
     abstract: "Validate your Xcode localization files",
-    subcommands: [Strings.self, Stringsdict.self, Lproj.self, Discover.self])
+    subcommands: [Strings.self, /* Stringsdict.self, */ Lproj.self, Discover.self])
 }
 
 Locheck.main()
