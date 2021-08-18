@@ -98,7 +98,11 @@ struct LocalizedString {
   }
 }
 
-public func parseAndValidateStrings(primary: File, secondary: File, secondaryName: String, problemReporter: ProblemReporter) {
+public func parseAndValidateStrings(
+  primary: File,
+  secondary: File,
+  secondaryName: String,
+  problemReporter: ProblemReporter) {
   problemReporter.logInfo("Validating \(secondary.path) against \(primary.path)")
 
   validateStrings(

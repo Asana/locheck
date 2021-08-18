@@ -16,7 +16,7 @@ private struct StderrOutputStream: TextOutputStream {
 }
 
 public class ProblemReporter {
-  public struct Problem: Error {
+  public struct Problem: Error, Equatable {
     public enum Severity: String {
       case warning
       case error
@@ -29,8 +29,8 @@ public class ProblemReporter {
   }
 
   private var standardError = StderrOutputStream()
-  private var problems = [Problem]()
-  
+  public private(set) var problems = [Problem]()
+
   public var log: Bool
 
   public init(log: Bool = true) {
