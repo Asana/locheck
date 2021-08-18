@@ -1,4 +1,5 @@
 import ArgumentParser
+import Darwin
 import Files
 import Foundation
 
@@ -38,12 +39,18 @@ struct Strings: ParsableCommand {
   }
 
   func run() {
+    let problemReporter = ProblemReporter()
     for file in secondary {
       let secondaryFile = try! File(path: file.argument)
       validateStrings(
         primary: try! File(path: primary.argument),
         secondary: secondaryFile,
-        secondaryName: secondaryFile.nameExcludingExtension)
+        secondaryName: secondaryFile.nameExcludingExtension,
+        problemReporter: problemReporter)
+    }
+    if problemReporter.hasError {
+      print("Errors found")
+      Darwin.exit(1)
     }
   }
 }
@@ -130,8 +137,15 @@ struct Discover: ParsableCommand {
     print("Source of truth: \(primaryLproj.path)")
     print("Translations to check: \(secondaryLproj.count)")
 
+    let problemReporter = ProblemReporter()
+
     for secondary in secondaryLproj {
-      validateLproj(primary: primaryLproj, secondary: secondary)
+      validateLproj(primary: primaryLproj, secondary: secondary, problemReporter: problemReporter)
+    }
+
+    if problemReporter.hasError {
+      print("Errors found")
+      Darwin.exit(1)
     }
 
     print("Finished validating")

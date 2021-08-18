@@ -8,45 +8,19 @@
 import Files
 import Foundation
 
-import func Darwin.fputs
-import var Darwin.stderr
-
-struct StderrOutputStream: TextOutputStream {
-  mutating func write(_ string: String) {
-    fputs(string, stderr)
-  }
-}
-
-var standardError = StderrOutputStream()
-
-extension NSTextCheckingResult {
-  func getGroupStrings(original: String) -> [String] {
-    (0 ..< numberOfRanges).compactMap { i in
-      let matchRange = range(at: i)
-      if matchRange == NSRange(original.startIndex ..< original.endIndex, in: original) {
-        return nil
-      } else if let substringRange = Range(matchRange, in: original) {
-        return String(original[substringRange])
-      } else {
-        return nil
-      }
-    }
-  }
-}
-
-struct FormatArgument {
+private struct FormatArgument {
   let specifier: String
   let position: Int
 }
 
-extension FormatArgument {
+private extension FormatArgument {
   init(specifier: String, positionString: String) {
     self.specifier = specifier
     position = NumberFormatter().number(from: positionString)!.intValue
   }
 }
 
-struct LocalizedString {
+private struct LocalizedString {
   let key: String
   let string: String
   let arguments: [FormatArgument]
@@ -114,13 +88,7 @@ struct LocalizedString {
   }
 }
 
-extension File {
-  var lines: [String] {
-    try! readAsString().split(omittingEmptySubsequences: false, whereSeparator: \.isNewline).map { String($0) }
-  }
-}
-
-func validateStrings(primary: File, secondary: File, secondaryName: String) {
+func validateStrings(primary: File, secondary: File, secondaryName: String, problemReporter: ProblemReporter) {
   print("Validating \(secondary.path) against \(primary.path)")
   var secondaryStrings = [String: LocalizedString]()
   for (i, line) in secondary.lines.enumerated() {
@@ -132,24 +100,32 @@ func validateStrings(primary: File, secondary: File, secondaryName: String) {
     guard let primaryString = LocalizedString(string: line, line: i) else { continue }
 
     guard let secondaryString = secondaryStrings[primaryString.key] else {
-      print(
-        "\(primary.path):\(i + 1): warning: This string is missing from \(secondaryName)",
-        to: &standardError)
+      problemReporter.report(
+        .warning,
+        path: primary.path,
+        lineNumber: i + 1,
+        message: "This string is missing from \(secondaryName)")
       continue
     }
 
     let hasSamePositions = Set(primaryString.arguments.map(\.position)) == Set(secondaryString.arguments.map(\.position))
     if !hasSamePositions {
-      print("\(secondary.path):\(i + 1): error: Number or value of positions do not match", to: &standardError)
+      problemReporter.report(
+        .error,
+        path: secondary.path,
+        lineNumber: i + 1,
+        message: "Number or value of positions do not match")
     }
 
     let primaryTypes = primaryString.arguments.sorted(by: { $0.position < $1.position }).map(\.specifier)
     let secondaryTypes = secondaryString
       .arguments.sorted(by: { $0.position < $1.position }).map(\.specifier)
     if primaryTypes != secondaryTypes {
-      print(
-        "\(secondary.path):\(i + 1): error: Specifiers do not match. Original: \(primaryTypes), translated: \(secondaryTypes)",
-        to: &standardError)
+      problemReporter.report(
+        .error,
+        path: secondary.path,
+        lineNumber: i + 1,
+        message: "Specifiers do not match. Original: \(primaryTypes.joined(separator: ",")); translated: \(secondaryTypes.joined(separator: ","))")
     }
   }
 }

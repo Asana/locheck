@@ -33,13 +33,17 @@ struct LprojFiles {
   }
 }
 
-func validateLproj(primary: LprojFiles, secondary: LprojFiles) {
+func validateLproj(primary: LprojFiles, secondary: LprojFiles, problemReporter: ProblemReporter) {
   for stringsFile in primary.strings {
     guard let secondaryStringsFile = secondary.strings.first(where: { $0.name == stringsFile.name }) else {
       print("error: \(stringsFile.name) missing from translation \(secondary.name)")
       continue
     }
-    validateStrings(primary: stringsFile, secondary: secondaryStringsFile, secondaryName: secondary.name)
+    validateStrings(
+      primary: stringsFile,
+      secondary: secondaryStringsFile,
+      secondaryName: secondary.name,
+      problemReporter: problemReporter)
   }
 
   for stringsdictFile in primary.stringsdict {
