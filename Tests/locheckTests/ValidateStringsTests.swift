@@ -19,19 +19,17 @@ class ValidateStringsTests: XCTestCase {
         validateStrings(
             primaryStrings: [
                 LocalizedString(
-                    key: "present",
-                    string: "present",
+                    string: "\"present\" = \"present\";",
                     file: FakeFile(path: "abc", nameExcludingExtension: "xyz"),
                     line: 0,
-                    arguments: []),
+                    problemReporter: problemReporter)!,
             ],
             secondaryStrings: [
                 LocalizedString(
-                    key: "present",
-                    string: "tneserp",
+                    string: "\"present\" = \"tneserp\";",
                     file: FakeFile(path: "def", nameExcludingExtension: "uvw"),
                     line: 0,
-                    arguments: []),
+                    problemReporter: problemReporter)!,
             ],
             secondaryFileName: "secondary",
             problemReporter: problemReporter)
@@ -125,25 +123,22 @@ class ValidateStringsTests: XCTestCase {
         validateStrings(
             primaryStrings: [
                 LocalizedString(
-                    key: "present",
-                    string: "present",
+                    string: "\"present\" = \"present\";",
                     file: FakeFile(path: "abc", nameExcludingExtension: "xyz"),
                     line: 0,
-                    arguments: []),
+                    problemReporter: problemReporter)!,
                 LocalizedString(
-                    key: "missing",
-                    string: "missing",
+                    string: "\"missing\" = \"missing\";",
                     file: FakeFile(path: "abc", nameExcludingExtension: "xyz"),
                     line: 1,
-                    arguments: []),
+                    problemReporter: problemReporter)!,
             ],
             secondaryStrings: [
                 LocalizedString(
-                    key: "present",
-                    string: "tneserp",
+                    string: "\"present\" = \"tneserp\";",
                     file: FakeFile(path: "def", nameExcludingExtension: "uvw"),
                     line: 0,
-                    arguments: []),
+                    problemReporter: problemReporter)!,
             ],
             secondaryFileName: "secondary",
             problemReporter: problemReporter)

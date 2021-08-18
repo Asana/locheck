@@ -48,17 +48,10 @@ private extension FormatArgument {
 struct LocalizedString {
     let key: String
     let string: String
-    let arguments: [FormatArgument]
+    let keyArguments: [FormatArgument]
+    let valueArguments: [FormatArgument]
     let file: Filing
     let line: Int
-
-    init(key: String, string: String, file: Filing, line: Int, arguments: [FormatArgument]) {
-        self.key = key
-        self.string = string
-        self.file = file
-        self.line = line
-        self.arguments = arguments
-    }
 
     init?(string: String, file: Filing, line: Int, problemReporter: ProblemReporter) {
         // https://stackoverflow.com/a/37032779
@@ -82,7 +75,8 @@ struct LocalizedString {
         self.string = string
         self.file = file
         self.line = line
-        arguments = LocalizedString.parseArguments(string: value, problemReporter: problemReporter)
+        keyArguments = LocalizedString.parseArguments(string: key, problemReporter: problemReporter)
+        valueArguments = LocalizedString.parseArguments(string: value, problemReporter: problemReporter)
     }
 
     static func parseArguments(string: String, problemReporter: ProblemReporter) -> [FormatArgument] {
@@ -133,8 +127,8 @@ func validateStrings(
             continue
         }
 
-        let hasSamePositions = Set(primaryString.arguments.map(\.position)) ==
-            Set(secondaryString.arguments.map(\.position))
+        let hasSamePositions = Set(primaryString.valueArguments.map(\.position)) ==
+            Set(secondaryString.valueArguments.map(\.position))
         if !hasSamePositions {
             problemReporter.report(
                 .error,
@@ -143,9 +137,9 @@ func validateStrings(
                 message: "Number or value of argument positions do not match")
         }
 
-        let primaryTypes = primaryString.arguments.sorted(by: { $0.position < $1.position }).map(\.specifier)
+        let primaryTypes = primaryString.valueArguments.sorted(by: { $0.position < $1.position }).map(\.specifier)
         let secondaryTypes = secondaryString
-            .arguments.sorted(by: { $0.position < $1.position }).map(\.specifier)
+            .valueArguments.sorted(by: { $0.position < $1.position }).map(\.specifier)
         if primaryTypes != secondaryTypes {
             problemReporter.report(
                 .error,
