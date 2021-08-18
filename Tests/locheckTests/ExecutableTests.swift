@@ -24,6 +24,7 @@ class ExecutableTests: XCTestCase {
     }
 
     override func setUp() {
+        super.setUp()
         FileManager.default.changeCurrentDirectoryPath(String(packageRootPath))
     }
 

@@ -132,7 +132,8 @@ class ValidateStringsTests: XCTestCase {
                     arguments: []),
                 LocalizedString(
                     key: "missing",
-                    string: "missing", file: FakeFile(path: "abc", nameExcludingExtension: "xyz"),
+                    string: "missing",
+                    file: FakeFile(path: "abc", nameExcludingExtension: "xyz"),
                     line: 1,
                     arguments: []),
             ],

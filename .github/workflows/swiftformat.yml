@@ -1,0 +1,25 @@
+name: Swift
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Mint
+        run: brew install mint
+
+      - name: SwiftFormat
+        run: swiftformat --verbose .
+
+      - name: Verify formatted code is unchanged
+        run: git diff --exit-code HEAD
+
+      - name: SwiftLint
+        run: swiftlint --strict
