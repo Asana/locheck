@@ -107,8 +107,8 @@ struct Discover: ParsableCommand {
   func run() {
     print("Discovering .lproj files in \(directory.argument)")
 
-   var primaryLproj: LprojFiles!
-   var secondaryLproj = [LprojFiles]()
+    var primaryLproj: LprojFiles!
+    var secondaryLproj = [LprojFiles]()
 
     for folder in try! Folder(path: directory.argument).subfolders {
       if folder.extension != "lproj" { continue }

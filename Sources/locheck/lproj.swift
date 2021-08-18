@@ -1,6 +1,6 @@
 //
 //  lproj.swift
-//  
+//
 //
 //  Created by Steve Landey on 8/17/21.
 //
@@ -15,8 +15,8 @@ struct LprojFiles {
   let stringsdict: [File]
 
   init(folder: Folder) {
-    self.name = folder.nameExcludingExtension
-    self.path = folder.path
+    name = folder.nameExcludingExtension
+    path = folder.path
     var strings = [File]()
     var stringsdict = [File]()
 

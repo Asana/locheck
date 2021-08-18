@@ -1,6 +1,6 @@
 //
 //  strings.swift
-//  
+//
 //
 //  Created by Steve Landey on 8/17/21.
 //
@@ -10,9 +10,9 @@ import Foundation
 
 extension NSTextCheckingResult {
   func getGroupStrings(original: String) -> [String] {
-    (0..<numberOfRanges).compactMap { i in
+    (0 ..< numberOfRanges).compactMap { i in
       let matchRange = range(at: i)
-      if matchRange == NSRange(original.startIndex..<original.endIndex, in: original) {
+      if matchRange == NSRange(original.startIndex ..< original.endIndex, in: original) {
         return nil
       } else if let substringRange = Range(matchRange, in: original) {
         return String(original[substringRange])
@@ -25,13 +25,13 @@ extension NSTextCheckingResult {
 
 struct FormatArgument {
   let specifier: String
-  let position: Int? // nil = implicit
+  let position: Int
 }
 
 extension FormatArgument {
   init(specifier: String, positionString: String) {
     self.specifier = specifier
-    self.position = NumberFormatter().number(from: positionString)!.intValue
+    position = NumberFormatter().number(from: positionString)!.intValue
   }
 }
 
@@ -39,11 +39,38 @@ struct LocalizedString {
   let key: String
   let string: String
   let arguments: [FormatArgument]
+  let line: Int
 
-  init(key: String, string: String) {
+  init(key: String, string: String, line: Int) {
     self.key = key
     self.string = string
-    self.arguments = LocalizedString.parseArguments(string: string)
+    self.line = line
+    arguments = LocalizedString.parseArguments(string: string)
+  }
+
+  init?(string: String, line: Int) {
+    // https://stackoverflow.com/a/37032779
+    let stringPattern = "\"[^\"\\\\]*(\\\\.[^\"\\\\]*)*\""
+    let pattern = "^(\(stringPattern)) = (\(stringPattern));$"
+    let stringLiteralRegex = try! NSRegularExpression(
+      pattern: pattern,
+      options: .anchorsMatchLines)
+    guard let strings = stringLiteralRegex
+      .matches(in: string, options: [], range: NSRange(location: 0, length: string.count))
+      .first?
+      .getGroupStrings(original: string) else {
+      return nil
+    }
+    guard strings.count == 2 else {
+      assert(strings.count == 0)
+      return nil
+    }
+    let key = String(strings[0].dropFirst().dropLast())
+    let value = String(strings[1].dropFirst().dropLast())
+    self.key = key
+    self.string = string
+    self.line = line
+    arguments = LocalizedString.parseArguments(string: value)
   }
 
   static func parseArguments(string: String) -> [FormatArgument] {
@@ -64,45 +91,44 @@ struct LocalizedString {
           let groupStrings = match.getGroupStrings(original: string)
           return FormatArgument(
             specifier: groupStrings[1],
-            position: i)
+            position: i + 1)
         }
     }
   }
 }
 
-func validateStrings(primary: File, secondary: File) {
-  print("Validating \(primary.path)")
-  var secondaryStrings = [String: LocalizedString]()
-  let lines = try! secondary.readAsString().split(whereSeparator: {
-    $0.unicodeScalars.contains(where: CharacterSet.newlines.contains)
-  }).map { String($0) }
-  for line in lines {
-    guard let localizedString = parseStringsLine(line) else { continue }
-    print(line)
-    secondaryStrings[localizedString.key] = localizedString
-    print(localizedString)
-    return
+extension File {
+  var lines: [String] {
+    try! readAsString().split(omittingEmptySubsequences: false, whereSeparator: \.isNewline).map { String($0) }
   }
 }
 
-func parseStringsLine(_ line: String) -> LocalizedString? {
-  // https://stackoverflow.com/a/37032779
-  let stringPattern = "\"[^\"\\\\]*(\\\\.[^\"\\\\]*)*\""
-  let pattern = "^(\(stringPattern)) = (\(stringPattern));$"
-  let stringLiteralRegex = try! NSRegularExpression(
-    pattern: pattern,
-    options: .anchorsMatchLines)
-  guard let strings = stringLiteralRegex
-    .matches(in: line, options: [], range: NSRange(location: 0, length: line.count))
-    .first?
-    .getGroupStrings(original: line) else {
-    return nil
+func validateStrings(primary: File, secondary: File) {
+  print("Validating \(secondary.path) against \(primary.path)")
+  var secondaryStrings = [String: LocalizedString]()
+  for (i, line) in secondary.lines.enumerated() {
+    guard let localizedString = LocalizedString(string: line, line: i) else { continue }
+    secondaryStrings[localizedString.key] = localizedString
   }
-  guard strings.count == 2 else {
-    assert(strings.count == 0)
-    return nil
+
+  for (i, line) in primary.lines.enumerated() {
+    guard let primaryString = LocalizedString(string: line, line: i) else { continue }
+
+    guard let secondaryString = secondaryStrings[primaryString.key] else {
+      print("\(primary.path):\(i):error:This string is missing from \(secondary.nameExcludingExtension)")
+      continue
+    }
+
+    let hasSamePositions = Set(primaryString.arguments.map(\.position)) == Set(secondaryString.arguments.map(\.position))
+    if !hasSamePositions {
+      print("\(secondary.path):\(i):error:Number or value of positions do not match")
+    }
+
+    let primaryTypes = primaryString.arguments.sorted(by: { $0.position < $1.position }).map(\.specifier)
+    let secondaryTypes = secondaryString
+      .arguments.sorted(by: { $0.position < $1.position }).map(\.specifier)
+    if primaryTypes != secondaryTypes {
+      print("\(secondary.path):\(i):error:Specifiers do not match. Original: \(primaryTypes), translated: \(secondaryTypes)")
+    }
   }
-  let key = String(strings[0].dropFirst().dropLast())
-  let value = String(strings[1].dropFirst().dropLast())
-  return LocalizedString(key: key, string: value)
 }
