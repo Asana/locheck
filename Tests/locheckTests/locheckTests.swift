@@ -1,4 +1,5 @@
 import class Foundation.Bundle
+@testable import locheck
 import XCTest
 
 final class LocheckTests: XCTestCase {

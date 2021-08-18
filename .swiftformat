@@ -5,10 +5,7 @@
 --wraparguments before-first
 --wrapparameters before-first
 --wrapcollections before-first
---maxwidth 130
-
-# File options
---exclude Carthage,Pods,Xcode\ Templates
+--maxwidth 120
 
 # Rules
 --disable andOperator,enumNamespaces,unusedArguments,wrapMultilineStatementBraces

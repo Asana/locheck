@@ -92,7 +92,8 @@ func validateStrings(primary: File, secondary: File, secondaryName: String, prob
   problemReporter.logInfo("Validating \(secondary.path) against \(primary.path)")
   var secondaryStrings = [String: LocalizedString]()
   for (i, line) in secondary.lines.enumerated() {
-    guard let localizedString = LocalizedString(string: line, line: i, problemReporter: problemReporter) else { continue }
+    guard let localizedString = LocalizedString(string: line, line: i, problemReporter: problemReporter)
+    else { continue }
     secondaryStrings[localizedString.key] = localizedString
   }
 
@@ -108,7 +109,8 @@ func validateStrings(primary: File, secondary: File, secondaryName: String, prob
       continue
     }
 
-    let hasSamePositions = Set(primaryString.arguments.map(\.position)) == Set(secondaryString.arguments.map(\.position))
+    let hasSamePositions = Set(primaryString.arguments.map(\.position)) ==
+      Set(secondaryString.arguments.map(\.position))
     if !hasSamePositions {
       problemReporter.report(
         .error,
