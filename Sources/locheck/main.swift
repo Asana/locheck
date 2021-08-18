@@ -86,55 +86,59 @@ struct Lproj: ParsableCommand {
 
 struct Discover: ParsableCommand {
     @Argument(help: "A directory full of .lproj files, with one of them being authoritative.")
-    private var directory: FileArg
+    private var directories: [FileArg]
 
     @Argument(help: "The authoritative language. Defaults to 'en'.")
     private var primary = "en"
 
     func validate() throws {
-        try directory.validate()
+        for directory in directories {
+            try directory.validate()
 
-        var hasPrimary = false
-        var hasSecondary = false
+            var hasPrimary = false
+            var hasSecondary = false
 
-        for folder in try! Folder(path: directory.argument).subfolders {
-            if folder.extension != "lproj" { continue }
-            if folder.name == "\(primary).lproj" { hasPrimary = true } else { hasSecondary = true }
-        }
+            for folder in try! Folder(path: directory.argument).subfolders {
+                if folder.extension != "lproj" { continue }
+                if folder.name == "\(primary).lproj" { hasPrimary = true } else { hasSecondary = true }
+            }
 
-        if !hasPrimary {
-            throw ValidationError("Can't find \(primary).lproj in \(directory.argument)")
-        }
-        if !hasSecondary {
-            throw ValidationError("Can't find any secondary .lproj folders in in \(directory.argument)")
+            if !hasPrimary {
+                throw ValidationError("Can't find \(primary).lproj in \(directory.argument)")
+            }
+            if !hasSecondary {
+                throw ValidationError("Can't find any secondary .lproj folders in in \(directory.argument)")
+            }
         }
     }
 
     func run() {
-        print("Discovering .lproj files in \(directory.argument)")
+        for directory in directories {
+            print("Discovering .lproj files in \(directory.argument)")
 
-        var maybePrimaryLproj: LprojFiles!
-        var secondaryLproj = [LprojFiles]()
+            var maybePrimaryLproj: LprojFiles!
+            var secondaryLproj = [LprojFiles]()
 
-        for folder in try! Folder(path: directory.argument).subfolders {
-            if folder.extension != "lproj" { continue }
-            if folder.name == "\(primary).lproj" {
-                maybePrimaryLproj = LprojFiles(folder: folder)
-            } else {
-                secondaryLproj.append(LprojFiles(folder: folder))
+            for folder in try! Folder(path: directory.argument).subfolders {
+                if folder.extension != "lproj" { continue }
+                if folder.name == "\(primary).lproj" {
+                    maybePrimaryLproj = LprojFiles(folder: folder)
+                } else {
+                    secondaryLproj.append(LprojFiles(folder: folder))
+                }
             }
-        }
 
-        guard let primaryLproj = maybePrimaryLproj else {
-            return // caught by validation already
-        }
+            guard let primaryLproj = maybePrimaryLproj else {
+                return // caught by validation already
+            }
 
-        print("Source of truth: \(primaryLproj.path)")
-        print("Translations to check: \(secondaryLproj.count)")
+            print("Source of truth: \(primaryLproj.path)")
+            print("Translations to check: \(secondaryLproj.count)")
 
-        withProblemReporter { problemReporter in
-            for secondary in secondaryLproj {
-                validateLproj(primary: primaryLproj, secondary: secondary, problemReporter: problemReporter)
+            withProblemReporter { problemReporter in
+                for secondary in secondaryLproj {
+                    validateLproj(primary: primaryLproj, secondary: secondary, problemReporter: problemReporter)
+                }
             }
         }
     }
