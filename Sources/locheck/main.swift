@@ -143,12 +143,12 @@ struct Discover: ParsableCommand {
 struct Locheck: ParsableCommand {
     static let configuration = CommandConfiguration(
         abstract: """
-          Validate your Xcode localization files. Currently only works on .strings. The different
-          commands have different amounts of automation. `discover` operates on a directory of
-          .lproj files, `lproj` operates on specific .lproj files, and `strings` operates on\
-          specific .strings files.
-          """,
-      subcommands: [Discover.self, Lproj.self, Strings.self/*,  Stringsdict.self*/])
+        Validate your Xcode localization files. Currently only works on .strings. The different
+        commands have different amounts of automation. `discover` operates on a directory of
+        .lproj files, `lproj` operates on specific .lproj files, and `strings` operates on\
+        specific .strings files.
+        """,
+        subcommands: [Discover.self, Lproj.self, Strings.self /* ,  Stringsdict.self */ ])
 }
 
 Locheck.main()
