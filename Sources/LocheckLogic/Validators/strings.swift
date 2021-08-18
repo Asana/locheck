@@ -74,9 +74,6 @@ struct LocalizedString {
             return nil
         }
         guard strings.count == 2 else {
-//      print(string)
-//      print(strings.debugDescription)
-//      assert(strings.count == 0)
             return nil
         }
         let key = String(strings[0].dropFirst().dropLast())
