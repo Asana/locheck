@@ -64,7 +64,7 @@ class ExecutableTests: XCTestCase {
 
         XCTAssertEqual(stderr, """
         Examples/Demo1.strings:3: warning: This string is missing from Demo2
-        Examples/Demo2.strings:3: error: Number or value of positions do not match
+        Examples/Demo2.strings:3: error: Number or value of argument positions do not match
         Examples/Demo2.strings:5: error: Specifiers do not match. Original: @,d; translated: d,@
 
         """)

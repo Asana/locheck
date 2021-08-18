@@ -140,7 +140,7 @@ func validateStrings(
                 .error,
                 path: secondaryString.file.path,
                 lineNumber: secondaryString.line,
-                message: "Number or value of positions do not match")
+                message: "Number or value of argument positions do not match")
         }
 
         let primaryTypes = primaryString.arguments.sorted(by: { $0.position < $1.position }).map(\.specifier)
