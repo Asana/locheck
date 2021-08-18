@@ -8,6 +8,17 @@
 import Files
 import Foundation
 
+import func Darwin.fputs
+import var Darwin.stderr
+
+struct StderrOutputStream: TextOutputStream {
+  mutating func write(_ string: String) {
+    fputs(string, stderr)
+  }
+}
+
+var standardError = StderrOutputStream()
+
 extension NSTextCheckingResult {
   func getGroupStrings(original: String) -> [String] {
     (0 ..< numberOfRanges).compactMap { i in
@@ -121,20 +132,24 @@ func validateStrings(primary: File, secondary: File, secondaryName: String) {
     guard let primaryString = LocalizedString(string: line, line: i) else { continue }
 
     guard let secondaryString = secondaryStrings[primaryString.key] else {
-      print("\(primary.path):\(i):error:This string is missing from \(secondaryName) \(primaryString.string.debugDescription)")
+      print(
+        "\(primary.path):\(i + 1): warning: This string is missing from \(secondaryName)",
+        to: &standardError)
       continue
     }
 
     let hasSamePositions = Set(primaryString.arguments.map(\.position)) == Set(secondaryString.arguments.map(\.position))
     if !hasSamePositions {
-      print("\(secondary.path):\(i):error:Number or value of positions do not match")
+      print("\(secondary.path):\(i + 1): error: Number or value of positions do not match", to: &standardError)
     }
 
     let primaryTypes = primaryString.arguments.sorted(by: { $0.position < $1.position }).map(\.specifier)
     let secondaryTypes = secondaryString
       .arguments.sorted(by: { $0.position < $1.position }).map(\.specifier)
     if primaryTypes != secondaryTypes {
-      print("\(secondary.path):\(i):error:Specifiers do not match. Original: \(primaryTypes), translated: \(secondaryTypes)")
+      print(
+        "\(secondary.path):\(i + 1): error: Specifiers do not match. Original: \(primaryTypes), translated: \(secondaryTypes)",
+        to: &standardError)
     }
   }
 }
