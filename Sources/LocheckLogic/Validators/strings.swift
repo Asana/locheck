@@ -8,6 +8,24 @@
 import Files
 import Foundation
 
+public func parseAndValidateStrings(
+  primary: File,
+  secondary: File,
+  secondaryName: String,
+  problemReporter: ProblemReporter) {
+  problemReporter.logInfo("Validating \(secondary.path) against \(primary.path)")
+
+  validateStrings(
+    primaryStrings: primary.lines.enumerated().compactMap {
+      LocalizedString(string: $0.1, file: primary, line: $0.0 + 1, problemReporter: problemReporter)
+    },
+    secondaryStrings: secondary.lines.enumerated().compactMap {
+      LocalizedString(string: $0.1, file: secondary, line: $0.0 + 1, problemReporter: problemReporter)
+    },
+    secondaryFileName: secondary.nameExcludingExtension,
+    problemReporter: problemReporter)
+}
+
 protocol Filing {
   var nameExcludingExtension: String { get }
   var path: String { get }
@@ -96,24 +114,6 @@ struct LocalizedString {
         }
     }
   }
-}
-
-public func parseAndValidateStrings(
-  primary: File,
-  secondary: File,
-  secondaryName: String,
-  problemReporter: ProblemReporter) {
-  problemReporter.logInfo("Validating \(secondary.path) against \(primary.path)")
-
-  validateStrings(
-    primaryStrings: primary.lines.enumerated().compactMap {
-      LocalizedString(string: $0.1, file: primary, line: $0.0 + 1, problemReporter: problemReporter)
-    },
-    secondaryStrings: secondary.lines.enumerated().compactMap {
-      LocalizedString(string: $0.1, file: secondary, line: $0.0 + 1, problemReporter: problemReporter)
-    },
-    secondaryFileName: secondary.nameExcludingExtension,
-    problemReporter: problemReporter)
 }
 
 func validateStrings(
