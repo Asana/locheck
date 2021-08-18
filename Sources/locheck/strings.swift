@@ -71,9 +71,6 @@ struct LocalizedString {
 }
 
 func validateStrings(primary: File, secondary: File) {
-  print(parseStringsLine("\"%@ %@ - %@\" = \"%2$@ %1$@ – %3$@\";"))
-  return
-
   print("Validating \(primary.path)")
   var secondaryStrings = [String: LocalizedString]()
   let lines = try! secondary.readAsString().split(whereSeparator: {
