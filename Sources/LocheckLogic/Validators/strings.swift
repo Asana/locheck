@@ -22,7 +22,7 @@ public func parseAndValidateStrings(
         secondaryStrings: secondary.lines.enumerated().compactMap {
             LocalizedString(string: $0.1, file: secondary, line: $0.0 + 1, problemReporter: problemReporter)
         },
-        secondaryFileName: secondary.nameExcludingExtension,
+        secondaryFileName: secondaryName,
         problemReporter: problemReporter)
 }
 
