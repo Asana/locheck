@@ -15,6 +15,15 @@ jobs:
       # - uses: fwal/setup-swift@v1
       #   with:
       #     swift-version: "5.4"
+
+      - name: Cache SwiftPM
+        uses: actions/cache@v1
+        with:
+          path: .build
+          key: ${{ runner.os }}-xcode_${{ matrix.xcode }}-swiftpm-deps-${{ github.workspace }}-${{ hashFiles('Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-xcode_${{ matrix.xcode }}-swiftpm-deps-${{ github.workspace }}
+
       - name: Build
         run: swift build
       - name: Run tests
