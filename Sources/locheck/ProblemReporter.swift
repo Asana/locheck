@@ -30,13 +30,20 @@ class ProblemReporter {
 
   private var standardError = StderrOutputStream()
   private var problems = [Problem]()
+  var log = true
 
   func report(_ severity: Problem.Severity, path: String, lineNumber: Int, message: String) {
     problems.append(Problem(path: path, lineNumber: lineNumber, message: message, severity: severity))
 
+    guard log else { return }
     // Print to stderr with formatting for Xcode error reporting
     print("\(path):\(lineNumber): \(severity.rawValue): \(message)", to: &standardError)
   }
 
   var hasError: Bool { problems.contains(where: { $0.severity == .error }) }
+
+  func logInfo(_ string: String) {
+    guard log else { return }
+    print(string)
+  }
 }

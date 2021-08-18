@@ -26,14 +26,14 @@ private struct LocalizedString {
   let arguments: [FormatArgument]
   let line: Int
 
-  init(key: String, string: String, line: Int) {
+  init(key: String, string: String, line: Int, problemReporter: ProblemReporter) {
     self.key = key
     self.string = string
     self.line = line
-    arguments = LocalizedString.parseArguments(string: string)
+    arguments = LocalizedString.parseArguments(string: string, problemReporter: problemReporter)
   }
 
-  init?(string: String, line: Int) {
+  init?(string: String, line: Int, problemReporter: ProblemReporter) {
     // https://stackoverflow.com/a/37032779
     let stringPattern = "\"[^\"\\\\]*(\\\\.[^\"\\\\]*)*\""
     let pattern = "^(\(stringPattern)) = (\(stringPattern));$"
@@ -57,10 +57,10 @@ private struct LocalizedString {
     self.key = key
     self.string = string
     self.line = line
-    arguments = LocalizedString.parseArguments(string: value)
+    arguments = LocalizedString.parseArguments(string: value, problemReporter: problemReporter)
   }
 
-  static func parseArguments(string: String) -> [FormatArgument] {
+  static func parseArguments(string: String, problemReporter: ProblemReporter) -> [FormatArgument] {
     if string.contains("$") {
       return try! NSRegularExpression(pattern: "%(\\d+)\\$([@a-z]+)", options: [])
         .matches(in: string, options: [], range: NSRange(location: 0, length: string.count))
@@ -77,7 +77,7 @@ private struct LocalizedString {
         .compactMap { (i: Int, match: NSTextCheckingResult) -> FormatArgument? in
           let groupStrings = match.getGroupStrings(original: string)
           guard !groupStrings.isEmpty else {
-            print("XXX", string.debugDescription, groupStrings.debugDescription)
+            problemReporter.logInfo("XXX \(string.debugDescription) \(groupStrings.debugDescription)")
             return nil
           }
           return FormatArgument(
@@ -89,15 +89,15 @@ private struct LocalizedString {
 }
 
 func validateStrings(primary: File, secondary: File, secondaryName: String, problemReporter: ProblemReporter) {
-  print("Validating \(secondary.path) against \(primary.path)")
+  problemReporter.logInfo("Validating \(secondary.path) against \(primary.path)")
   var secondaryStrings = [String: LocalizedString]()
   for (i, line) in secondary.lines.enumerated() {
-    guard let localizedString = LocalizedString(string: line, line: i) else { continue }
+    guard let localizedString = LocalizedString(string: line, line: i, problemReporter: problemReporter) else { continue }
     secondaryStrings[localizedString.key] = localizedString
   }
 
   for (i, line) in primary.lines.enumerated() {
-    guard let primaryString = LocalizedString(string: line, line: i) else { continue }
+    guard let primaryString = LocalizedString(string: line, line: i, problemReporter: problemReporter) else { continue }
 
     guard let secondaryString = secondaryStrings[primaryString.key] else {
       problemReporter.report(
