@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  lproj.swift
 //  
 //
 //  Created by Steve Landey on 8/17/21.
@@ -47,6 +47,6 @@ func validateLproj(primary: LprojFiles, secondary: LprojFiles) {
       print("error: \(stringsdictFile.name) missing from translation \(secondary.name)")
       continue
     }
-    validateStrings(primary: stringsdictFile, secondary: secondaryStringsdictFile)
+    validateStringsdict(primary: stringsdictFile, secondary: secondaryStringsdictFile)
   }
 }
