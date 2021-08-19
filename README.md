@@ -24,7 +24,7 @@ Locheck will make sure you get it right.
 
 ## Installation
 
-Using Mint: `mint install Asana/locheck`
+Using [Mint](https://github.com/yonaskolb/Mint): `mint install Asana/locheck`
 
 ## Usage
 
