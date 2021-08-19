@@ -8,6 +8,9 @@
 import Files
 import Foundation
 
+/**
+ Manifest of all files within an `.lproj` file
+ */
 public struct LprojFiles {
     public let name: String
     public let path: String

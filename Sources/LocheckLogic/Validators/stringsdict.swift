@@ -8,4 +8,5 @@
 import Files
 import Foundation
 
+/// Placeholder for when we implement stringsdict validation
 func validateStringsdict(primary: File, secondary: File) {}

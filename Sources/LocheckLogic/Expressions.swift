@@ -7,6 +7,9 @@
 
 import Foundation
 
+/**
+ Collection of regular expression patterns
+ */
 struct Expressions {
     // MARK: String literals
 

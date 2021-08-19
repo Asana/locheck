@@ -15,6 +15,9 @@ private struct StderrOutputStream: TextOutputStream {
     }
 }
 
+/**
+ Collect problems found during a run, and log them to the console for Xcode integration if desired.
+ */
 public class ProblemReporter {
     public struct Problem: Error, Equatable {
         public enum Severity: String {
@@ -45,8 +48,15 @@ public class ProblemReporter {
         print("\(path):\(lineNumber): \(severity.rawValue): \(message)", to: &standardError)
     }
 
+    /**
+     Returns true iff an `.error`-severity problem has been reported. Returns `false` if no problems
+     or only warnings were reported.
+     */
     public var hasError: Bool { problems.contains(where: { $0.severity == .error }) }
 
+    /**
+     Forwards to `print()` iff `log == true`, otherwise does nothing
+     */
     public func logInfo(_ string: String) {
         guard log else { return }
         print(string)

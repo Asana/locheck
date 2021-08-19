@@ -8,6 +8,9 @@
 import Foundation
 
 extension NSTextCheckingResult {
+    /**
+     Wraps boilerplate for getting group strings out of a regular expression match
+     */
     func getGroupStrings(original: String) -> [String] {
         (0 ..< numberOfRanges).compactMap { i in
             let matchRange = range(at: i)
