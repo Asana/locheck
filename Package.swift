@@ -5,6 +5,9 @@ import PackageDescription
 
 let package = Package(
     name: "locheck",
+    platforms: [
+        .macOS(.v10_13),
+    ],
     products: [
         .executable(name: "locheck", targets: ["locheck"]),
     ],

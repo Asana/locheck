@@ -61,17 +61,16 @@ struct LocalizedString {
         let stringPairRegex = try! NSRegularExpression(
             pattern: Expressions.stringPairExpression,
             options: .anchorsMatchLines)
-        guard let strings = stringPairRegex
+        guard
+            let match = stringPairRegex
             .matches(in: string, options: [], range: NSRange(string.startIndex ..< string.endIndex, in: string))
-            .first?
-            .getGroupStrings(original: string) else {
+            .first,
+            let keySequence = match.getGroup(in: string, named: "key")?.dropFirst().dropLast(),
+            let valueSequence = match.getGroup(in: string, named: "value")?.dropFirst().dropLast() else {
             return nil
         }
-        guard strings.count == 2 else {
-            return nil
-        }
-        let key = String(strings[0].dropFirst().dropLast())
-        let value = String(strings[1].dropFirst().dropLast())
+        let key = String(keySequence)
+        let value = String(valueSequence)
         self.key = key
         self.value = value
         self.string = string
@@ -94,32 +93,19 @@ struct LocalizedString {
             .matches(in: string, options: [], range: NSRange(string.startIndex ..< string.endIndex, in: string))
             .enumerated()
             .compactMap { (i: Int, match: NSTextCheckingResult) -> FormatArgument? in
-                let groupStrings = match.getGroupStrings(original: string)
-
-                switch groupStrings.count {
-                case 2:
-                    return FormatArgument(
-                        specifier: groupStrings[1],
-                        position: i + 1)
-                case 3:
-                    return FormatArgument(
-                        specifier: groupStrings[1],
-                        position: i + 1)
-                case 4:
-                    return FormatArgument(
-                        specifier: groupStrings[1],
-                        position: i + 1)
-                case 5:
-                    return FormatArgument(
-                        specifier: groupStrings[3],
-                        positionString: groupStrings[2])
-                case 6:
-                    return FormatArgument(
-                        specifier: groupStrings[3],
-                        positionString: groupStrings[2])
-                default:
-                    print("You found a bug! Check this string:", string, groupStrings)
+                guard let specifier = match.getGroup(in: string, named: "specifier") else {
+                    print("You found a bug! Check this string:", string)
                     return nil
+                }
+
+                if let positionString = match.getGroup(in: string, named: "position") {
+                    return FormatArgument(
+                        specifier: specifier,
+                        positionString: positionString)
+                } else {
+                    return FormatArgument(
+                        specifier: specifier,
+                        position: i + 1)
                 }
             }
     }

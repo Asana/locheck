@@ -11,16 +11,13 @@ extension NSTextCheckingResult {
     /**
      Wraps boilerplate for getting group strings out of a regular expression match
      */
-    func getGroupStrings(original: String) -> [String] {
-        (0 ..< numberOfRanges).compactMap { i in
-            let matchRange = range(at: i)
-            if matchRange == NSRange(original.startIndex ..< original.endIndex, in: original) {
-                return nil
-            } else if let substringRange = Range(matchRange, in: original) {
-                return String(original[substringRange])
-            } else {
-                return nil
-            }
+    func getGroup(in string: String, named name: String) -> String? {
+        let matchRange = range(withName: name)
+        guard
+            matchRange.location != NSNotFound,
+            let substringRange = Range(matchRange, in: string) else {
+            return nil
         }
+        return String(string[substringRange])
     }
 }

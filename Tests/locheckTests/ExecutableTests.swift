@@ -29,20 +29,10 @@ class ExecutableTests: XCTestCase {
     }
 
     func testExampleOutput() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-
-        // Some of the APIs that we use below are available in macOS 10.13 and above.
-        guard #available(macOS 10.13, *) else {
-            XCTFail("Only runs on macOS 10.13+")
-            return
-        }
-
-        let fooBinary = productsDirectory.appendingPathComponent("locheck")
+        let binary = productsDirectory.appendingPathComponent("locheck")
 
         let process = Process()
-        process.executableURL = fooBinary
+        process.executableURL = binary
         process.arguments = ["strings", "Examples/Demo1.strings", "Examples/Demo2.strings"]
 
         let stdoutPipe = Pipe()

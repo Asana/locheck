@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Steve Landey on 8/19/21.
 //
@@ -15,7 +15,7 @@ struct Expressions {
 
     // https://stackoverflow.com/a/37032779
     private static let stringLiteralExpression = #""[^"\\]*(\\.[^"\\]*)*""#
-    static let stringPairExpression = "^(\(stringLiteralExpression)) = (\(stringLiteralExpression));$"
+    static let stringPairExpression = "^(?<key>\(stringLiteralExpression)) = (?<value>\(stringLiteralExpression));$"
 
     // MARK: Arguments
 
@@ -61,5 +61,6 @@ struct Expressions {
     ]
     private static let specifierExpression = specifiers.joined(separator: "|")
 
-    static let argumentExpression = "%((\\d+)\\$)?((\(lengthExpression))?(\(specifierExpression)))"
+    static let argumentExpression =
+        "%((?<position>\\d+)\\$)?(?<specifier>(\(lengthExpression))?(\(specifierExpression)))"
 }
