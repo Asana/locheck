@@ -2,6 +2,6 @@
 
 "missing" = "missing";
 
-"bad pos %d %@" = "%d %@";
+"bad pos %ld %@" = "%1$ld %@";
 
 "mismatch %@ types %d" = "mismatch %@ types %d";

@@ -1,5 +1,5 @@
 "%@ %@ - %@" = "%2$@ %1$@ – %3$@";
 
-"bad pos %d %@" = "%2$d %2$@";
+"bad pos %ld %@" = "%2$ld %2$@";
 
 "mismatch %@ types %d" = "mismatch %2$@ types %1$d";

@@ -37,14 +37,17 @@ class ParsingTests: XCTestCase {
         let problemReporter = ProblemReporter(log: false)
         let string = LocalizedString(
             string: """
-            "A sync error occurred while removing “%@” tag from %d task(s)." = "Erreur de synchronisation lors du retrait de l’étiquette « %@ » de %2$d tâche(s).";
+            "A sync error occurred while creating column “%@” in project “%@”." = "Er is een synchronisatiefout opgetreden tijdens het maken van kolom “%@” in een project.";
             """,
             file: FakeFile(path: "abc", nameExcludingExtension: "def"),
             line: 0,
             problemReporter: problemReporter)!
         XCTAssertEqual(
             string.baseArguments,
-            [FormatArgument(specifier: "@", position: 1), FormatArgument(specifier: "d", position: 2)])
+            [FormatArgument(specifier: "@", position: 1), FormatArgument(specifier: "@", position: 2)])
+        XCTAssertEqual(
+            string.translationArguments,
+            [FormatArgument(specifier: "@", position: 1)])
         XCTAssertTrue(problemReporter.problems.isEmpty)
     }
 
@@ -60,6 +63,9 @@ class ParsingTests: XCTestCase {
         XCTAssertEqual(
             string.baseArguments,
             [FormatArgument(specifier: "@", position: 1), FormatArgument(specifier: "@", position: 2)])
+        XCTAssertEqual(
+            string.translationArguments,
+            [FormatArgument(specifier: "@", position: 1), FormatArgument(specifier: "@", position: 2)])
         XCTAssertTrue(problemReporter.problems.isEmpty)
     }
 
@@ -74,6 +80,9 @@ class ParsingTests: XCTestCase {
             problemReporter: problemReporter)!
         XCTAssertEqual(
             string.baseArguments,
+            [FormatArgument(specifier: "d", position: 1), FormatArgument(specifier: "lu", position: 2)])
+        XCTAssertEqual(
+            string.translationArguments,
             [FormatArgument(specifier: "d", position: 1), FormatArgument(specifier: "lu", position: 2)])
         XCTAssertTrue(problemReporter.problems.isEmpty)
     }

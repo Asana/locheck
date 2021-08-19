@@ -39,6 +39,7 @@ private let lengthModifiers: [String] = [
     "t",
     "j",
 ]
+private let lengthExpression = lengthModifiers.joined(separator: "|")
 
 // https://developer.apple.com/library/archive/documentation/CoreFoundation/Conceptual/CFStrings/formatSpecifiers.html#//apple_ref/doc/uid/TP40004265
 private let specifiers: [String] = [
@@ -66,6 +67,7 @@ private let specifiers: [String] = [
     "A",
     "F",
 ]
+private let specifierExpression = specifiers.joined(separator: "|")
 
 struct LocalizedString {
     let key: String
@@ -112,23 +114,31 @@ struct LocalizedString {
     }
 
     static func parseArguments(string: String, problemReporter: ProblemReporter) -> [FormatArgument] {
-        return try! NSRegularExpression(pattern: "%((\\d+)\\$)?([@a-z]+)", options: [])
+        return try! NSRegularExpression(pattern: "%((\\d+)\\$)?((\(lengthExpression))?(\(specifierExpression)))", options: [])
             .matches(in: string, options: [], range: NSRange(string.startIndex ..< string.endIndex, in: string))
             .enumerated()
             .compactMap { (i: Int, match: NSTextCheckingResult) -> FormatArgument? in
                 let groupStrings = match.getGroupStrings(original: string)
 
-                if groupStrings.count == 2 {
+                switch groupStrings.count {
+                case 3:
                     return FormatArgument(
                         specifier: groupStrings[1],
                         position: i + 1)
-                } else if groupStrings.count == 4 {
+                case 4:
+                    return FormatArgument(
+                        specifier: groupStrings[1],
+                        position: i + 1)
+                case 5:
                     return FormatArgument(
                         specifier: groupStrings[3],
                         positionString: groupStrings[2])
-                } else {
-                    // ???
-                    print("You found a bug! Check this string:", string)
+                case 6:
+                    return FormatArgument(
+                        specifier: groupStrings[3],
+                        positionString: groupStrings[2])
+                default:
+                    print("You found a bug! Check this string:", string, groupStrings)
                     return nil
                 }
             }
