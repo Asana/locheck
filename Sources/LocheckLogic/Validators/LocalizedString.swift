@@ -8,6 +8,11 @@
 import Files
 import Foundation
 
+enum LocalizedStringError: Error {
+    case invalidPositionString(String)
+}
+
+/// Tiny shim around Files.File to simplify testing
 protocol Filing {
     var nameExcludingExtension: String { get }
     var path: String { get }
@@ -15,60 +20,30 @@ protocol Filing {
 
 extension File: Filing {}
 
+/// The contents of one "%d" or "%2$@" argument. (These would be
+/// `FormatArgument(specifier: "d", position: <automatic>)` and
+/// `FormatArgument(specifier: "@", position: 2)`, respectively.)
 struct FormatArgument: Equatable {
     let specifier: String
     let position: Int
 }
 
 private extension FormatArgument {
+    /// Accept position as a string.
     init(specifier: String, positionString: String) {
         self.specifier = specifier
+        // ! is safe here because the regular expression only matches digits.
         position = NumberFormatter().number(from: positionString)!.intValue
     }
 }
 
-// https://developer.apple.com/library/archive/documentation/CoreFoundation/Conceptual/CFStrings/formatSpecifiers.html#//apple_ref/doc/uid/TP40004265
-private let lengthModifiers: [String] = [
-    "h",
-    "hh",
-    "l",
-    "ll",
-    "q",
-    "L",
-    "z",
-    "t",
-    "j",
-]
-private let lengthExpression = lengthModifiers.joined(separator: "|")
+/**
+ Represents a line from a `.strings` file, like this:
 
-// https://developer.apple.com/library/archive/documentation/CoreFoundation/Conceptual/CFStrings/formatSpecifiers.html#//apple_ref/doc/uid/TP40004265
-private let specifiers: [String] = [
-    // omit %%, it doesn't affect interpolation
-    "@",
-    "d",
-    "D",
-    "u",
-    "U",
-    "x",
-    "X",
-    "o",
-    "O",
-    "f",
-    "e",
-    "E",
-    "g",
-    "G",
-    "c",
-    "C",
-    "s",
-    "S",
-    "p",
-    "a",
-    "A",
-    "F",
-]
-private let specifierExpression = specifiers.joined(separator: "|")
-
+ ```
+ "primary string with an argument %@" = "translated string with an argument %@";
+ ```
+ */
 struct LocalizedString {
     let key: String
     let value: String
@@ -82,15 +57,11 @@ struct LocalizedString {
         string: String,
         file: Filing,
         line: Int,
-        primaryStringMap: [String: LocalizedString]? = nil, // only pass for secondary strings
-        problemReporter: ProblemReporter) {
-        // https://stackoverflow.com/a/37032779
-        let stringPattern = "\"[^\"\\\\]*(\\\\.[^\"\\\\]*)*\""
-        let pattern = "^(\(stringPattern)) = (\(stringPattern));$"
-        let stringLiteralRegex = try! NSRegularExpression(
-            pattern: pattern,
+        primaryStringMap: [String: LocalizedString]? = nil) { // only pass for secondary strings
+        let stringPairRegex = try! NSRegularExpression(
+            pattern: Expressions.stringPairExpression,
             options: .anchorsMatchLines)
-        guard let strings = stringLiteralRegex
+        guard let strings = stringPairRegex
             .matches(in: string, options: [], range: NSRange(string.startIndex ..< string.endIndex, in: string))
             .first?
             .getGroupStrings(original: string) else {
@@ -107,16 +78,19 @@ struct LocalizedString {
         self.file = file
         self.line = line
 
+        // If the primary string has its own translation, use that as the key. Sometimes developers omit format specifiers
+        // from keys if they provide their own translation in their base language .strings file.
         if let primaryStringMap = primaryStringMap, let primaryString = primaryStringMap[key] {
             baseArguments = primaryString.translationArguments
         } else {
-            baseArguments = LocalizedString.parseArguments(string: key, problemReporter: problemReporter)
+            baseArguments = LocalizedString.parseArguments(string: key)
         }
-        translationArguments = LocalizedString.parseArguments(string: value, problemReporter: problemReporter)
+        translationArguments = LocalizedString.parseArguments(string: value)
     }
 
-    static func parseArguments(string: String, problemReporter: ProblemReporter) -> [FormatArgument] {
-        try! NSRegularExpression(pattern: "%((\\d+)\\$)?((\(lengthExpression))?(\(specifierExpression)))", options: [])
+    /// Transform a single string into parsed `FormatSpecifier` objects
+    static func parseArguments(string: String) -> [FormatArgument] {
+        try! NSRegularExpression(pattern: Expressions.argumentExpression, options: [])
             .matches(in: string, options: [], range: NSRange(string.startIndex ..< string.endIndex, in: string))
             .enumerated()
             .compactMap { (i: Int, match: NSTextCheckingResult) -> FormatArgument? in

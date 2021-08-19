@@ -21,8 +21,7 @@ class ParsingTests: XCTestCase {
             "%1$@ %2$d %@" = "%1$@ %2$d %@";
             """,
             file: FakeFile(path: "abc", nameExcludingExtension: "def"),
-            line: 0,
-            problemReporter: problemReporter)!
+            line: 0)!
         XCTAssertEqual(
             string.baseArguments,
             [
@@ -40,8 +39,7 @@ class ParsingTests: XCTestCase {
             "A sync error occurred while creating column “%@” in project “%@”." = "Er is een synchronisatiefout opgetreden tijdens het maken van kolom “%@” in een project.";
             """,
             file: FakeFile(path: "abc", nameExcludingExtension: "def"),
-            line: 0,
-            problemReporter: problemReporter)!
+            line: 0)!
         XCTAssertEqual(
             string.baseArguments,
             [FormatArgument(specifier: "@", position: 1), FormatArgument(specifier: "@", position: 2)])
@@ -58,8 +56,7 @@ class ParsingTests: XCTestCase {
             "A sync error occurred while processing %@'s request to join “%@”." = "“%@” 님의 “%2$@” 참가 요청을 처리하는 중 동기화 오류가 발생했습니다.";
             """,
             file: FakeFile(path: "abc", nameExcludingExtension: "def"),
-            line: 0,
-            problemReporter: problemReporter)!
+            line: 0)!
         XCTAssertEqual(
             string.baseArguments,
             [FormatArgument(specifier: "@", position: 1), FormatArgument(specifier: "@", position: 2)])

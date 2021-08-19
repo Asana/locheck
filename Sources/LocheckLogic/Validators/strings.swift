@@ -8,6 +8,9 @@
 import Files
 import Foundation
 
+/**
+ Directly compare two `.strings` files
+ */
 public func parseAndValidateStrings(
     primary: File,
     secondary: File,
@@ -19,8 +22,7 @@ public func parseAndValidateStrings(
         LocalizedString(
             string: $0.1,
             file: primary,
-            line: $0.0 + 1,
-            problemReporter: problemReporter)
+            line: $0.0 + 1)
     }
     var primaryStringMap = [String: LocalizedString]()
     for localizedString in primaryStrings {
@@ -34,13 +36,16 @@ public func parseAndValidateStrings(
                 string: $0.1,
                 file: secondary,
                 line: $0.0 + 1,
-                primaryStringMap: primaryStringMap,
-                problemReporter: problemReporter)
+                primaryStringMap: primaryStringMap)
         },
         secondaryFileName: secondaryName,
         problemReporter: problemReporter)
 }
 
+/**
+ Directly compare two lists of already-parsed strings. This is the "interesting" part of the code
+ where we look for and report most errors.
+ */
 func validateStrings(
     primaryStrings: [LocalizedString],
     secondaryStrings: [LocalizedString],

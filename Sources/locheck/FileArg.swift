@@ -9,6 +9,10 @@ import ArgumentParser
 import Files
 import Foundation
 
+/**
+ ArgumentParser-compatible representation of a file. You must call `validate()` on it
+ in your command's `validate()` method.
+ */
 struct FileArg: ExpressibleByArgument {
     let argument: String
 

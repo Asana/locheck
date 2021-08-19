@@ -21,15 +21,13 @@ class ValidateStringsTests: XCTestCase {
                 LocalizedString(
                     string: "\"present\" = \"present\";",
                     file: FakeFile(path: "abc", nameExcludingExtension: "xyz"),
-                    line: 0,
-                    problemReporter: problemReporter)!,
+                    line: 0)!,
             ],
             secondaryStrings: [
                 LocalizedString(
                     string: "\"present\" = \"tneserp\";",
                     file: FakeFile(path: "def", nameExcludingExtension: "uvw"),
-                    line: 0,
-                    problemReporter: problemReporter)!,
+                    line: 0)!,
             ],
             secondaryFileName: "secondary",
             problemReporter: problemReporter)
@@ -45,15 +43,13 @@ class ValidateStringsTests: XCTestCase {
                 LocalizedString(
                     string: "\"present %d %@\" = \"present %d %@\";",
                     file: FakeFile(path: "abc", nameExcludingExtension: "xyz"),
-                    line: 0,
-                    problemReporter: problemReporter)!,
+                    line: 0)!,
             ],
             secondaryStrings: [
                 LocalizedString(
                     string: "\"present %d %@\" = \"%d %@\";",
                     file: FakeFile(path: "def", nameExcludingExtension: "uvw"),
-                    line: 0,
-                    problemReporter: problemReporter)!,
+                    line: 0)!,
             ],
             secondaryFileName: "secondary",
             problemReporter: problemReporter)
@@ -69,15 +65,13 @@ class ValidateStringsTests: XCTestCase {
                 LocalizedString(
                     string: "\"present %d %@\" = \"present %d %@\";",
                     file: FakeFile(path: "abc", nameExcludingExtension: "xyz"),
-                    line: 0,
-                    problemReporter: problemReporter)!,
+                    line: 0)!,
             ],
             secondaryStrings: [
                 LocalizedString(
                     string: "\"present %d %@\" = \"%@ %d tneserp\";", // specifiers swapped
                     file: FakeFile(path: "def", nameExcludingExtension: "uvw"),
-                    line: 0,
-                    problemReporter: problemReporter)!,
+                    line: 0)!,
             ],
             secondaryFileName: "secondary",
             problemReporter: problemReporter)
@@ -106,15 +100,13 @@ class ValidateStringsTests: XCTestCase {
                 LocalizedString(
                     string: "\"present %1$d %2$@\" = \"present %1$d %2$@\";",
                     file: FakeFile(path: "abc", nameExcludingExtension: "xyz"),
-                    line: 0,
-                    problemReporter: problemReporter)!,
+                    line: 0)!,
             ],
             secondaryStrings: [
                 LocalizedString(
                     string: "\"present %1$d %2$@\" = \"tneserp %2$@ %1$d\";",
                     file: FakeFile(path: "def", nameExcludingExtension: "uvw"),
-                    line: 0,
-                    problemReporter: problemReporter)!,
+                    line: 0)!,
             ],
             secondaryFileName: "secondary",
             problemReporter: problemReporter)
@@ -130,20 +122,17 @@ class ValidateStringsTests: XCTestCase {
                 LocalizedString(
                     string: "\"present\" = \"present\";",
                     file: FakeFile(path: "abc", nameExcludingExtension: "xyz"),
-                    line: 0,
-                    problemReporter: problemReporter)!,
+                    line: 0)!,
                 LocalizedString(
                     string: "\"missing\" = \"missing\";",
                     file: FakeFile(path: "abc", nameExcludingExtension: "xyz"),
-                    line: 1,
-                    problemReporter: problemReporter)!,
+                    line: 1)!,
             ],
             secondaryStrings: [
                 LocalizedString(
                     string: "\"present\" = \"tneserp\";",
                     file: FakeFile(path: "def", nameExcludingExtension: "uvw"),
-                    line: 0,
-                    problemReporter: problemReporter)!,
+                    line: 0)!,
             ],
             secondaryFileName: "secondary",
             problemReporter: problemReporter)

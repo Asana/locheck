@@ -4,6 +4,17 @@ import Files
 import Foundation
 import LocheckLogic
 
+struct Locheck: ParsableCommand {
+    static let configuration = CommandConfiguration(
+        abstract: """
+        Validate your Xcode localization files. Currently only works on .strings. The different
+        commands have different amounts of automation. `discover` operates on a directory of
+        .lproj files, `lproj` operates on specific .lproj files, and `strings` operates on
+        specific .strings files.
+        """,
+        subcommands: [Discover.self, Lproj.self, Strings.self /* ,  Stringsdict.self */ ])
+}
+
 private func withProblemReporter(_ block: (ProblemReporter) -> Void) {
     let problemReporter = ProblemReporter()
     block(problemReporter)
@@ -15,6 +26,9 @@ private func withProblemReporter(_ block: (ProblemReporter) -> Void) {
 }
 
 struct Strings: ParsableCommand {
+    static let configuration = CommandConfiguration(
+        abstract: "Directly compare .strings files")
+
     @Argument(help: "An authoritative .strings file")
     private var primary: FileArg
 
@@ -40,25 +54,10 @@ struct Strings: ParsableCommand {
     }
 }
 
-// We have an internal task tracking this functionality.
-// struct Stringsdict: ParsableCommand {
-//  @Argument(help: "An authoritative .stringsdict file")
-//  private var primary: FileArg
-//
-//  @Argument(help: "Non-authoritative .stringsdict files that need to be validated")
-//  private var secondary: [FileArg]
-//
-//  func validate() throws {
-//    try primary.validate(ext: "stringsdict")
-//    try secondary.forEach { try $0.validate(ext: "stringsdict") }
-//  }
-//
-//  func run() {
-//    print("STRINGSDICT!")
-//  }
-// }
-
 struct Lproj: ParsableCommand {
+    static let configuration = CommandConfiguration(
+        abstract: "Compare the contents of multiple .lproj files")
+
     @Argument(help: "An authoritative .lproj directory")
     private var primary: FileArg
 
@@ -85,6 +84,9 @@ struct Lproj: ParsableCommand {
 }
 
 struct Discover: ParsableCommand {
+    static let configuration = CommandConfiguration(
+        abstract: "Automatically find .lproj files within a directory and compare them")
+
     @Option(help: "The authoritative language. Defaults to 'en'.")
     private var primary = "en"
 
@@ -144,15 +146,22 @@ struct Discover: ParsableCommand {
     }
 }
 
-struct Locheck: ParsableCommand {
-    static let configuration = CommandConfiguration(
-        abstract: """
-        Validate your Xcode localization files. Currently only works on .strings. The different
-        commands have different amounts of automation. `discover` operates on a directory of
-        .lproj files, `lproj` operates on specific .lproj files, and `strings` operates on\
-        specific .strings files.
-        """,
-        subcommands: [Discover.self, Lproj.self, Strings.self /* ,  Stringsdict.self */ ])
-}
+// We have an internal task tracking this functionality.
+// struct Stringsdict: ParsableCommand {
+//  @Argument(help: "An authoritative .stringsdict file")
+//  private var primary: FileArg
+//
+//  @Argument(help: "Non-authoritative .stringsdict files that need to be validated")
+//  private var secondary: [FileArg]
+//
+//  func validate() throws {
+//    try primary.validate(ext: "stringsdict")
+//    try secondary.forEach { try $0.validate(ext: "stringsdict") }
+//  }
+//
+//  func run() {
+//    print("STRINGSDICT!")
+//  }
+// }
 
 Locheck.main()
