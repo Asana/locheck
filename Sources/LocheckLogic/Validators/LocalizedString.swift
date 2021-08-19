@@ -116,7 +116,7 @@ struct LocalizedString {
     }
 
     static func parseArguments(string: String, problemReporter: ProblemReporter) -> [FormatArgument] {
-        return try! NSRegularExpression(pattern: "%((\\d+)\\$)?((\(lengthExpression))?(\(specifierExpression)))", options: [])
+        try! NSRegularExpression(pattern: "%((\\d+)\\$)?((\(lengthExpression))?(\(specifierExpression)))", options: [])
             .matches(in: string, options: [], range: NSRange(string.startIndex ..< string.endIndex, in: string))
             .enumerated()
             .compactMap { (i: Int, match: NSTextCheckingResult) -> FormatArgument? in

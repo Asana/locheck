@@ -18,8 +18,8 @@ class ParsingTests: XCTestCase {
         let problemReporter = ProblemReporter(log: false)
         let string = LocalizedString(
             string: """
-                "%1$@ %2$d %@" = "%1$@ %2$d %@";
-                """,
+            "%1$@ %2$d %@" = "%1$@ %2$d %@";
+            """,
             file: FakeFile(path: "abc", nameExcludingExtension: "def"),
             line: 0,
             problemReporter: problemReporter)!
@@ -33,7 +33,7 @@ class ParsingTests: XCTestCase {
         XCTAssertTrue(problemReporter.problems.isEmpty)
     }
 
-    func testRegression1() {
+    func testOmitArgument() {
         let problemReporter = ProblemReporter(log: false)
         let string = LocalizedString(
             string: """
@@ -51,7 +51,7 @@ class ParsingTests: XCTestCase {
         XCTAssertTrue(problemReporter.problems.isEmpty)
     }
 
-    func testRegression2() {
+    func testMixedImplicitAndExplicitOrder() {
         let problemReporter = ProblemReporter(log: false)
         let string = LocalizedString(
             string: """
@@ -66,24 +66,6 @@ class ParsingTests: XCTestCase {
         XCTAssertEqual(
             string.translationArguments,
             [FormatArgument(specifier: "@", position: 1), FormatArgument(specifier: "@", position: 2)])
-        XCTAssertTrue(problemReporter.problems.isEmpty)
-    }
-
-    func testRegression3() {
-        let problemReporter = ProblemReporter(log: false)
-        let string = LocalizedString(
-            string: """
-            "Every %d week(s) on %lu days" = "Iedere %d week/weken op %2$lu dagen";
-            """,
-            file: FakeFile(path: "abc", nameExcludingExtension: "def"),
-            line: 0,
-            problemReporter: problemReporter)!
-        XCTAssertEqual(
-            string.baseArguments,
-            [FormatArgument(specifier: "d", position: 1), FormatArgument(specifier: "lu", position: 2)])
-        XCTAssertEqual(
-            string.translationArguments,
-            [FormatArgument(specifier: "d", position: 1), FormatArgument(specifier: "lu", position: 2)])
         XCTAssertTrue(problemReporter.problems.isEmpty)
     }
 }

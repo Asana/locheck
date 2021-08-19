@@ -95,7 +95,7 @@ class ValidateStringsTests: XCTestCase {
                     path: "def",
                     lineNumber: 0,
                     message: "Specifier for argument 2 does not match (should be @, is d)",
-                    severity: .error)
+                    severity: .error),
             ])
     }
 
