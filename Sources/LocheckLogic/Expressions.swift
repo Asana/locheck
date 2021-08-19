@@ -14,7 +14,7 @@ struct Expressions {
     // MARK: String literals
 
     // https://stackoverflow.com/a/37032779
-    private static let stringLiteralExpression = "\"[^\"\\\\]*(\\\\.[^\"\\\\]*)*\""
+    private static let stringLiteralExpression = #""[^"\\]*(\\.[^"\\]*)*""#
     static let stringPairExpression = "^(\(stringLiteralExpression)) = (\(stringLiteralExpression));$"
 
     // MARK: Arguments
