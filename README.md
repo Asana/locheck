@@ -45,7 +45,7 @@ There are three ways to invoke `locheck` depending on how much magic you want.
 
 The simplest way is to use `discover` and point to a directory containing all your `.lproj` files:
 
-```swift
+```sh
 locheck discover "MyApp/Supporting Files" --default en # use English as the base language
 ```
 
@@ -55,7 +55,7 @@ If you use a language besides English as your base, you'll need to pass it as an
 
 You can pass a list of `lproj` files to `locheck lproj`, starting with the base language.
 
-```swift
+```sh
 locheck lproj MyApp/en.lproj MyApp/fr.lproj
 ```
 
@@ -63,6 +63,6 @@ locheck lproj MyApp/en.lproj MyApp/fr.lproj
 
 You can directly compare `.strings` files against each other. Again, pass the base language first, followed by the rest.
 
-```swift
+```sh
 locheck strings MyApp/en.lproj/Localizable.strings MyApp/fr.lproj/Localizable.strings
 ```
