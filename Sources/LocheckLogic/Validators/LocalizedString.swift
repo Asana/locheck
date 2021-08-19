@@ -123,6 +123,10 @@ struct LocalizedString {
                 let groupStrings = match.getGroupStrings(original: string)
 
                 switch groupStrings.count {
+                case 2:
+                    return FormatArgument(
+                        specifier: groupStrings[1],
+                        position: i + 1)
                 case 3:
                     return FormatArgument(
                         specifier: groupStrings[1],
