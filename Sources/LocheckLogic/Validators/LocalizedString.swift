@@ -71,6 +71,7 @@ private let specifierExpression = specifiers.joined(separator: "|")
 
 struct LocalizedString {
     let key: String
+    let value: String
     let string: String
     let baseArguments: [FormatArgument]
     let translationArguments: [FormatArgument]
@@ -101,6 +102,7 @@ struct LocalizedString {
         let key = String(strings[0].dropFirst().dropLast())
         let value = String(strings[1].dropFirst().dropLast())
         self.key = key
+        self.value = value
         self.string = string
         self.file = file
         self.line = line

@@ -64,7 +64,7 @@ class ExecutableTests: XCTestCase {
 
         XCTAssertEqual(stderr, """
         Examples/Demo1.strings:3: warning: This string is missing from Demo2
-        Examples/Demo2.strings:3: error: Translation includes arguments that don't exist in the source: 1 (original has [2])
+        Examples/Demo2.strings:3: warning: Some arguments appear more than once in this translation
         Examples/Demo2.strings:3: error: Specifier for argument 2 does not match (should be @, is ld)
         Examples/Demo2.strings:5: error: Specifier for argument 2 does not match (should be d, is @)
         Examples/Demo2.strings:5: error: Specifier for argument 1 does not match (should be @, is d)

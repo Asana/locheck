@@ -67,7 +67,7 @@ func validateStrings(
     // MARK: Validate arguments
 
     for secondaryString in secondaryStrings {
-        let secondaryArgumentPositions = Set(secondaryString.baseArguments.map(\.position))
+        let secondaryArgumentPositions = Set(secondaryString.translationArguments.map(\.position))
         let primaryArgumentPositions = Set(secondaryString.translationArguments.map(\.position))
 
         let missingArgumentPositions = primaryArgumentPositions.subtracting(secondaryArgumentPositions)
@@ -89,7 +89,7 @@ func validateStrings(
                 .error,
                 path: secondaryString.file.path,
                 lineNumber: secondaryString.line,
-                message: "Translation includes arguments that don't exist in the source: \(args) (original has \(primaryArgumentPositions))")
+                message: "Translation includes arguments that don't exist in the source: \(args) (original has \(primaryArgumentPositions); \(secondaryString.value)")
         }
 
         if hasDuplicates {
