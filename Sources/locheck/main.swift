@@ -47,7 +47,7 @@ struct Strings: ParsableCommand {
                 parseAndValidateStrings(
                     primary: try! File(path: primary.argument),
                     secondary: secondaryFile,
-                    secondaryName: secondaryFile.nameExcludingExtension,
+                    secondaryLanguageName: secondaryFile.nameExcludingExtension,
                     problemReporter: problemReporter)
             }
         }

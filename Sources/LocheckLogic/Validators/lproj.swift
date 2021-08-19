@@ -24,7 +24,7 @@ public func validateLproj(primary: LprojFiles, secondary: LprojFiles, problemRep
         parseAndValidateStrings(
             primary: stringsFile,
             secondary: secondaryStringsFile,
-            secondaryName: secondary.name,
+            secondaryLanguageName: secondary.name,
             problemReporter: problemReporter)
     }
 

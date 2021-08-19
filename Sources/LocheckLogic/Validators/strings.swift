@@ -14,7 +14,7 @@ import Foundation
 public func parseAndValidateStrings(
     primary: File,
     secondary: File,
-    secondaryName: String,
+    secondaryLanguageName: String,
     problemReporter: ProblemReporter) {
     problemReporter.logInfo("Validating \(secondary.path) against \(primary.path)")
 
@@ -38,7 +38,7 @@ public func parseAndValidateStrings(
                 line: $0.0 + 1,
                 primaryStringMap: primaryStringMap)
         },
-        secondaryFileName: secondaryName,
+        secondaryLanguageName: secondaryLanguageName,
         problemReporter: problemReporter)
 }
 
@@ -49,7 +49,7 @@ public func parseAndValidateStrings(
 func validateStrings(
     primaryStrings: [LocalizedString],
     secondaryStrings: [LocalizedString],
-    secondaryFileName: String,
+    secondaryLanguageName: String,
     problemReporter: ProblemReporter) {
     // MARK: Ensure all base strings appear in this translation
 
@@ -64,7 +64,7 @@ func validateStrings(
                 .warning,
                 path: primaryString.file.path,
                 lineNumber: primaryString.line,
-                message: "This string is missing from \(secondaryFileName)")
+                message: "This string is missing from \(secondaryLanguageName)")
             continue
         }
     }

@@ -29,7 +29,7 @@ class ValidateStringsTests: XCTestCase {
                     file: FakeFile(path: "def", nameExcludingExtension: "uvw"),
                     line: 0)!,
             ],
-            secondaryFileName: "secondary",
+            secondaryLanguageName: "secondary",
             problemReporter: problemReporter)
 
         XCTAssertFalse(problemReporter.hasError)
@@ -51,7 +51,7 @@ class ValidateStringsTests: XCTestCase {
                     file: FakeFile(path: "def", nameExcludingExtension: "uvw"),
                     line: 0)!,
             ],
-            secondaryFileName: "secondary",
+            secondaryLanguageName: "secondary",
             problemReporter: problemReporter)
 
         XCTAssertFalse(problemReporter.hasError)
@@ -73,7 +73,7 @@ class ValidateStringsTests: XCTestCase {
                     file: FakeFile(path: "def", nameExcludingExtension: "uvw"),
                     line: 0)!,
             ],
-            secondaryFileName: "secondary",
+            secondaryLanguageName: "secondary",
             problemReporter: problemReporter)
 
         XCTAssertTrue(problemReporter.hasError)
@@ -108,7 +108,7 @@ class ValidateStringsTests: XCTestCase {
                     file: FakeFile(path: "def", nameExcludingExtension: "uvw"),
                     line: 0)!,
             ],
-            secondaryFileName: "secondary",
+            secondaryLanguageName: "secondary",
             problemReporter: problemReporter)
 
         XCTAssertFalse(problemReporter.hasError)
@@ -134,7 +134,7 @@ class ValidateStringsTests: XCTestCase {
                     file: FakeFile(path: "def", nameExcludingExtension: "uvw"),
                     line: 0)!,
             ],
-            secondaryFileName: "secondary",
+            secondaryLanguageName: "secondary",
             problemReporter: problemReporter)
 
         XCTAssertEqual(
