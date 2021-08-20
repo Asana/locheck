@@ -30,24 +30,24 @@ struct Strings: ParsableCommand {
         abstract: "Directly compare .strings files")
 
     @Argument(help: "An authoritative .strings file")
-    private var primary: FileArg
+    private var base: FileArg
 
     @Argument(help: "Non-authoritative .strings files that need to be validated")
-    private var secondary: [FileArg]
+    private var translation: [FileArg]
 
     func validate() throws {
-        try primary.validate(ext: "strings")
-        try secondary.forEach { try $0.validate(ext: "strings") }
+        try base.validate(ext: "strings")
+        try translation.forEach { try $0.validate(ext: "strings") }
     }
 
     func run() {
         withProblemReporter { problemReporter in
-            for file in secondary {
-                let secondaryFile = try! File(path: file.argument)
+            for file in translation {
+                let translationFile = try! File(path: file.argument)
                 parseAndValidateStrings(
-                    primary: try! File(path: primary.argument),
-                    secondary: secondaryFile,
-                    secondaryLanguageName: secondaryFile.nameExcludingExtension,
+                    base: try! File(path: base.argument),
+                    translation: translationFile,
+                    translationLanguageName: translationFile.nameExcludingExtension,
                     problemReporter: problemReporter)
             }
         }
@@ -59,24 +59,24 @@ struct Lproj: ParsableCommand {
         abstract: "Compare the contents of multiple .lproj files")
 
     @Argument(help: "An authoritative .lproj directory")
-    private var primary: FileArg
+    private var base: FileArg
 
     @Argument(help: "Non-authoritative .lproj directories that need to be validated")
-    private var secondary: [FileArg]
+    private var translation: [FileArg]
 
     func validate() throws {
-        try primary.validate(ext: "lproj")
-        try secondary.forEach { try $0.validate(ext: "lproj") }
+        try base.validate(ext: "lproj")
+        try translation.forEach { try $0.validate(ext: "lproj") }
     }
 
     func run() {
-        print("Validating \(secondary.count) lproj files against \(try! Folder(path: primary.argument).name)")
+        print("Validating \(translation.count) lproj files against \(try! Folder(path: base.argument).name)")
 
         withProblemReporter { problemReporter in
-            for secondary in secondary {
+            for translation in translation {
                 validateLproj(
-                    primary: LprojFiles(folder: try! Folder(path: primary.argument)),
-                    secondary: LprojFiles(folder: try! Folder(path: secondary.argument)),
+                    base: LprojFiles(folder: try! Folder(path: base.argument)),
+                    translation: LprojFiles(folder: try! Folder(path: translation.argument)),
                     problemReporter: problemReporter)
             }
         }
@@ -88,7 +88,7 @@ struct Discover: ParsableCommand {
         abstract: "Automatically find .lproj files within a directory and compare them")
 
     @Option(help: "The authoritative language. Defaults to 'en'.")
-    private var primary = "en"
+    private var base = "en"
 
     @Argument(help: "A directory full of .lproj files, with one of them being authoritative.")
     private var directories: [FileArg]
@@ -102,14 +102,14 @@ struct Discover: ParsableCommand {
 
             for folder in try! Folder(path: directory.argument).subfolders {
                 if folder.extension != "lproj" { continue }
-                if folder.name == "\(primary).lproj" { hasPrimary = true } else { hasSecondary = true }
+                if folder.name == "\(base).lproj" { hasPrimary = true } else { hasSecondary = true }
             }
 
             if !hasPrimary {
-                throw ValidationError("Can't find \(primary).lproj in \(directory.argument)")
+                throw ValidationError("Can't find \(base).lproj in \(directory.argument)")
             }
             if !hasSecondary {
-                throw ValidationError("Can't find any secondary .lproj folders in in \(directory.argument)")
+                throw ValidationError("Can't find any translation .lproj folders in in \(directory.argument)")
             }
         }
     }
@@ -119,27 +119,27 @@ struct Discover: ParsableCommand {
             print("Discovering .lproj files in \(directory.argument)")
 
             var maybePrimaryLproj: LprojFiles!
-            var secondaryLproj = [LprojFiles]()
+            var translationLproj = [LprojFiles]()
 
             for folder in try! Folder(path: directory.argument).subfolders {
                 if folder.extension != "lproj" { continue }
-                if folder.name == "\(primary).lproj" {
+                if folder.name == "\(base).lproj" {
                     maybePrimaryLproj = LprojFiles(folder: folder)
                 } else {
-                    secondaryLproj.append(LprojFiles(folder: folder))
+                    translationLproj.append(LprojFiles(folder: folder))
                 }
             }
 
-            guard let primaryLproj = maybePrimaryLproj else {
+            guard let baseLproj = maybePrimaryLproj else {
                 return // caught by validation already
             }
 
-            print("Source of truth: \(primaryLproj.path)")
-            print("Translations to check: \(secondaryLproj.count)")
+            print("Source of truth: \(baseLproj.path)")
+            print("Translations to check: \(translationLproj.count)")
 
             withProblemReporter { problemReporter in
-                for secondary in secondaryLproj {
-                    validateLproj(primary: primaryLproj, secondary: secondary, problemReporter: problemReporter)
+                for translation in translationLproj {
+                    validateLproj(base: baseLproj, translation: translation, problemReporter: problemReporter)
                 }
             }
         }
@@ -149,14 +149,14 @@ struct Discover: ParsableCommand {
 // We have an internal task tracking this functionality.
 // struct Stringsdict: ParsableCommand {
 //  @Argument(help: "An authoritative .stringsdict file")
-//  private var primary: FileArg
+//  private var base: FileArg
 //
 //  @Argument(help: "Non-authoritative .stringsdict files that need to be validated")
-//  private var secondary: [FileArg]
+//  private var translation: [FileArg]
 //
 //  func validate() throws {
-//    try primary.validate(ext: "stringsdict")
-//    try secondary.forEach { try $0.validate(ext: "stringsdict") }
+//    try base.validate(ext: "stringsdict")
+//    try translation.forEach { try $0.validate(ext: "stringsdict") }
 //  }
 //
 //  func run() {

@@ -12,33 +12,33 @@ import Foundation
  Directly compare two `.strings` files
  */
 public func parseAndValidateStrings(
-    primary: File,
-    secondary: File,
-    secondaryLanguageName: String,
+    base: File,
+    translation: File,
+    translationLanguageName: String,
     problemReporter: ProblemReporter) {
-    problemReporter.logInfo("Validating \(secondary.path) against \(primary.path)")
+    problemReporter.logInfo("Validating \(translation.path) against \(base.path)")
 
-    let primaryStrings = primary.lines.enumerated().compactMap {
+    let baseStrings = base.lines.enumerated().compactMap {
         LocalizedString(
             string: $0.1,
-            file: primary,
+            file: base,
             line: $0.0 + 1)
     }
-    var primaryStringMap = [String: LocalizedString]()
-    for localizedString in primaryStrings {
-        primaryStringMap[localizedString.key] = localizedString
+    var baseStringMap = [String: LocalizedString]()
+    for localizedString in baseStrings {
+        baseStringMap[localizedString.key] = localizedString
     }
 
     validateStrings(
-        primaryStrings: primaryStrings,
-        secondaryStrings: secondary.lines.enumerated().compactMap {
+        baseStrings: baseStrings,
+        translationStrings: translation.lines.enumerated().compactMap {
             LocalizedString(
                 string: $0.1,
-                file: secondary,
+                file: translation,
                 line: $0.0 + 1,
-                primaryStringMap: primaryStringMap)
+                baseStringMap: baseStringMap)
         },
-        secondaryLanguageName: secondaryLanguageName,
+        translationLanguageName: translationLanguageName,
         problemReporter: problemReporter)
 }
 
@@ -47,44 +47,44 @@ public func parseAndValidateStrings(
  where we look for and report most errors.
  */
 func validateStrings(
-    primaryStrings: [LocalizedString],
-    secondaryStrings: [LocalizedString],
-    secondaryLanguageName: String,
+    baseStrings: [LocalizedString],
+    translationStrings: [LocalizedString],
+    translationLanguageName: String,
     problemReporter: ProblemReporter) {
     // MARK: Ensure all base strings appear in this translation
 
-    var secondaryStringMap = [String: LocalizedString]()
-    for localizedString in secondaryStrings {
-        secondaryStringMap[localizedString.key] = localizedString
+    var translationStringMap = [String: LocalizedString]()
+    for localizedString in translationStrings {
+        translationStringMap[localizedString.key] = localizedString
     }
 
-    for primaryString in primaryStrings {
-        if secondaryStringMap[primaryString.key] == nil {
+    for baseString in baseStrings {
+        if translationStringMap[baseString.key] == nil {
             problemReporter.report(
                 .warning,
-                path: primaryString.file.path,
-                lineNumber: primaryString.line,
-                message: "This string is missing from \(secondaryLanguageName)")
+                path: baseString.file.path,
+                lineNumber: baseString.line,
+                message: "This string is missing from \(translationLanguageName)")
             continue
         }
     }
 
     // MARK: Validate arguments
 
-    for secondaryString in secondaryStrings {
-        let secondaryArgumentPositions = Set(secondaryString.translationArguments.map(\.position))
-        let primaryArgumentPositions = Set(secondaryString.translationArguments.map(\.position))
+    for translationString in translationStrings {
+        let baseArgumentPositions = Set(translationString.baseArguments.map(\.position))
+        let translationArgumentPositions = Set(translationString.translationArguments.map(\.position))
 
-        let missingArgumentPositions = primaryArgumentPositions.subtracting(secondaryArgumentPositions)
-        let extraArgumentPositions = secondaryArgumentPositions.subtracting(primaryArgumentPositions)
-        let hasDuplicates = secondaryArgumentPositions.count != secondaryString.translationArguments.count
+        let missingArgumentPositions = baseArgumentPositions.subtracting(translationArgumentPositions)
+        let extraArgumentPositions = translationArgumentPositions.subtracting(baseArgumentPositions)
+        let hasDuplicates = translationArgumentPositions.count != translationString.translationArguments.count
 
         if !missingArgumentPositions.isEmpty {
             let args = missingArgumentPositions.sorted().map { String($0) }.joined(separator: ",")
             problemReporter.report(
                 .warning,
-                path: secondaryString.file.path,
-                lineNumber: secondaryString.line,
+                path: translationString.file.path,
+                lineNumber: translationString.line,
                 message: "Does not include arguments \(args)")
         }
 
@@ -92,31 +92,31 @@ func validateStrings(
             let args = extraArgumentPositions.sorted().map { String($0) }.joined(separator: ",")
             problemReporter.report(
                 .error,
-                path: secondaryString.file.path,
-                lineNumber: secondaryString.line,
-                message: "Translation includes arguments that don't exist in the source: \(args) (original has \(primaryArgumentPositions); \(secondaryString.value)")
+                path: translationString.file.path,
+                lineNumber: translationString.line,
+                message: "Translation includes arguments that don't exist in the source: \(args) (original has \(baseArgumentPositions); \(translationString.value)")
         }
 
         if hasDuplicates {
             problemReporter.report(
                 .warning,
-                path: secondaryString.file.path,
-                lineNumber: secondaryString.line,
+                path: translationString.file.path,
+                lineNumber: translationString.line,
                 message: "Some arguments appear more than once in this translation")
         }
 
-        let primaryArgs = secondaryString.baseArguments.sorted(by: { $0.position < $1.position })
+        let baseArgs = translationString.baseArguments.sorted(by: { $0.position < $1.position })
 
-        for arg in secondaryString.translationArguments {
-            guard let primaryArg = primaryArgs.first(where: { $0.position == arg.position }) else {
+        for arg in translationString.translationArguments {
+            guard let baseArg = baseArgs.first(where: { $0.position == arg.position }) else {
                 continue
             }
-            if arg.specifier != primaryArg.specifier {
+            if arg.specifier != baseArg.specifier {
                 problemReporter.report(
                     .error,
-                    path: secondaryString.file.path,
-                    lineNumber: secondaryString.line,
-                    message: "Specifier for argument \(arg.position) does not match (should be \(primaryArg.specifier), is \(arg.specifier))")
+                    path: translationString.file.path,
+                    lineNumber: translationString.line,
+                    message: "Specifier for argument \(arg.position) does not match (should be \(baseArg.specifier), is \(arg.specifier))")
             }
         }
     }

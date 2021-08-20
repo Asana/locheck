@@ -11,33 +11,33 @@ import Foundation
 /**
  Directly compare `.strings` files with the same name across two `.lproj` files
  */
-public func validateLproj(primary: LprojFiles, secondary: LprojFiles, problemReporter: ProblemReporter) {
-    for stringsFile in primary.strings {
-        guard let secondaryStringsFile = secondary.strings.first(where: { $0.name == stringsFile.name }) else {
+public func validateLproj(base: LprojFiles, translation: LprojFiles, problemReporter: ProblemReporter) {
+    for stringsFile in base.strings {
+        guard let translationStringsFile = translation.strings.first(where: { $0.name == stringsFile.name }) else {
             problemReporter.report(
                 .error,
                 path: stringsFile.name,
                 lineNumber: 0,
-                message: "\(stringsFile.name) missing from translation \(secondary.name)")
+                message: "\(stringsFile.name) missing from translation \(translation.name)")
             continue
         }
         parseAndValidateStrings(
-            primary: stringsFile,
-            secondary: secondaryStringsFile,
-            secondaryLanguageName: secondary.name,
+            base: stringsFile,
+            translation: translationStringsFile,
+            translationLanguageName: translation.name,
             problemReporter: problemReporter)
     }
 
-    for stringsdictFile in primary.stringsdict {
-        guard let secondaryStringsdictFile = secondary.stringsdict.first(where: { $0.name == stringsdictFile.name })
+    for stringsdictFile in base.stringsdict {
+        guard let translationStringsdictFile = translation.stringsdict.first(where: { $0.name == stringsdictFile.name })
         else {
             problemReporter.report(
                 .error,
                 path: stringsdictFile.name,
                 lineNumber: 0,
-                message: "\(stringsdictFile.name) missing from translation \(secondary.name)")
+                message: "\(stringsdictFile.name) missing from translation \(translation.name)")
             continue
         }
-        validateStringsdict(primary: stringsdictFile, secondary: secondaryStringsdictFile)
+        validateStringsdict(base: stringsdictFile, translation: translationStringsdictFile)
     }
 }

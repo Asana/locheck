@@ -41,7 +41,7 @@ private extension FormatArgument {
  Represents a line from a `.strings` file, like this:
 
  ```
- "primary string with an argument %@" = "translated string with an argument %@";
+ "base string with an argument %@" = "translated string with an argument %@";
  ```
  */
 struct LocalizedString {
@@ -57,7 +57,7 @@ struct LocalizedString {
         string: String,
         file: Filing,
         line: Int,
-        primaryStringMap: [String: LocalizedString]? = nil) { // only pass for secondary strings
+        baseStringMap: [String: LocalizedString]? = nil) { // only pass for translation strings
         let stringPairRegex = try! NSRegularExpression(
             pattern: Expressions.stringPairExpression,
             options: .anchorsMatchLines)
@@ -77,10 +77,10 @@ struct LocalizedString {
         self.file = file
         self.line = line
 
-        // If the primary string has its own translation, use that as the key. Sometimes developers omit format specifiers
+        // If the base string has its own translation, use that as the key. Sometimes developers omit format specifiers
         // from keys if they provide their own translation in their base language .strings file.
-        if let primaryStringMap = primaryStringMap, let primaryString = primaryStringMap[key] {
-            baseArguments = primaryString.translationArguments
+        if let baseStringMap = baseStringMap, let baseString = baseStringMap[key] {
+            baseArguments = baseString.translationArguments
         } else {
             baseArguments = LocalizedString.parseArguments(string: key)
         }
