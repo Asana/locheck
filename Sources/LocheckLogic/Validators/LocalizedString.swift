@@ -33,7 +33,7 @@ private extension FormatArgument {
     init(specifier: String, positionString: String) {
         self.specifier = specifier
         // ! is safe here because the regular expression only matches digits.
-        position = NumberFormatter().number(from: positionString)!.intValue
+        position = Int(positionString)!
     }
 }
 
@@ -58,15 +58,10 @@ struct LocalizedString {
         file: Filing,
         line: Int,
         baseStringMap: [String: LocalizedString]? = nil) { // only pass for translation strings
-        let stringPairRegex = try! NSRegularExpression(
-            pattern: Expressions.stringPairExpression,
-            options: .anchorsMatchLines)
         guard
-            let match = stringPairRegex
-            .matches(in: string, options: [], range: NSRange(string.startIndex ..< string.endIndex, in: string))
-            .first,
-            let keySequence = match.getGroup(in: string, named: "key")?.dropFirst().dropLast(),
-            let valueSequence = match.getGroup(in: string, named: "value")?.dropFirst().dropLast() else {
+            let match = Expressions.stringPairRegex.lo_matches(in: string).first,
+            let keySequence = match.lo_getGroup(in: string, named: "key")?.dropFirst().dropLast(),
+            let valueSequence = match.lo_getGroup(in: string, named: "value")?.dropFirst().dropLast() else {
             return nil
         }
         let key = String(keySequence)
@@ -79,7 +74,7 @@ struct LocalizedString {
 
         // If the base string has its own translation, use that as the key. Sometimes developers omit format specifiers
         // from keys if they provide their own translation in their base language .strings file.
-        if let baseStringMap = baseStringMap, let baseString = baseStringMap[key] {
+        if let baseString = baseStringMap?[key] {
             baseArguments = baseString.translationArguments
         } else {
             baseArguments = LocalizedString.parseArguments(string: key)
@@ -89,16 +84,16 @@ struct LocalizedString {
 
     /// Transform a single string into parsed `FormatSpecifier` objects
     static func parseArguments(string: String) -> [FormatArgument] {
-        try! NSRegularExpression(pattern: Expressions.argumentExpression, options: [])
-            .matches(in: string, options: [], range: NSRange(string.startIndex ..< string.endIndex, in: string))
+        Expressions.argumentRegex
+            .lo_matches(in: string)
             .enumerated()
             .compactMap { (i: Int, match: NSTextCheckingResult) -> FormatArgument? in
-                guard let specifier = match.getGroup(in: string, named: "specifier") else {
+                guard let specifier = match.lo_getGroup(in: string, named: "specifier") else {
                     print("You found a bug! Check this string:", string)
                     return nil
                 }
 
-                if let positionString = match.getGroup(in: string, named: "position") {
+                if let positionString = match.lo_getGroup(in: string, named: "position") {
                     return FormatArgument(
                         specifier: specifier,
                         positionString: positionString)

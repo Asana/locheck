@@ -18,7 +18,7 @@ public func parseAndValidateStrings(
     problemReporter: ProblemReporter) {
     problemReporter.logInfo("Validating \(translation.path) against \(base.path)")
 
-    let baseStrings = base.lines.enumerated().compactMap {
+    let baseStrings = base.lo_lines.enumerated().compactMap {
         LocalizedString(
             string: $0.1,
             file: base,
@@ -31,7 +31,7 @@ public func parseAndValidateStrings(
 
     validateStrings(
         baseStrings: baseStrings,
-        translationStrings: translation.lines.enumerated().compactMap {
+        translationStrings: translation.lo_lines.enumerated().compactMap {
             LocalizedString(
                 string: $0.1,
                 file: translation,
@@ -77,7 +77,7 @@ func validateStrings(
         let hasDuplicates = translationArgumentPositions.count != translationString.translationArguments.count
 
         if !missingArgumentPositions.isEmpty {
-            let args = missingArgumentPositions.sorted().map { String($0) }.joined(separator: ",")
+            let args = missingArgumentPositions.sorted().map { String($0) }.joined(separator: ", ")
             problemReporter.report(
                 .warning,
                 path: translationString.file.path,
@@ -86,7 +86,7 @@ func validateStrings(
         }
 
         if !extraArgumentPositions.isEmpty {
-            let args = extraArgumentPositions.sorted().map { String($0) }.joined(separator: ",")
+            let args = extraArgumentPositions.sorted().map { String($0) }.joined(separator: ", ")
             problemReporter.report(
                 .error,
                 path: translationString.file.path,

@@ -66,10 +66,10 @@ struct Lproj: ParsableCommand {
         abstract: "Compare the contents of multiple .lproj files")
 
     @Argument(help: "An authoritative .lproj directory")
-    private var base: FileArg
+    private var base: DirectoryArg
 
     @Argument(help: "Non-authoritative .lproj directories that need to be validated")
-    private var translation: [FileArg]
+    private var translation: [DirectoryArg]
 
     func validate() throws {
         try base.validate(ext: "lproj")
@@ -97,25 +97,25 @@ struct Discover: ParsableCommand {
     @Option(help: "The authoritative language. Defaults to 'en'.")
     private var base = "en"
 
-    @Argument(help: "A directory full of .lproj files, with one of them being authoritative.")
-    private var directories: [FileArg]
+    @Argument(help: "One or more directories full of .lproj files, with one of them being authoritative.")
+    private var directories: [DirectoryArg]
 
     func validate() throws {
         for directory in directories {
             try directory.validate()
 
-            var hasPrimary = false
-            var hasSecondary = false
+            var hasBase = false
+            var hasTranslation = false
 
             for folder in try! Folder(path: directory.argument).subfolders {
                 if folder.extension != "lproj" { continue }
-                if folder.name == "\(base).lproj" { hasPrimary = true } else { hasSecondary = true }
+                if folder.name == "\(base).lproj" { hasBase = true } else { hasTranslation = true }
             }
 
-            if !hasPrimary {
+            if !hasBase {
                 throw ValidationError("Can't find \(base).lproj in \(directory.argument)")
             }
-            if !hasSecondary {
+            if !hasTranslation {
                 throw ValidationError("Can't find any translation .lproj folders in in \(directory.argument)")
             }
         }
@@ -152,23 +152,5 @@ struct Discover: ParsableCommand {
         }
     }
 }
-
-// We have an internal task tracking this functionality.
-// struct Stringsdict: ParsableCommand {
-//  @Argument(help: "An authoritative .stringsdict file")
-//  private var base: FileArg
-//
-//  @Argument(help: "Non-authoritative .stringsdict files that need to be validated")
-//  private var translation: [FileArg]
-//
-//  func validate() throws {
-//    try base.validate(ext: "stringsdict")
-//    try translation.forEach { try $0.validate(ext: "stringsdict") }
-//  }
-//
-//  func run() {
-//    print("STRINGSDICT!")
-//  }
-// }
 
 Locheck.main()

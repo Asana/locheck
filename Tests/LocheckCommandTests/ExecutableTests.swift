@@ -37,7 +37,7 @@ class ExecutableTests: XCTestCase {
 
         let process = Process()
         process.executableURL = binary
-        process.arguments = ["strings", "Examples/Demo1.strings", "Examples/Demo2.strings"]
+        process.arguments = ["strings", "Examples/Demo_Base.strings", "Examples/Demo_Translation.strings"]
 
         let stdoutPipe = Pipe()
         let stderrPipe = Pipe()
@@ -51,19 +51,19 @@ class ExecutableTests: XCTestCase {
         let stderr = String(data: stderrPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
 
         XCTAssertEqual(stdout, """
-        Validating Examples/Demo2.strings against Examples/Demo1.strings
+        Validating Examples/Demo_Translation.strings against Examples/Demo_Base.strings
         Errors found
 
         """)
 
         XCTAssertEqual(stderr, """
-        Examples/Demo1.strings:3: warning: This string is missing from Demo2
-        Examples/Demo2.strings:3: warning: Does not include arguments 1
-        Examples/Demo2.strings:3: warning: Some arguments appear more than once in this translation
-        Examples/Demo2.strings:3: error: Specifier for argument 2 does not match (should be @, is ld)
-        Examples/Demo2.strings:5: error: Specifier for argument 2 does not match (should be d, is @)
-        Examples/Demo2.strings:5: error: Specifier for argument 1 does not match (should be @, is d)
-        Examples/Demo2.strings:7: warning: Does not include arguments 1
+        Examples/Demo_Base.strings:3: warning: This string is missing from Demo_Translation
+        Examples/Demo_Translation.strings:3: warning: Does not include arguments 1
+        Examples/Demo_Translation.strings:3: warning: Some arguments appear more than once in this translation
+        Examples/Demo_Translation.strings:3: error: Specifier for argument 2 does not match (should be @, is ld)
+        Examples/Demo_Translation.strings:5: error: Specifier for argument 2 does not match (should be d, is @)
+        Examples/Demo_Translation.strings:5: error: Specifier for argument 1 does not match (should be @, is d)
+        Examples/Demo_Translation.strings:7: warning: Does not include arguments 1
 
         """)
     }

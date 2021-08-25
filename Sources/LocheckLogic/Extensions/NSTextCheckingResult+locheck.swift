@@ -11,7 +11,7 @@ extension NSTextCheckingResult {
     /**
      Wraps boilerplate for getting group strings out of a regular expression match
      */
-    func getGroup(in string: String, named name: String) -> String? {
+    func lo_getGroup(in string: String, named name: String) -> String? {
         let matchRange = range(withName: name)
         guard
             matchRange.location != NSNotFound,

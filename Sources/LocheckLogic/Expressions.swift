@@ -11,11 +11,17 @@ import Foundation
  Collection of regular expression patterns
  */
 struct Expressions {
+    private init() {}
+
     // MARK: String literals
 
     // https://stackoverflow.com/a/37032779
     private static let stringLiteralExpression = #""[^"\\]*(\\.[^"\\]*)*""#
-    static let stringPairExpression = "^(?<key>\(stringLiteralExpression)) = (?<value>\(stringLiteralExpression));$"
+    private static let stringPairExpression =
+        "^(?<key>\(stringLiteralExpression)) = (?<value>\(stringLiteralExpression));$"
+    static let stringPairRegex = try! NSRegularExpression(
+        pattern: Expressions.stringPairExpression,
+        options: .anchorsMatchLines)
 
     // MARK: Arguments
 
@@ -61,6 +67,9 @@ struct Expressions {
     ]
     private static let specifierExpression = specifiers.joined(separator: "|")
 
-    static let argumentExpression =
+    // Technically length modifiers are invalid for @ and potentially some others, but in practice
+    // it probably doesn't matter.
+    private static let argumentExpression =
         "%((?<position>\\d+)\\$)?(?<specifier>(\(lengthExpression))?(\(specifierExpression)))"
+    static let argumentRegex = try! NSRegularExpression(pattern: Expressions.argumentExpression, options: [])
 }
