@@ -28,6 +28,10 @@ class ExecutableTests: XCTestCase {
         FileManager.default.changeCurrentDirectoryPath(String(packageRootPath))
     }
 
+    override class func tearDown() {
+        super.tearDown()
+    }
+
     func testExampleOutput() throws {
         let binary = productsDirectory.appendingPathComponent("locheck")
 

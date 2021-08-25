@@ -58,15 +58,12 @@ func validateStrings(
         translationStringMap[localizedString.key] = localizedString
     }
 
-    for baseString in baseStrings {
-        if translationStringMap[baseString.key] == nil {
-            problemReporter.report(
-                .warning,
-                path: baseString.file.path,
-                lineNumber: baseString.line,
-                message: "This string is missing from \(translationLanguageName)")
-            continue
-        }
+    for baseString in baseStrings where translationStringMap[baseString.key] == nil {
+        problemReporter.report(
+            .warning,
+            path: baseString.file.path,
+            lineNumber: baseString.line,
+            message: "This string is missing from \(translationLanguageName)")
     }
 
     // MARK: Validate arguments
