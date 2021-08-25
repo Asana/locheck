@@ -22,6 +22,18 @@ The translation reads naturally on its own, but this would crash your app when i
 
 Locheck will make sure you get it right.
 
+In the example above, the key happens to be equal to the base translation. But you might have special cases where you manually define your string in `Localizable.strings`, so the key's format string doesn't match the value:
+
+```swift
+// in en.lproj/Localizable.strings:
+"send-donuts" = "Send %d donuts to %@";
+
+// in backwards.lproj/Localizable.strings:
+"send-donuts" = "%@ to donuts %d send";
+```
+
+In these cases, Locheck will use the base translation's _value_ (not its key) as the authoritative string, and would catch the error in the example above.
+
 ## Installation
 
 ### Using [Mint](https://github.com/yonaskolb/Mint)
