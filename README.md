@@ -81,4 +81,18 @@ locheck strings MyApp/en.lproj/Localizable.strings MyApp/fr.lproj/Localizable.st
 
 ## Contributing
 
-GitHub issues and pull requests are very welcome. Please format your code with `swiftformat Sources Tests` before opening your PR, otherwise tests will fail. You can install `swiftformat` using `brew install mint && mint bootstrap --link`.
+GitHub issues and pull requests are very welcome! Please format your code with `swiftformat Sources Tests` before opening your PR, otherwise tests will fail and we cannot merge your branch. We also run SwiftLint to help ensure best practices.
+
+The simplest way to install SwiftFormat and SwiftLint is to use [Mint](https://github.com/yonaskolb/Mint): 
+
+```sh
+brew install mint
+mint bootstrap --link`
+```
+
+You can then run both tools locally:
+
+```sh
+swiftformat Sources Tests
+swiftlint lint --quiet
+```
