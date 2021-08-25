@@ -8,4 +8,5 @@
 import Files
 import Foundation
 
-func validateStringsdict(primary: File, secondary: File) {}
+/// Placeholder for when we implement stringsdict validation
+func validateStringsdict(base: File, translation: File) {}

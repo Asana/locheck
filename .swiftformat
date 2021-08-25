@@ -1,6 +1,6 @@
 # Format options
 --closingparen same-line
---indent 2
+--indent 4
 --patternlet inline
 --wraparguments before-first
 --wrapparameters before-first

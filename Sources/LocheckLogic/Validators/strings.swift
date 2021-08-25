@@ -8,153 +8,113 @@
 import Files
 import Foundation
 
+/**
+ Directly compare two `.strings` files
+ */
 public func parseAndValidateStrings(
-  primary: File,
-  secondary: File,
-  secondaryName: String,
-  problemReporter: ProblemReporter) {
-  problemReporter.logInfo("Validating \(secondary.path) against \(primary.path)")
+    base: File,
+    translation: File,
+    translationLanguageName: String,
+    problemReporter: ProblemReporter) {
+    problemReporter.logInfo("Validating \(translation.path) against \(base.path)")
 
-  validateStrings(
-    primaryStrings: primary.lines.enumerated().compactMap {
-      LocalizedString(string: $0.1, file: primary, line: $0.0 + 1, problemReporter: problemReporter)
-    },
-    secondaryStrings: secondary.lines.enumerated().compactMap {
-      LocalizedString(string: $0.1, file: secondary, line: $0.0 + 1, problemReporter: problemReporter)
-    },
-    secondaryFileName: secondary.nameExcludingExtension,
-    problemReporter: problemReporter)
-}
-
-protocol Filing {
-  var nameExcludingExtension: String { get }
-  var path: String { get }
-}
-
-extension File: Filing {}
-
-struct FormatArgument {
-  let specifier: String
-  let position: Int
-}
-
-private extension FormatArgument {
-  init(specifier: String, positionString: String) {
-    self.specifier = specifier
-    position = NumberFormatter().number(from: positionString)!.intValue
-  }
-}
-
-struct LocalizedString {
-  let key: String
-  let string: String
-  let arguments: [FormatArgument]
-  let file: Filing
-  let line: Int
-
-  init(key: String, string: String, file: Filing, line: Int, arguments: [FormatArgument]) {
-    self.key = key
-    self.string = string
-    self.file = file
-    self.line = line
-    self.arguments = arguments
-  }
-
-  init?(string: String, file: Filing, line: Int, problemReporter: ProblemReporter) {
-    // https://stackoverflow.com/a/37032779
-    let stringPattern = "\"[^\"\\\\]*(\\\\.[^\"\\\\]*)*\""
-    let pattern = "^(\(stringPattern)) = (\(stringPattern));$"
-    let stringLiteralRegex = try! NSRegularExpression(
-      pattern: pattern,
-      options: .anchorsMatchLines)
-    guard let strings = stringLiteralRegex
-      .matches(in: string, options: [], range: NSRange(location: 0, length: string.count))
-      .first?
-      .getGroupStrings(original: string) else {
-      return nil
+    let baseStrings = base.lo_lines.enumerated().compactMap {
+        LocalizedString(
+            string: $0.1,
+            file: base,
+            line: $0.0 + 1)
     }
-    guard strings.count == 2 else {
-//      print(string)
-//      print(strings.debugDescription)
-//      assert(strings.count == 0)
-      return nil
+    var baseStringMap = [String: LocalizedString]()
+    for localizedString in baseStrings {
+        baseStringMap[localizedString.key] = localizedString
     }
-    let key = String(strings[0].dropFirst().dropLast())
-    let value = String(strings[1].dropFirst().dropLast())
-    self.key = key
-    self.string = string
-    self.file = file
-    self.line = line
-    arguments = LocalizedString.parseArguments(string: value, problemReporter: problemReporter)
-  }
 
-  static func parseArguments(string: String, problemReporter: ProblemReporter) -> [FormatArgument] {
-    if string.contains("$") {
-      return try! NSRegularExpression(pattern: "%(\\d+)\\$([@a-z]+)", options: [])
-        .matches(in: string, options: [], range: NSRange(location: 0, length: string.count))
-        .compactMap { (match: NSTextCheckingResult) -> FormatArgument? in
-          let groupStrings = match.getGroupStrings(original: string)
-          return FormatArgument(
-            specifier: groupStrings[2],
-            positionString: groupStrings[1])
-        }
-    } else {
-      return try! NSRegularExpression(pattern: "%([@a-z]+)", options: [])
-        .matches(in: string, options: [], range: NSRange(location: 0, length: string.count))
-        .enumerated()
-        .compactMap { (i: Int, match: NSTextCheckingResult) -> FormatArgument? in
-          let groupStrings = match.getGroupStrings(original: string)
-          guard !groupStrings.isEmpty else {
-            problemReporter.logInfo("XXX \(string.debugDescription) \(groupStrings.debugDescription)")
-            return nil
-          }
-          return FormatArgument(
-            specifier: groupStrings.last!,
-            position: i + 1)
-        }
-    }
-  }
+    validateStrings(
+        baseStrings: baseStrings,
+        translationStrings: translation.lo_lines.enumerated().compactMap {
+            LocalizedString(
+                string: $0.1,
+                file: translation,
+                line: $0.0 + 1,
+                baseStringMap: baseStringMap)
+        },
+        translationLanguageName: translationLanguageName,
+        problemReporter: problemReporter)
 }
 
+/**
+ Directly compare two lists of already-parsed strings. This is the "interesting" part of the code
+ where we look for and report most errors.
+ */
 func validateStrings(
-  primaryStrings: [LocalizedString],
-  secondaryStrings: [LocalizedString],
-  secondaryFileName: String,
-  problemReporter: ProblemReporter) {
-  var secondaryStringMap = [String: LocalizedString]()
-  for localizedString in secondaryStrings {
-    secondaryStringMap[localizedString.key] = localizedString
-  }
+    baseStrings: [LocalizedString],
+    translationStrings: [LocalizedString],
+    translationLanguageName: String,
+    problemReporter: ProblemReporter) {
+    // MARK: Ensure all base strings appear in this translation
 
-  for primaryString in primaryStrings {
-    guard let secondaryString = secondaryStringMap[primaryString.key] else {
-      problemReporter.report(
-        .warning,
-        path: primaryString.file.path,
-        lineNumber: primaryString.line,
-        message: "This string is missing from \(secondaryFileName)")
-      continue
+    var translationStringMap = [String: LocalizedString]()
+    for localizedString in translationStrings {
+        translationStringMap[localizedString.key] = localizedString
     }
 
-    let hasSamePositions = Set(primaryString.arguments.map(\.position)) ==
-      Set(secondaryString.arguments.map(\.position))
-    if !hasSamePositions {
-      problemReporter.report(
-        .error,
-        path: secondaryString.file.path,
-        lineNumber: secondaryString.line,
-        message: "Number or value of positions do not match")
+    for baseString in baseStrings where translationStringMap[baseString.key] == nil {
+        problemReporter.report(
+            .warning,
+            path: baseString.file.path,
+            lineNumber: baseString.line,
+            message: "This string is missing from \(translationLanguageName)")
     }
 
-    let primaryTypes = primaryString.arguments.sorted(by: { $0.position < $1.position }).map(\.specifier)
-    let secondaryTypes = secondaryString
-      .arguments.sorted(by: { $0.position < $1.position }).map(\.specifier)
-    if primaryTypes != secondaryTypes {
-      problemReporter.report(
-        .error,
-        path: secondaryString.file.path,
-        lineNumber: secondaryString.line,
-        message: "Specifiers do not match. Original: \(primaryTypes.joined(separator: ",")); translated: \(secondaryTypes.joined(separator: ","))")
+    // MARK: Validate arguments
+
+    for translationString in translationStrings {
+        let baseArgumentPositions = Set(translationString.baseArguments.map(\.position))
+        let translationArgumentPositions = Set(translationString.translationArguments.map(\.position))
+
+        let missingArgumentPositions = baseArgumentPositions.subtracting(translationArgumentPositions)
+        let extraArgumentPositions = translationArgumentPositions.subtracting(baseArgumentPositions)
+        let hasDuplicates = translationArgumentPositions.count != translationString.translationArguments.count
+
+        if !missingArgumentPositions.isEmpty {
+            let args = missingArgumentPositions.sorted().map { String($0) }.joined(separator: ", ")
+            problemReporter.report(
+                .warning,
+                path: translationString.file.path,
+                lineNumber: translationString.line,
+                message: "Does not include arguments \(args)")
+        }
+
+        if !extraArgumentPositions.isEmpty {
+            let args = extraArgumentPositions.sorted().map { String($0) }.joined(separator: ", ")
+            problemReporter.report(
+                .error,
+                path: translationString.file.path,
+                lineNumber: translationString.line,
+                message: "Translation includes arguments that don't exist in the source: \(args) (original has \(baseArgumentPositions); \(translationString.value)")
+        }
+
+        if hasDuplicates {
+            problemReporter.report(
+                .warning,
+                path: translationString.file.path,
+                lineNumber: translationString.line,
+                message: "Some arguments appear more than once in this translation")
+        }
+
+        let baseArgs = translationString.baseArguments.sorted(by: { $0.position < $1.position })
+
+        for arg in translationString.translationArguments {
+            guard let baseArg = baseArgs.first(where: { $0.position == arg.position }) else {
+                continue
+            }
+            if arg.specifier != baseArg.specifier {
+                problemReporter.report(
+                    .error,
+                    path: translationString.file.path,
+                    lineNumber: translationString.line,
+                    message: "Specifier for argument \(arg.position) does not match (should be \(baseArg.specifier), is \(arg.specifier))")
+            }
+        }
     }
-  }
 }
