@@ -9,7 +9,7 @@ let package = Package(
         .macOS(.v10_13),
     ],
     products: [
-        .executable(name: "locheck", targets: ["locheck"]),
+        .executable(name: "locheck", targets: ["LocheckCommand"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser", .upToNextMinor(from: "0.4.0")),
@@ -17,7 +17,7 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "locheck",
+            name: "LocheckCommand",
             dependencies: [
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "Files", package: "Files"),
@@ -29,6 +29,6 @@ let package = Package(
                 .product(name: "Files", package: "Files"),
             ]),
         .testTarget(
-            name: "locheckTests",
-            dependencies: ["locheck"]),
+            name: "LocheckCommandTests",
+            dependencies: ["LocheckCommand"]),
     ])
