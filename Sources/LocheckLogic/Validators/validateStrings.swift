@@ -18,21 +18,24 @@ public func parseAndValidateStrings(
     problemReporter: ProblemReporter) {
     problemReporter.logInfo("Validating \(translation.path) against \(base.path)")
 
-    let baseStrings = base.lo_lines.enumerated().compactMap {
-        LocalizedString(
-            string: $0.1,
-            file: base,
-            line: $0.0 + 1)
-    }
+    let baseStrings = base.lo_lines.enumerated()
+        .compactMap {
+            LocalizedStringPair(
+                string: $0.1,
+                file: base,
+                line: $0.0 + 1)
+        }
+        .map { $0.translation }
+
     var baseStringMap = [String: LocalizedString]()
     for localizedString in baseStrings {
-        baseStringMap[localizedString.key] = localizedString
+        baseStringMap[localizedString.string] = localizedString
     }
 
     validateStrings(
         baseStrings: baseStrings,
         translationStrings: translation.lo_lines.enumerated().compactMap {
-            LocalizedString(
+            LocalizedStringPair(
                 string: $0.1,
                 file: translation,
                 line: $0.0 + 1,
@@ -48,33 +51,33 @@ public func parseAndValidateStrings(
  */
 func validateStrings(
     baseStrings: [LocalizedString],
-    translationStrings: [LocalizedString],
+    translationStrings: [LocalizedStringPair],
     translationLanguageName: String,
     problemReporter: ProblemReporter) {
     // MARK: Ensure all base strings appear in this translation
 
-    var translationStringMap = [String: LocalizedString]()
+    var translationStringMap = [String: LocalizedStringPair]()
     for localizedString in translationStrings {
         translationStringMap[localizedString.key] = localizedString
     }
 
-    for baseString in baseStrings where translationStringMap[baseString.key] == nil {
+    for baseString in baseStrings where translationStringMap[baseString.string] == nil {
         problemReporter.report(
             .warning,
             path: baseString.file.path,
-            lineNumber: baseString.line,
+            lineNumber: baseString.line ?? 0,
             message: "This string is missing from \(translationLanguageName)")
     }
 
     // MARK: Validate arguments
 
     for translationString in translationStrings {
-        let baseArgumentPositions = Set(translationString.baseArguments.map(\.position))
-        let translationArgumentPositions = Set(translationString.translationArguments.map(\.position))
+        let baseArgumentPositions = Set(translationString.base.arguments.map(\.position))
+        let translationArgumentPositions = Set(translationString.translation.arguments.map(\.position))
 
         let missingArgumentPositions = baseArgumentPositions.subtracting(translationArgumentPositions)
         let extraArgumentPositions = translationArgumentPositions.subtracting(baseArgumentPositions)
-        let hasDuplicates = translationArgumentPositions.count != translationString.translationArguments.count
+        let hasDuplicates = translationArgumentPositions.count != translationString.translation.arguments.count
 
         if !missingArgumentPositions.isEmpty {
             let args = missingArgumentPositions.sorted().map { String($0) }.joined(separator: ", ")
@@ -91,7 +94,7 @@ func validateStrings(
                 .error,
                 path: translationString.file.path,
                 lineNumber: translationString.line,
-                message: "Translation includes arguments that don't exist in the source: \(args) (original has \(baseArgumentPositions); \(translationString.value)")
+                message: "Translation includes arguments that don't exist in the source: \(args) (original has \(baseArgumentPositions); \(translationString.translation.string)")
         }
 
         if hasDuplicates {
@@ -102,9 +105,9 @@ func validateStrings(
                 message: "Some arguments appear more than once in this translation")
         }
 
-        let baseArgs = translationString.baseArguments.sorted(by: { $0.position < $1.position })
+        let baseArgs = translationString.base.arguments.sorted(by: { $0.position < $1.position })
 
-        for arg in translationString.translationArguments {
+        for arg in translationString.translation.arguments {
             guard let baseArg = baseArgs.first(where: { $0.position == arg.position }) else {
                 continue
             }

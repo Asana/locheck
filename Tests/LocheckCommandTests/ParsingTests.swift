@@ -16,7 +16,7 @@ private struct FakeFile: Filing {
 class ParsingTests: XCTestCase {
     func testArgumentParsing() {
         let problemReporter = ProblemReporter(log: false)
-        let string = LocalizedString(
+        let string = LocalizedStringPair(
             string: """
             "%1$@ %2$d %@" = "%1$@ %2$d %@";
             """,
@@ -34,7 +34,7 @@ class ParsingTests: XCTestCase {
 
     func testOmitArgument() {
         let problemReporter = ProblemReporter(log: false)
-        let string = LocalizedString(
+        let string = LocalizedStringPair(
             string: """
             "A sync error occurred while creating column “%@” in project “%@”." = "Er is een synchronisatiefout opgetreden tijdens het maken van kolom “%@” in een project.";
             """,
@@ -51,7 +51,7 @@ class ParsingTests: XCTestCase {
 
     func testMixedImplicitAndExplicitOrder() {
         let problemReporter = ProblemReporter(log: false)
-        let string = LocalizedString(
+        let string = LocalizedStringPair(
             string: """
             "A sync error occurred while processing %@'s request to join “%@”." = "“%@” 님의 “%2$@” 참가 요청을 처리하는 중 동기화 오류가 발생했습니다.";
             """,

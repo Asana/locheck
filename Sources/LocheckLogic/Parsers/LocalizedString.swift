@@ -1,5 +1,5 @@
 //
-//  LocalizedString.swift
+//  LocalizedStringPair.swift
 //
 //
 //  Created by Steve Landey on 8/18/21.
@@ -37,6 +37,29 @@ private extension FormatArgument {
     }
 }
 
+/// Transform a single string into parsed `FormatSpecifier` objects
+private func parseArguments(string: String) -> [FormatArgument] {
+    Expressions.argumentRegex
+        .lo_matches(in: string)
+        .enumerated()
+        .compactMap { (i: Int, match: NSTextCheckingResult) -> FormatArgument? in
+            guard let specifier = match.lo_getGroup(in: string, named: "specifier") else {
+                print("You found a bug! Check this string:", string)
+                return nil
+            }
+
+            if let positionString = match.lo_getGroup(in: string, named: "position") {
+                return FormatArgument(
+                    specifier: specifier,
+                    positionString: positionString)
+            } else {
+                return FormatArgument(
+                    specifier: specifier,
+                    position: i + 1)
+            }
+        }
+}
+
 /**
  Represents a line from a `.strings` file, like this:
 
@@ -45,11 +68,32 @@ private extension FormatArgument {
  ```
  */
 struct LocalizedString {
-    let key: String
-    let value: String
     let string: String
-    let baseArguments: [FormatArgument]
-    let translationArguments: [FormatArgument]
+    let arguments: [FormatArgument]
+    let file: Filing
+    let line: Int?
+
+    init(string: String, file: Filing, line: Int?) {
+        self.string = string
+        self.arguments = parseArguments(string: string)
+        self.file = file
+        self.line = line
+    }
+
+}
+
+/**
+ Represents a line from a `.strings` file, like this:
+
+ ```
+ "base string with an argument %@" = "translated string with an argument %@";
+ ```
+ */
+struct LocalizedStringPair {
+    let key: String
+    let string: String
+    let base: LocalizedString
+    let translation: LocalizedString
     let file: Filing
     let line: Int
 
@@ -65,43 +109,18 @@ struct LocalizedString {
             return nil
         }
         let key = String(keySequence)
-        let value = String(valueSequence)
         self.key = key
-        self.value = value
         self.string = string
         self.file = file
         self.line = line
 
         // If the base string has its own translation, use that as the key. Sometimes developers omit format specifiers
         // from keys if they provide their own translation in their base language .strings file.
-        if let baseString = baseStringMap?[key] {
-            baseArguments = baseString.translationArguments
+        if let base = baseStringMap?[key] {
+            self.base = base
         } else {
-            baseArguments = LocalizedString.parseArguments(string: key)
+            base = LocalizedString(string: key, file: file, line: line)
         }
-        translationArguments = LocalizedString.parseArguments(string: value)
-    }
-
-    /// Transform a single string into parsed `FormatSpecifier` objects
-    static func parseArguments(string: String) -> [FormatArgument] {
-        Expressions.argumentRegex
-            .lo_matches(in: string)
-            .enumerated()
-            .compactMap { (i: Int, match: NSTextCheckingResult) -> FormatArgument? in
-                guard let specifier = match.lo_getGroup(in: string, named: "specifier") else {
-                    print("You found a bug! Check this string:", string)
-                    return nil
-                }
-
-                if let positionString = match.lo_getGroup(in: string, named: "position") {
-                    return FormatArgument(
-                        specifier: specifier,
-                        positionString: positionString)
-                } else {
-                    return FormatArgument(
-                        specifier: specifier,
-                        position: i + 1)
-                }
-            }
+        translation = LocalizedString(string: String(valueSequence), file: file, line: line)
     }
 }

@@ -72,4 +72,9 @@ struct Expressions {
     private static let argumentExpression =
         "%((?<position>\\d+)\\$)?(?<specifier>(\(lengthExpression))?(\(specifierExpression)))"
     static let argumentRegex = try! NSRegularExpression(pattern: Expressions.argumentExpression, options: [])
+
+    private static let stringsdictArgumentExpression = #"%#@(?<name>.*?)@"#
+    static let stringsdictArgumentRegex = try! NSRegularExpression(
+        pattern: Expressions.stringsdictArgumentExpression,
+        options: [])
 }
