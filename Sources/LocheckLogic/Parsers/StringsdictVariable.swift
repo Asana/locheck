@@ -8,7 +8,7 @@
 import Foundation
 import SwiftyXMLParser
 
-struct StringsdictVariable {
+struct StringsdictVariable: Equatable {
     let key: String
     let specType: String
     let valueType: String
@@ -16,23 +16,23 @@ struct StringsdictVariable {
 }
 
 extension StringsdictVariable {
-    init?(key: String, node: XML.Element, file: Filing, problemReporter: ProblemReporter) {
+    init?(key: String, node: XML.Element, path: String, problemReporter: ProblemReporter) {
         let reportError = { (message: String) -> Void in
-            problemReporter.report(.error, path: file.path, lineNumber: 0, message: message)
+            problemReporter.report(.error, path: path, lineNumber: 0, message: message)
         }
 
         var specType: String?
         var valueType: String?
         var values = [String: LocalizedString]()
 
-        for (valueKey, valueNode) in readPlistDict(root: node, path: file.path, problemReporter: problemReporter) {
+        for (valueKey, valueNode) in readPlistDict(root: node, path: path, problemReporter: problemReporter) {
             switch valueKey {
             case "NSStringFormatSpecTypeKey":
                 specType = valueNode.text
             case "NSStringFormatValueTypeKey":
                 valueType = valueNode.text
             default:
-                values[valueKey] = LocalizedString(string: valueNode.text ?? "", file: file, line: 0)
+                values[valueKey] = LocalizedString(string: valueNode.text ?? "", path: path, line: 0)
             }
         }
 

@@ -22,24 +22,31 @@ public func parseAndValidateStrings(
         .compactMap {
             LocalizedStringPair(
                 string: $0.1,
-                file: base,
+                path: base.path,
                 line: $0.0 + 1)
         }
-        .map { $0.translation }
 
     var baseStringMap = [String: LocalizedString]()
-    for localizedString in baseStrings {
-        baseStringMap[localizedString.string] = localizedString
+    for (i, line) in base.lo_lines.enumerated() {
+        guard let basePair = LocalizedStringPair(
+            string: line,
+            path: base.path,
+            line: i + 1,
+            baseStringMap: [:]) else {
+            continue
+        }
+        baseStringMap[basePair.base.string] = basePair.translation
     }
 
     validateStrings(
         baseStrings: baseStrings,
         translationStrings: translation.lo_lines.enumerated().compactMap {
-            LocalizedStringPair(
+            let p = LocalizedStringPair(
                 string: $0.1,
-                file: translation,
+                path: translation.path,
                 line: $0.0 + 1,
                 baseStringMap: baseStringMap)
+            return p
         },
         translationLanguageName: translationLanguageName,
         problemReporter: problemReporter)
@@ -50,7 +57,7 @@ public func parseAndValidateStrings(
  where we look for and report most errors.
  */
 func validateStrings(
-    baseStrings: [LocalizedString],
+    baseStrings: [LocalizedStringPair],
     translationStrings: [LocalizedStringPair],
     translationLanguageName: String,
     problemReporter: ProblemReporter) {
@@ -61,11 +68,11 @@ func validateStrings(
         translationStringMap[localizedString.key] = localizedString
     }
 
-    for baseString in baseStrings where translationStringMap[baseString.string] == nil {
+    for baseString in baseStrings where translationStringMap[baseString.key] == nil {
         problemReporter.report(
             .warning,
-            path: baseString.file.path,
-            lineNumber: baseString.line ?? 0,
+            path: baseString.path,
+            lineNumber: baseString.line,
             message: "This string is missing from \(translationLanguageName)")
     }
 
@@ -83,7 +90,7 @@ func validateStrings(
             let args = missingArgumentPositions.sorted().map { String($0) }.joined(separator: ", ")
             problemReporter.report(
                 .warning,
-                path: translationString.file.path,
+                path: translationString.path,
                 lineNumber: translationString.line,
                 message: "Does not include arguments \(args)")
         }
@@ -92,7 +99,7 @@ func validateStrings(
             let args = extraArgumentPositions.sorted().map { String($0) }.joined(separator: ", ")
             problemReporter.report(
                 .error,
-                path: translationString.file.path,
+                path: translationString.path,
                 lineNumber: translationString.line,
                 message: "Translation includes arguments that don't exist in the source: \(args) (original has \(baseArgumentPositions); \(translationString.translation.string)")
         }
@@ -100,7 +107,7 @@ func validateStrings(
         if hasDuplicates {
             problemReporter.report(
                 .warning,
-                path: translationString.file.path,
+                path: translationString.path,
                 lineNumber: translationString.line,
                 message: "Some arguments appear more than once in this translation")
         }
@@ -114,7 +121,7 @@ func validateStrings(
             if arg.specifier != baseArg.specifier {
                 problemReporter.report(
                     .error,
-                    path: translationString.file.path,
+                    path: translationString.path,
                     lineNumber: translationString.line,
                     message: "Specifier for argument \(arg.position) does not match (should be \(baseArg.specifier), is \(arg.specifier))")
             }

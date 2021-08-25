@@ -5,13 +5,9 @@
 //  Created by Steve Landey on 8/18/21.
 //
 
+import Files
 @testable import LocheckLogic
 import XCTest
-
-private struct FakeFile: Filing {
-    let path: String
-    let nameExcludingExtension: String
-}
 
 class ValidateStringsTests: XCTestCase {
     func testValid_noArgs() {
@@ -20,13 +16,13 @@ class ValidateStringsTests: XCTestCase {
             baseStrings: [
                 LocalizedStringPair(
                     string: "\"present\" = \"present\";",
-                    file: FakeFile(path: "abc", nameExcludingExtension: "xyz"),
+                    path: "abc",
                     line: 0)!,
             ],
             translationStrings: [
                 LocalizedStringPair(
                     string: "\"present\" = \"tneserp\";",
-                    file: FakeFile(path: "def", nameExcludingExtension: "uvw"),
+                    path: "def",
                     line: 0)!,
             ],
             translationLanguageName: "translation",
@@ -34,6 +30,7 @@ class ValidateStringsTests: XCTestCase {
 
         XCTAssertFalse(problemReporter.hasError)
         XCTAssertTrue(problemReporter.problems.isEmpty)
+        print(problemReporter.problems)
     }
 
     func testValid_implicitOrderArgs() {
@@ -42,13 +39,13 @@ class ValidateStringsTests: XCTestCase {
             baseStrings: [
                 LocalizedStringPair(
                     string: "\"present %d %@\" = \"present %d %@\";",
-                    file: FakeFile(path: "abc", nameExcludingExtension: "xyz"),
+                    path: "abc",
                     line: 0)!,
             ],
             translationStrings: [
                 LocalizedStringPair(
                     string: "\"present %d %@\" = \"%d %@\";",
-                    file: FakeFile(path: "def", nameExcludingExtension: "uvw"),
+                    path: "def",
                     line: 0)!,
             ],
             translationLanguageName: "translation",
@@ -64,13 +61,13 @@ class ValidateStringsTests: XCTestCase {
             baseStrings: [
                 LocalizedStringPair(
                     string: "\"present %d %@\" = \"present %d %@\";",
-                    file: FakeFile(path: "abc", nameExcludingExtension: "xyz"),
+                    path: "abc",
                     line: 0)!,
             ],
             translationStrings: [
                 LocalizedStringPair(
                     string: "\"present %d %@\" = \"%@ %d tneserp\";", // specifiers swapped
-                    file: FakeFile(path: "def", nameExcludingExtension: "uvw"),
+                    path: "def",
                     line: 0)!,
             ],
             translationLanguageName: "translation",
@@ -99,13 +96,13 @@ class ValidateStringsTests: XCTestCase {
             baseStrings: [
                 LocalizedStringPair(
                     string: "\"present %1$d %2$@\" = \"present %1$d %2$@\";",
-                    file: FakeFile(path: "abc", nameExcludingExtension: "xyz"),
+                    path: "abc",
                     line: 0)!,
             ],
             translationStrings: [
                 LocalizedStringPair(
                     string: "\"present %1$d %2$@\" = \"tneserp %2$@ %1$d\";",
-                    file: FakeFile(path: "def", nameExcludingExtension: "uvw"),
+                    path: "def",
                     line: 0)!,
             ],
             translationLanguageName: "translation",
@@ -121,17 +118,17 @@ class ValidateStringsTests: XCTestCase {
             baseStrings: [
                 LocalizedStringPair(
                     string: "\"present\" = \"present\";",
-                    file: FakeFile(path: "abc", nameExcludingExtension: "xyz"),
+                    path: "abc",
                     line: 0)!,
                 LocalizedStringPair(
                     string: "\"missing\" = \"missing\";",
-                    file: FakeFile(path: "abc", nameExcludingExtension: "xyz"),
+                    path: "abc",
                     line: 1)!,
             ],
             translationStrings: [
                 LocalizedStringPair(
                     string: "\"present\" = \"tneserp\";",
-                    file: FakeFile(path: "def", nameExcludingExtension: "uvw"),
+                    path: "def",
                     line: 0)!,
             ],
             translationLanguageName: "translation",

@@ -13,11 +13,13 @@ public func validateStringsdict(
     translation: File,
     translationLanguageName: String,
     problemReporter: ProblemReporter) {
-    guard
-        let baseStringsdict = Stringsdict(file: base, problemReporter: problemReporter),
-        let translationStringsdict = Stringsdict(file: translation, problemReporter: problemReporter) else {
+    guard let baseStringsdict = Stringsdict(path: base.path, problemReporter: problemReporter) else {
         return
     }
-    print(baseStringsdict)
-    print(translationStringsdict)
+    print("=======")
+    guard let translationStringsdict = Stringsdict(path: translation.path, problemReporter: problemReporter) else {
+        return
+    }
+//    print(baseStringsdict)
+//    print(translationStringsdict)
 }

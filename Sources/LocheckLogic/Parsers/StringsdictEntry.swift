@@ -8,7 +8,7 @@
 import Foundation
 import SwiftyXMLParser
 
-struct StringsdictEntry {
+struct StringsdictEntry: Equatable {
     let key: String
     let formatKey: String
     let variables: [String: StringsdictVariable] // derived from XML
@@ -16,9 +16,9 @@ struct StringsdictEntry {
 }
 
 extension StringsdictEntry {
-    init?(key: String, node: XML.Element, file: Filing, problemReporter: ProblemReporter) {
+    init?(key: String, node: XML.Element, path: String, problemReporter: ProblemReporter) {
         let reportError = { (message: String) -> Void in
-            problemReporter.report(.error, path: file.path, lineNumber: 0, message: message)
+            problemReporter.report(.error, path: path, lineNumber: 0, message: message)
         }
 
         var formatKey: String?
@@ -27,7 +27,7 @@ extension StringsdictEntry {
 
         for (valueKey, valueNode) in readPlistDict(
             root: node,
-            path: file.path,
+            path: path,
             problemReporter: problemReporter) {
             guard let valueText = valueNode.text else {
                 reportError("No value for key \(key).\(valueKey)")
@@ -44,7 +44,7 @@ extension StringsdictEntry {
                     .lo_matches(in: valueText)
                     .compactMap { $0.lo_getGroup(in: valueText, named: "name") }
             default:
-                guard let variable = StringsdictVariable(key: valueKey, node: valueNode, file: file, problemReporter: problemReporter) else {
+                guard let variable = StringsdictVariable(key: valueKey, node: valueNode, path: path, problemReporter: problemReporter) else {
                     return nil
                 }
                 variables[valueKey] = variable

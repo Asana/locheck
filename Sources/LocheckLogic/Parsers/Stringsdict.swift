@@ -22,21 +22,21 @@ private func parseXML(file: File, problemReporter: ProblemReporter) -> XML.Acces
     }
 }
 
-struct Stringsdict {
+struct Stringsdict: Equatable {
     let entries: [StringsdictEntry]
 
     init(entries: [StringsdictEntry]) {
         self.entries = entries
     }
 
-    init?(file: File, problemReporter: ProblemReporter) {
-        guard let xml = parseXML(file: file, problemReporter: problemReporter) else {
+    init?(path: String, problemReporter: ProblemReporter) {
+        guard let xml = parseXML(file: try! File(path: path), problemReporter: problemReporter) else {
             return nil
         }
         guard let dict = xml.all![0].childElements.first?.childElements.first else {
             problemReporter.report(
                 .error,
-                path: file.path,
+                path: path,
                 lineNumber: 0,
                 message: "Invalid schema, can't find dict")
             return nil
@@ -44,11 +44,11 @@ struct Stringsdict {
 
         var entries = [StringsdictEntry]()
 
-        for (dictKey, valueNode) in readPlistDict(root: dict, path: file.path, problemReporter: problemReporter) {
+        for (dictKey, valueNode) in readPlistDict(root: dict, path: path, problemReporter: problemReporter) {
             guard let entry = StringsdictEntry(
                 key: dictKey,
                 node: valueNode,
-                file: file,
+                path: path,
                 problemReporter: problemReporter) else {
                 return nil
             }
@@ -56,10 +56,5 @@ struct Stringsdict {
         }
 
         self.entries = entries
-
-        for entry in entries {
-            print("=====")
-            print(entry)
-        }
     }
 }
