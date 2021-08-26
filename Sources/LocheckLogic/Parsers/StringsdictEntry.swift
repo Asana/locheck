@@ -61,7 +61,7 @@ struct StringsdictEntry: Equatable {
         return getAllPermutations(of: formatKey)
     }
 
-    private func getAllPermutations(of string: LexedStringsdictString) -> [String] {
+    func getAllPermutations(of string: LexedStringsdictString) -> [String] {
         var toExpand = [PartialPermutation(string: formatKey, resolvedParts: [])]
         var results = [String]()
 

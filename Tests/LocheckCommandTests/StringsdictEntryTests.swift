@@ -61,4 +61,32 @@ class StringsdictEntryTests: XCTestCase {
                 severity: .error),
         ])
     }
+
+    func testRuleExpansion_baseCase() {
+        let entry = StringsdictEntry(
+            key: "abc",
+            formatKey: LexedStringsdictString(string: "abc"),
+            rules: [:],
+            orderedRuleKeys: ["def"])
+
+        XCTAssertEqual(entry.allPermutations, ["abc"])
+    }
+
+    func testRuleExpansion_oneLevel() {
+        let entry = StringsdictEntry(
+            key: "abc",
+            formatKey: LexedStringsdictString(string: "abc %#@def@"),
+            rules: [
+                "def": StringsdictRule(
+                    key: "def",
+                    specType: "plural",
+                    valueType: "d",
+                    alternatives: [
+                        "other": LexedStringsdictString(string: "%#@xyz@"),
+                    ]),
+            ],
+            orderedRuleKeys: ["def"])
+
+        XCTAssertEqual(entry.allPermutations, ["abc xyz"])
+    }
 }
