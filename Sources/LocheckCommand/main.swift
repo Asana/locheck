@@ -77,6 +77,8 @@ struct Stringsdict: ParsableCommand {
     }
 
     func run() {
+        print("Validating \(translation.count) lproj files against \(try! Folder(path: base.argument).name)")
+
         withProblemReporter { problemReporter in
             for file in translation {
                 let translationFile = try! File(path: file.argument)
