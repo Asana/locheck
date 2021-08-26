@@ -58,7 +58,7 @@ struct StringsdictEntry: Equatable {
     /// getter will return `["xxx", "yyy"]`. In order to be comprehensive, it needs to
     /// recursively expand every rule, including nested rules.
     var allPermutations: [String] {
-        return getAllPermutations(of: formatKey)
+        getAllPermutations(of: formatKey)
     }
 
     func getAllPermutations(of string: LexedStringsdictString) -> [String] {
@@ -88,7 +88,7 @@ struct StringsdictEntry: Equatable {
             case .replacement(let replacement):
                 var nextPermutations = [PartialPermutation]()
                 // ! is safe because we validated rules at init time
-                let rule = self.rules[replacement]!
+                let rule = rules[replacement]!
                 for alternative in rule.alternatives.values.sorted(by: { $0.string < $1.string }) {
                     for substring in getAllPermutations(of: alternative) {
                         nextPermutations.append(
