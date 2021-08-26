@@ -40,9 +40,57 @@ struct StringsdictEntry: Equatable {
         }
     }
 
-    /// Generate
+    private struct PartialPermutation {
+        let string: LexedStringsdictString
+        var resolvedParts: [String]
+
+        var nextPart: LexedStringsdictString.Part? {
+            if resolvedParts.count < string.parts.count {
+                return string.parts[resolvedParts.count]
+            } else {
+                return nil
+            }
+        }
+    }
+
+    /// Generate every possible permutation of this string. For example, if your format key is
+    /// `%#@abc@` and you have a rule `abc` with variants `one="xxx"` and `other="yyy"`, this
+    /// getter will return `["xxx", "yyy"]`. In order to be comprehensive, it needs to
+    /// recursively expand every rule, including nested rules.
     var allPermutations: [String] {
-        return []
+        var toExpand = [PartialPermutation(string: formatKey, resolvedParts: [])]
+        var results = [String]()
+
+        while !toExpand.isEmpty {
+            let p = toExpand.removeFirst()
+            let (newPartialPermutations, newResults) = expand(p)
+            toExpand.append(contentsOf: newPartialPermutations)
+            results.append(contentsOf: newResults)
+        }
+
+        return results
+    }
+
+    private func expand(_ p: PartialPermutation) -> ([PartialPermutation], [String]) {
+        switch p.nextPart {
+        case .none:
+            return ([], [p.resolvedParts.joined()])
+        case .some(let part):
+            switch part {
+            case .constant(let constant):
+                var newPermutation = p
+                newPermutation.resolvedParts.append(constant)
+                return ([newPermutation], [])
+            case .replacement(let replacement):
+                var nextPermutations = [PartialPermutation]()
+                // ! is safe because we validated rules at init time
+                let rule = self.rules[replacement]!
+                for alternative in rule.alternatives {
+                    // dang, wrong data structure
+                }
+                return (nextPermutations, [])
+            }
+        }
     }
 }
 
