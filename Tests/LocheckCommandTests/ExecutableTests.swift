@@ -87,12 +87,12 @@ class ExecutableTests: XCTestCase {
         let stderr = String(data: stderrPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
 
         XCTAssertEqual(stdout, """
-        Validating Examples/Demo_Translation.stringsdict against Examples/Demo_Base.stringsdict
         Errors found
 
         """)
 
         XCTAssertEqual(stderr, """
+        Examples/Demo_Base.stringsdict:0: error: Key '%d/%d Completed' is missing from Demo_Translation
         Examples/Demo_Base.stringsdict:0: error: Key 'missing from translation' is missing from Demo_Translation
         Examples/Demo_Translation.stringsdict:0: error: Key 'missing from base' is missing from the base localization
 
