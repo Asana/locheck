@@ -22,7 +22,6 @@ struct LocalizedString: Equatable {
         self.path = path
         self.line = line
     }
-
 }
 
 enum LocalizedStringError: Error {

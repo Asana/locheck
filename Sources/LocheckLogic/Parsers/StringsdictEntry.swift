@@ -18,6 +18,7 @@ struct StringsdictEntry: Equatable {
 extension StringsdictEntry {
     init?(key: String, node: XML.Element, path: String, problemReporter: ProblemReporter) {
         let reportError = { (message: String) -> Void in
+            // lineNumber is zero because we don't have it from SwiftyXMLParser.
             problemReporter.report(.error, path: path, lineNumber: 0, message: message)
         }
 

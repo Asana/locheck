@@ -1,5 +1,5 @@
 //
-//  stringsdict.swift
+//  validateStringsdict.swift
 //
 //
 //  Created by Steve Landey on 8/17/21.
@@ -42,6 +42,4 @@ public func validateStringsdict(
                 message: "Key '\(key)' is missing from the base localization")
         }
     }
-//    print(baseStringsdict)
-//    print(translationStringsdict)
 }

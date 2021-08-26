@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  StringsdictVariable.swift
 //  
 //
 //  Created by Steve Landey on 8/25/21.
@@ -18,6 +18,7 @@ struct StringsdictVariable: Equatable {
 extension StringsdictVariable {
     init?(key: String, node: XML.Element, path: String, problemReporter: ProblemReporter) {
         let reportError = { (message: String) -> Void in
+            // lineNumber is zero because we don't have it from SwiftyXMLParser.
             problemReporter.report(.error, path: path, lineNumber: 0, message: message)
         }
 

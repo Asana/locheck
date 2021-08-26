@@ -77,7 +77,6 @@ struct Stringsdict: ParsableCommand {
     }
 
     func run() {
-
         withProblemReporter { problemReporter in
             for file in translation {
                 let translationFile = try! File(path: file.argument)
