@@ -1,5 +1,9 @@
 # Locheck
 
+[![Swift 5.4](https://img.shields.io/badge/swift-5.4-red.svg?style=flat)](https://developer.apple.com/swift)
+[![License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://opensource.org/licenses/MIT)
+[![Build](https://github.com/stevelandeyasana/locheck/actions/workflows/tests.yml/badge.svg)](https://github.com/stevelandeyasana/locheck/actions/workflows/tests.yml)
+
 An Xcode localization file validator. Make sure your `.strings` files do not have any errors!
 
 ## What does it do?
@@ -96,3 +100,8 @@ You can then run both tools locally:
 swiftformat Sources Tests
 swiftlint lint --quiet
 ```
+
+## Further reading
+
+- [Localizing Strings that Contain Plurals](https://developer.apple.com/documentation/xcode/localizing-strings-that-contain-plurals)
+- [Stringsdict File Format](https://developer.apple.com/library/archive/documentation/MacOSX/Conceptual/BPInternational/StringsdictFileFormat/StringsdictFileFormat.html)

@@ -14,6 +14,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser", .upToNextMinor(from: "0.4.0")),
         .package(url: "https://github.com/johnsundell/Files.git", .upToNextMinor(from: "4.2.0")),
+        .package(url: "https://github.com/yahoojapan/SwiftyXMLParser", .upToNextMinor(from: "5.3.0")),
     ],
     targets: [
         .target(
@@ -27,6 +28,7 @@ let package = Package(
             name: "LocheckLogic",
             dependencies: [
                 .product(name: "Files", package: "Files"),
+                .product(name: "SwiftyXMLParser", package: "SwiftyXMLParser"),
             ]),
         .testTarget(
             name: "LocheckCommandTests",

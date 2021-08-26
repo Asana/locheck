@@ -19,7 +19,7 @@ struct Locheck: ParsableCommand {
         .lproj files, `lproj` operates on specific .lproj files, and `strings` operates on
         specific .strings files.
         """,
-        subcommands: [Discover.self, Lproj.self, Strings.self /* ,  Stringsdict.self */ ])
+        subcommands: [Discover.self, Lproj.self, Strings.self, Stringsdict.self])
 }
 
 private func withProblemReporter(_ block: (ProblemReporter) -> Void) {
@@ -52,6 +52,35 @@ struct Strings: ParsableCommand {
             for file in translation {
                 let translationFile = try! File(path: file.argument)
                 parseAndValidateStrings(
+                    base: try! File(path: base.argument),
+                    translation: translationFile,
+                    translationLanguageName: translationFile.nameExcludingExtension,
+                    problemReporter: problemReporter)
+            }
+        }
+    }
+}
+
+struct Stringsdict: ParsableCommand {
+    static let configuration = CommandConfiguration(
+        abstract: "Directly compare .stringsdict files")
+
+    @Argument(help: "An authoritative .stringsdict file")
+    private var base: FileArg
+
+    @Argument(help: "Non-authoritative .stringsdict files that need to be validated")
+    private var translation: [FileArg]
+
+    func validate() throws {
+        try base.validate(ext: "stringsdict")
+        try translation.forEach { try $0.validate(ext: "stringsdict") }
+    }
+
+    func run() {
+        withProblemReporter { problemReporter in
+            for file in translation {
+                let translationFile = try! File(path: file.argument)
+                validateStringsdict(
                     base: try! File(path: base.argument),
                     translation: translationFile,
                     translationLanguageName: translationFile.nameExcludingExtension,

@@ -32,7 +32,7 @@ class ExecutableTests: XCTestCase {
         super.tearDown()
     }
 
-    func testExampleOutput() throws {
+    func testExampleOutput_strings() throws {
         let binary = productsDirectory.appendingPathComponent("locheck")
 
         let process = Process()
@@ -64,6 +64,37 @@ class ExecutableTests: XCTestCase {
         Examples/Demo_Translation.strings:5: error: Specifier for argument 2 does not match (should be d, is @)
         Examples/Demo_Translation.strings:5: error: Specifier for argument 1 does not match (should be @, is d)
         Examples/Demo_Translation.strings:7: warning: Does not include arguments 1
+
+        """)
+    }
+
+    func testExampleOutput_stringsdict() throws {
+        let binary = productsDirectory.appendingPathComponent("locheck")
+
+        let process = Process()
+        process.executableURL = binary
+        process.arguments = ["stringsdict", "Examples/Demo_Base.stringsdict", "Examples/Demo_Translation.stringsdict"]
+
+        let stdoutPipe = Pipe()
+        let stderrPipe = Pipe()
+        process.standardOutput = stdoutPipe
+        process.standardError = stderrPipe
+
+        try process.run()
+        process.waitUntilExit()
+
+        let stdout = String(data: stdoutPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
+        let stderr = String(data: stderrPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
+
+        XCTAssertEqual(stdout, """
+        Errors found
+
+        """)
+
+        XCTAssertEqual(stderr, """
+        Examples/Demo_Base.stringsdict:0: error: Key '%d/%d Completed' is missing from Demo_Translation
+        Examples/Demo_Base.stringsdict:0: error: Key 'missing from translation' is missing from Demo_Translation
+        Examples/Demo_Translation.stringsdict:0: error: Key 'missing from base' is missing from the base localization
 
         """)
     }

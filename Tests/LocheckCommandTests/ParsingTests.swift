@@ -5,25 +5,21 @@
 //  Created by Steve Landey on 8/18/21.
 //
 
+import Files
 @testable import LocheckLogic
 import XCTest
-
-private struct FakeFile: Filing {
-    let path: String
-    let nameExcludingExtension: String
-}
 
 class ParsingTests: XCTestCase {
     func testArgumentParsing() {
         let problemReporter = ProblemReporter(log: false)
-        let string = LocalizedString(
+        let string = LocalizedStringPair(
             string: """
             "%1$@ %2$d %@" = "%1$@ %2$d %@";
             """,
-            file: FakeFile(path: "abc", nameExcludingExtension: "def"),
+            path: "abc",
             line: 0)!
         XCTAssertEqual(
-            string.baseArguments,
+            string.base.arguments,
             [
                 FormatArgument(specifier: "@", position: 1),
                 FormatArgument(specifier: "d", position: 2),
@@ -34,34 +30,34 @@ class ParsingTests: XCTestCase {
 
     func testOmitArgument() {
         let problemReporter = ProblemReporter(log: false)
-        let string = LocalizedString(
+        let string = LocalizedStringPair(
             string: """
             "A sync error occurred while creating column “%@” in project “%@”." = "Er is een synchronisatiefout opgetreden tijdens het maken van kolom “%@” in een project.";
             """,
-            file: FakeFile(path: "abc", nameExcludingExtension: "def"),
+            path: "abc",
             line: 0)!
         XCTAssertEqual(
-            string.baseArguments,
+            string.base.arguments,
             [FormatArgument(specifier: "@", position: 1), FormatArgument(specifier: "@", position: 2)])
         XCTAssertEqual(
-            string.translationArguments,
+            string.translation.arguments,
             [FormatArgument(specifier: "@", position: 1)])
         XCTAssertTrue(problemReporter.problems.isEmpty)
     }
 
     func testMixedImplicitAndExplicitOrder() {
         let problemReporter = ProblemReporter(log: false)
-        let string = LocalizedString(
+        let string = LocalizedStringPair(
             string: """
             "A sync error occurred while processing %@'s request to join “%@”." = "“%@” 님의 “%2$@” 참가 요청을 처리하는 중 동기화 오류가 발생했습니다.";
             """,
-            file: FakeFile(path: "abc", nameExcludingExtension: "def"),
+            path: "abc",
             line: 0)!
         XCTAssertEqual(
-            string.baseArguments,
+            string.base.arguments,
             [FormatArgument(specifier: "@", position: 1), FormatArgument(specifier: "@", position: 2)])
         XCTAssertEqual(
-            string.translationArguments,
+            string.translation.arguments,
             [FormatArgument(specifier: "@", position: 1), FormatArgument(specifier: "@", position: 2)])
         XCTAssertTrue(problemReporter.problems.isEmpty)
     }

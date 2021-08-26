@@ -1,5 +1,5 @@
 //
-//  lproj.swift
+//  validateLproj.swift
 //
 //
 //  Created by Steve Landey on 8/17/21.
@@ -28,16 +28,21 @@ public func validateLproj(base: LprojFiles, translation: LprojFiles, problemRepo
             problemReporter: problemReporter)
     }
 
-    for stringsdictFile in base.stringsdict {
-        guard let translationStringsdictFile = translation.stringsdict.first(where: { $0.name == stringsdictFile.name })
+    for baseStringsdictFile in base.stringsdict {
+        guard let translationStringsdictFile = translation.stringsdict
+            .first(where: { $0.name == baseStringsdictFile.name })
         else {
             problemReporter.report(
                 .error,
-                path: stringsdictFile.name,
+                path: baseStringsdictFile.name,
                 lineNumber: 0,
-                message: "\(stringsdictFile.name) missing from translation \(translation.name)")
+                message: "\(baseStringsdictFile.name) missing from translation \(translation.name)")
             continue
         }
-        validateStringsdict(base: stringsdictFile, translation: translationStringsdictFile)
+        validateStringsdict(
+            base: baseStringsdictFile,
+            translation: translationStringsdictFile,
+            translationLanguageName: translation.name,
+            problemReporter: problemReporter)
     }
 }
