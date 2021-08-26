@@ -96,3 +96,8 @@ You can then run both tools locally:
 swiftformat Sources Tests
 swiftlint lint --quiet
 ```
+
+## Further reading
+
+- [Localizing Strings that Contain Plurals](https://developer.apple.com/documentation/xcode/localizing-strings-that-contain-plurals)
+- [Stringsdict File Format](https://developer.apple.com/library/archive/documentation/MacOSX/Conceptual/BPInternational/StringsdictFileFormat/StringsdictFileFormat.html)
