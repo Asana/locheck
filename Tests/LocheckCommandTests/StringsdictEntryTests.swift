@@ -82,7 +82,7 @@ class StringsdictEntryTests: XCTestCase {
                     specType: "plural",
                     valueType: "d",
                     alternatives: [
-                        "other": LexedStringsdictString(string: "%#@xyz@"),
+                        "other": LexedStringsdictString(string: "xyz"),
                     ]),
             ],
             orderedRuleKeys: ["def"])

@@ -62,7 +62,7 @@ struct StringsdictEntry: Equatable {
     }
 
     func getAllPermutations(of string: LexedStringsdictString) -> [String] {
-        var toExpand = [PartialPermutation(string: formatKey, resolvedParts: [])]
+        var toExpand = [PartialPermutation(string: string, resolvedParts: [])]
         var results = [String]()
 
         while !toExpand.isEmpty {
