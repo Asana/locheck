@@ -72,7 +72,7 @@ class StringsdictEntryTests: XCTestCase {
         XCTAssertEqual(entry.allPermutations, ["abc"])
     }
 
-    func testRuleExpansion_oneLevel() {
+    func testRuleExpansion_oneLevel_oneAlternative() {
         let entry = StringsdictEntry(
             key: "abc",
             formatKey: LexedStringsdictString(string: "abc %#@def@"),
@@ -88,5 +88,51 @@ class StringsdictEntryTests: XCTestCase {
             orderedRuleKeys: ["def"])
 
         XCTAssertEqual(entry.allPermutations, ["abc xyz"])
+    }
+
+    func testRuleExpansion_oneLevel_twoAlternatives() {
+        let entry = StringsdictEntry(
+            key: "abc",
+            formatKey: LexedStringsdictString(string: "abc %#@def@"),
+            rules: [
+                "def": StringsdictRule(
+                    key: "def",
+                    specType: "plural",
+                    valueType: "d",
+                    alternatives: [
+                        "one": LexedStringsdictString(string: "x"),
+                        "other": LexedStringsdictString(string: "xyz"),
+                    ]),
+            ],
+            orderedRuleKeys: ["def"])
+
+        XCTAssertEqual(entry.allPermutations, ["abc x", "abc xyz"])
+    }
+
+    func testRuleExpansion_twoLevels_fourAlternatives() {
+        let entry = StringsdictEntry(
+            key: "abc",
+            formatKey: LexedStringsdictString(string: "%#@a@ %#@n@"),
+            rules: [
+                "a": StringsdictRule(
+                    key: "a",
+                    specType: "plural",
+                    valueType: "d",
+                    alternatives: [
+                        "one": LexedStringsdictString(string: "b"),
+                        "other": LexedStringsdictString(string: "c"),
+                    ]),
+                "n": StringsdictRule(
+                    key: "a",
+                    specType: "plural",
+                    valueType: "d",
+                    alternatives: [
+                        "one": LexedStringsdictString(string: "o"),
+                        "other": LexedStringsdictString(string: "p"),
+                    ]),
+            ],
+            orderedRuleKeys: ["def"])
+
+        XCTAssertEqual(entry.allPermutations, ["b o", "b p", "c o", "c p"])
     }
 }
