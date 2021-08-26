@@ -2,7 +2,7 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>%@ and %d other(s) showed their appreciation. - 2</key>
+	<key>missing from base</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@num_others@</string>
@@ -20,7 +20,7 @@
 			<string>%1$@ showed their appreciation.</string>
 		</dict>
 	</dict>
-	<key>missing from translation</key>
+	<key>%@ and %d other(s) showed their appreciation. - 2</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@num_others@</string>
