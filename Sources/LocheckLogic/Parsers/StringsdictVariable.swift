@@ -21,26 +21,26 @@ extension StringsdictVariable {
             problemReporter.report(.error, path: path, lineNumber: 0, message: message)
         }
 
-        var specType: String?
-        var valueType: String?
+        var maybeSpecType: String?
+        var maybeValueType: String?
         var values = [String: LocalizedString]()
 
         for (valueKey, valueNode) in readPlistDict(root: node, path: path, problemReporter: problemReporter) {
             switch valueKey {
             case "NSStringFormatSpecTypeKey":
-                specType = valueNode.text
+                maybeSpecType = valueNode.text
             case "NSStringFormatValueTypeKey":
-                valueType = valueNode.text
+                maybeValueType = valueNode.text
             default:
                 values[valueKey] = LocalizedString(string: valueNode.text ?? "", path: path, line: 0)
             }
         }
 
-        if specType == nil {
+        if maybeSpecType == nil {
             reportError("Missing NSStringFormatSpecTypeKey in \(key)")
         }
 
-        if valueType == nil {
+        if maybeValueType == nil {
             reportError("Missing NSStringFormatValueTypeKey in \(key)")
         }
 
@@ -48,7 +48,7 @@ extension StringsdictVariable {
             reportError("No variables are defined in \(key)")
         }
 
-        guard let specType = specType, let valueType = valueType, !values.isEmpty else {
+        guard let specType = maybeSpecType, let valueType = maybeValueType, !values.isEmpty else {
             return nil
         }
 

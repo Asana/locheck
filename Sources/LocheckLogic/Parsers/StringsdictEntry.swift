@@ -21,9 +21,9 @@ extension StringsdictEntry {
             problemReporter.report(.error, path: path, lineNumber: 0, message: message)
         }
 
-        var formatKey: String?
+        var maybeFormatKey: String?
         var variables = [String: StringsdictVariable]()
-        var orderedVariableKeys: [String]?
+        var maybeOrderedVariableKeys: [String]?
 
         for (valueKey, valueNode) in readPlistDict(
             root: node,
@@ -39,8 +39,8 @@ extension StringsdictEntry {
                     reportError("Unexpected value for key \(valueKey): \(valueNode.name)")
                     return nil
                 }
-                formatKey = valueText
-                orderedVariableKeys = Expressions.stringsdictArgumentRegex
+                maybeFormatKey = valueText
+                maybeOrderedVariableKeys = Expressions.stringsdictArgumentRegex
                     .lo_matches(in: valueText)
                     .compactMap { $0.lo_getGroup(in: valueText, named: "name") }
             default:
@@ -51,19 +51,19 @@ extension StringsdictEntry {
             }
         }
 
-        if formatKey == nil {
+        if maybeFormatKey == nil {
             reportError("\(key) contains no value for NSStringLocalizedFormatKey")
         }
-        if orderedVariableKeys == nil {
-            reportError("\(key) contains no variables in its format key: \(formatKey ?? "<unknown>")")
+        if maybeOrderedVariableKeys == nil {
+            reportError("\(key) contains no variables in its format key: \(maybeFormatKey ?? "<unknown>")")
         }
         var hasAllVariables = true
-        for variableKey in (orderedVariableKeys ?? []) where variables[variableKey] == nil {
+        for variableKey in (maybeOrderedVariableKeys ?? []) where variables[variableKey] == nil {
             reportError("Variable \(variableKey) is not defined in \(key)")
             hasAllVariables = false
         }
 
-        guard let formatKey = formatKey, let orderedVariableKeys = orderedVariableKeys, hasAllVariables else {
+        guard let formatKey = maybeFormatKey, let orderedVariableKeys = maybeOrderedVariableKeys, hasAllVariables else {
             return nil
         }
 
