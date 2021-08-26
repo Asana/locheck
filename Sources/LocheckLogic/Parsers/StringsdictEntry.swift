@@ -1,6 +1,6 @@
 //
 //  StringsdictEntry.swift
-//  
+//
 //
 //  Created by Steve Landey on 8/25/21.
 //
@@ -32,12 +32,17 @@ struct StringsdictEntry: Equatable {
             }
         }
 
-        checkRule("the format key", self.formatKey.replacements)
-        for rule in rules.values {
+        checkRule("the format key", formatKey.replacements)
+        for rule in rules.values.sorted(by: { $0.key < $1.key }) {
             for (alternativeKey, alternative) in rule.alternatives {
                 checkRule("'\(rule.key)'.\(alternativeKey)", alternative.replacements)
             }
         }
+    }
+
+    /// Generate
+    var allPermutations: [String] {
+        return []
     }
 }
 
@@ -71,7 +76,11 @@ extension StringsdictEntry {
                     .lo_matches(in: valueText)
                     .compactMap { $0.lo_getGroup(in: valueText, named: "name") }
             default:
-                guard let variable = StringsdictRule(key: valueKey, node: valueNode, path: path, problemReporter: problemReporter) else {
+                guard let variable = StringsdictRule(
+                    key: valueKey,
+                    node: valueNode,
+                    path: path,
+                    problemReporter: problemReporter) else {
                     return nil
                 }
                 rules[valueKey] = variable
@@ -85,7 +94,7 @@ extension StringsdictEntry {
             reportError("\(key) contains no variables in its format key: \(maybeFormatKey ?? "<unknown>")")
         }
         var hasAllVariables = true
-        for variableKey in (maybeOrderedRuleKeys ?? []) where rules[variableKey] == nil {
+        for variableKey in maybeOrderedRuleKeys ?? [] where rules[variableKey] == nil {
             reportError("Rule \(variableKey) is not defined in \(key)")
             hasAllVariables = false
         }

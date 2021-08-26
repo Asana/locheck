@@ -1,6 +1,6 @@
 //
-//  File.swift
-//  
+//  LexedStringsdictString.swift
+//
 //
 //  Created by Steve Landey on 8/26/21.
 //
@@ -44,7 +44,7 @@ extension LexedStringsdictString {
         for match in matches where match.range.location != NSNotFound {
             guard let range = Range(match.range, in: string) else { continue }
             if lastMatchEnd < range.lowerBound {
-                parts.append(.constant(String(string[lastMatchEnd..<range.lowerBound])))
+                parts.append(.constant(String(string[lastMatchEnd ..< range.lowerBound])))
             }
             lastMatchEnd = range.upperBound
             guard let name = match.lo_getGroup(in: string, named: "name") else {
@@ -54,7 +54,7 @@ extension LexedStringsdictString {
         }
 
         if lastMatchEnd < string.endIndex {
-            parts.append(.constant(String(string[lastMatchEnd..<string.endIndex])))
+            parts.append(.constant(String(string[lastMatchEnd ..< string.endIndex])))
         }
 
         self.parts = parts

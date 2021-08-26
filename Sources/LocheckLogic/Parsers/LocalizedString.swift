@@ -1,6 +1,6 @@
 //
 //  LocalizedString.swift
-//  
+//
 //
 //  Created by Steve Landey on 8/25/21.
 //
@@ -18,7 +18,7 @@ struct LocalizedString: Equatable {
 
     init(string: String, path: String, line: Int?) {
         self.string = string
-        self.arguments = parseArguments(string: string)
+        arguments = parseArguments(string: string)
         self.path = path
         self.line = line
     }

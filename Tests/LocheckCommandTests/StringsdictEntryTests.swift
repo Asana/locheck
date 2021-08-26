@@ -1,6 +1,6 @@
 //
 //  StringsdictEntryTests.swift
-//  
+//
 //
 //  Created by Steve Landey on 8/26/21.
 //
@@ -20,8 +20,8 @@ class StringsdictEntryTests: XCTestCase {
                     specType: "plural",
                     valueType: "d",
                     alternatives: [
-                        "other": LexedStringsdictString(string: "DEF")
-                    ])
+                        "other": LexedStringsdictString(string: "DEF"),
+                    ]),
             ],
             orderedRuleKeys: ["def"])
 
@@ -32,7 +32,7 @@ class StringsdictEntryTests: XCTestCase {
                 path: "en.stringsdict",
                 lineNumber: 0,
                 message: "Variable xyz does not exist in 'abc' but is used in the format key",
-                severity: .error)
+                severity: .error),
         ])
     }
 
@@ -46,8 +46,8 @@ class StringsdictEntryTests: XCTestCase {
                     specType: "plural",
                     valueType: "d",
                     alternatives: [
-                        "other": LexedStringsdictString(string: "%#@xyz@")
-                    ])
+                        "other": LexedStringsdictString(string: "%#@xyz@"),
+                    ]),
             ],
             orderedRuleKeys: ["def"])
 
@@ -58,7 +58,7 @@ class StringsdictEntryTests: XCTestCase {
                 path: "en.stringsdict",
                 lineNumber: 0,
                 message: "Variable xyz does not exist in 'abc' but is used in 'def'.other",
-                severity: .error)
+                severity: .error),
         ])
     }
 }
