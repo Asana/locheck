@@ -49,14 +49,6 @@ extension StringsdictRule {
             reportError("No variables are defined in \(key)")
         }
 
-        for (alternativeKey, alternative) in alternatives {
-            for item in alternative.replacements {
-                if !alternatives.keys.contains(item) {
-                    reportError("Variable \(item) does not exist in '\(key)' but is used in '\(alternativeKey)'")
-                }
-            }
-        }
-
         guard let specType = maybeSpecType, let valueType = maybeValueType, !alternatives.isEmpty else {
             return nil
         }

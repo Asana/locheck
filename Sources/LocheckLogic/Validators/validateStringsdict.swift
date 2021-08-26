@@ -23,7 +23,7 @@ public func validateStringsdict(
     let baseKeys = Set(base.entries.map(\.key))
     let translationKeys = Set(translation.entries.map(\.key))
 
-    for key in baseKeys {
+    for key in baseKeys.sorted() {
         if !translationKeys.contains(key) {
             problemReporter.report(
                 .error,
@@ -33,7 +33,7 @@ public func validateStringsdict(
         }
     }
 
-    for key in translationKeys {
+    for key in translationKeys.sorted() {
         if !baseKeys.contains(key) {
             problemReporter.report(
                 .error,

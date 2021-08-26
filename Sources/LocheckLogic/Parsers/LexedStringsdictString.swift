@@ -16,15 +16,6 @@ struct LexedStringsdictString: Equatable {
     let string: String
     let parts: [Part]
 
-    var hasReplacement: Bool {
-        parts.contains(where: {
-            switch $0 {
-            case .constant: return false
-            case .replacement: return true
-            }
-        })
-    }
-
     var replacements: [String] {
         parts.compactMap {
             switch $0 {

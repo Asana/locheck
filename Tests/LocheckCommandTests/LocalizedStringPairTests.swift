@@ -1,5 +1,5 @@
 //
-//  ParsingTests.swift
+//  LocalizedStringPairTests.swift
 //
 //
 //  Created by Steve Landey on 8/18/21.
@@ -9,7 +9,7 @@ import Files
 @testable import LocheckLogic
 import XCTest
 
-class ParsingTests: XCTestCase {
+class LocalizedStringPairTests: XCTestCase {
     func testArgumentParsing() {
         let problemReporter = ProblemReporter(log: false)
         let string = LocalizedStringPair(

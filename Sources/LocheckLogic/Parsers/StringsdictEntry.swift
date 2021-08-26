@@ -10,12 +10,34 @@ import SwiftyXMLParser
 
 struct StringsdictEntry: Equatable {
     let key: String
-    let formatKey: String
+    let formatKey: LexedStringsdictString
     let rules: [String: StringsdictRule] // derived from XML
     let orderedRuleKeys: [String] // derived from formatKey
 
     var orderedRules: [StringsdictRule] {
         orderedRuleKeys.map { rules[$0]! }
+    }
+
+    func validateRuleVariables(path: String, problemReporter: ProblemReporter) {
+        let checkRule = { (ruleKey: String, replacements: [String]) -> Void in
+            for replacement in replacements {
+                if rules[replacement] == nil {
+                    // lineNumber is zero because we don't have it from SwiftyXMLParser.
+                    problemReporter.report(
+                        .error,
+                        path: path,
+                        lineNumber: 0,
+                        message: "Variable \(replacement) does not exist in '\(key)' but is used in \(ruleKey)")
+                }
+            }
+        }
+
+        checkRule("the format key", self.formatKey.replacements)
+        for rule in rules.values {
+            for (alternativeKey, alternative) in rule.alternatives {
+                checkRule("'\(rule.key)'.\(alternativeKey)", alternative.replacements)
+            }
+        }
     }
 }
 
@@ -64,7 +86,7 @@ extension StringsdictEntry {
         }
         var hasAllVariables = true
         for variableKey in (maybeOrderedRuleKeys ?? []) where rules[variableKey] == nil {
-            reportError("Variable \(variableKey) is not defined in \(key)")
+            reportError("Rule \(variableKey) is not defined in \(key)")
             hasAllVariables = false
         }
 
@@ -73,8 +95,10 @@ extension StringsdictEntry {
         }
 
         self.key = key
-        self.formatKey = formatKey
+        self.formatKey = LexedStringsdictString(string: formatKey)
         self.orderedRuleKeys = orderedRuleKeys
         self.rules = rules
+
+        validateRuleVariables(path: path, problemReporter: problemReporter)
     }
 }
