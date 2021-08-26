@@ -13,6 +13,7 @@ struct LexedStringsdictString: Equatable {
         case replacement(String)
     }
 
+    let string: String
     let parts: [Part]
 
     var hasReplacement: Bool {
@@ -23,10 +24,21 @@ struct LexedStringsdictString: Equatable {
             }
         })
     }
+
+    var replacements: [String] {
+        parts.compactMap {
+            switch $0 {
+            case .constant: return nil
+            case .replacement(let name): return name
+            }
+        }
+    }
 }
 
 extension LexedStringsdictString {
     init(string: String) {
+        self.string = string
+
         let matches = Expressions.stringsdictArgumentRegex.lo_matches(in: string)
 
         guard !matches.isEmpty else {

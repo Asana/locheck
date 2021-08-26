@@ -11,8 +11,12 @@ import SwiftyXMLParser
 struct StringsdictEntry: Equatable {
     let key: String
     let formatKey: String
-    let variables: [String: StringsdictVariable] // derived from XML
-    let orderedVariableKeys: [String] // derived from formatKey
+    let rules: [String: StringsdictRule] // derived from XML
+    let orderedRuleKeys: [String] // derived from formatKey
+
+    var orderedRules: [StringsdictRule] {
+        orderedRuleKeys.map { rules[$0]! }
+    }
 }
 
 extension StringsdictEntry {
@@ -23,8 +27,8 @@ extension StringsdictEntry {
         }
 
         var maybeFormatKey: String?
-        var variables = [String: StringsdictVariable]()
-        var maybeOrderedVariableKeys: [String]?
+        var rules = [String: StringsdictRule]()
+        var maybeOrderedRuleKeys: [String]?
 
         for (valueKey, valueNode) in readPlistDict(
             root: node,
@@ -41,36 +45,36 @@ extension StringsdictEntry {
                     return nil
                 }
                 maybeFormatKey = valueText
-                maybeOrderedVariableKeys = Expressions.stringsdictArgumentRegex
+                maybeOrderedRuleKeys = Expressions.stringsdictArgumentRegex
                     .lo_matches(in: valueText)
                     .compactMap { $0.lo_getGroup(in: valueText, named: "name") }
             default:
-                guard let variable = StringsdictVariable(key: valueKey, node: valueNode, path: path, problemReporter: problemReporter) else {
+                guard let variable = StringsdictRule(key: valueKey, node: valueNode, path: path, problemReporter: problemReporter) else {
                     return nil
                 }
-                variables[valueKey] = variable
+                rules[valueKey] = variable
             }
         }
 
         if maybeFormatKey == nil {
             reportError("\(key) contains no value for NSStringLocalizedFormatKey")
         }
-        if maybeOrderedVariableKeys == nil {
+        if maybeOrderedRuleKeys == nil {
             reportError("\(key) contains no variables in its format key: \(maybeFormatKey ?? "<unknown>")")
         }
         var hasAllVariables = true
-        for variableKey in (maybeOrderedVariableKeys ?? []) where variables[variableKey] == nil {
+        for variableKey in (maybeOrderedRuleKeys ?? []) where rules[variableKey] == nil {
             reportError("Variable \(variableKey) is not defined in \(key)")
             hasAllVariables = false
         }
 
-        guard let formatKey = maybeFormatKey, let orderedVariableKeys = maybeOrderedVariableKeys, hasAllVariables else {
+        guard let formatKey = maybeFormatKey, let orderedRuleKeys = maybeOrderedRuleKeys, hasAllVariables else {
             return nil
         }
 
         self.key = key
         self.formatKey = formatKey
-        self.orderedVariableKeys = orderedVariableKeys
-        self.variables = variables
+        self.orderedRuleKeys = orderedRuleKeys
+        self.rules = rules
     }
 }
