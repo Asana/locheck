@@ -211,6 +211,42 @@ class StringsdictEntryTests: XCTestCase {
     }
 
     func testGetCanonicalArgumentList_logsErrorForUnusedArgument() {
-
+        let entry = StringsdictEntry(
+            key: "abc",
+            formatKey: LexedStringsdictString(string: "%1$d %#@level1@"),
+            rules: [
+                "level1": StringsdictRule(
+                    key: "level1",
+                    specType: "plural",
+                    valueType: "d",
+                    alternatives: [
+                        "one": LexedStringsdictString(string: "%#@level2@"), // $2 not present
+                        "other": LexedStringsdictString(string: "other %#@level2@"), // $2 not present
+                    ]),
+                "level2": StringsdictRule(
+                    key: "level2",
+                    specType: "plural",
+                    valueType: "d",
+                    alternatives: [
+                        "one": LexedStringsdictString(string: "%3$d"),
+                        "other": LexedStringsdictString(string: "%3$d other"),
+                    ]),
+            ])
+        let problemReporter = ProblemReporter(log: false)
+        let argList = entry.getCanonicalArgumentList(path: "abc", problemReporter: problemReporter)
+        XCTAssertEqual(problemReporter.problems, [
+            ProblemReporter.Problem(
+                path: "abc",
+                lineNumber: 0,
+                message: "No permutation of 'abc' use argument(s) at position 2",
+                severity: .warning),
+        ])
+        XCTAssertEqual(
+            argList,
+            [
+                FormatArgument(specifier: "d", position: 1),
+                nil,
+                FormatArgument(specifier: "d", position: 3),
+            ])
     }
 }

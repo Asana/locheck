@@ -37,7 +37,7 @@ struct StringsdictEntry: Equatable {
         }
     }
 
-    func getCanonicalArgumentList(path: String, problemReporter: ProblemReporter) -> [FormatArgument] {
+    func getCanonicalArgumentList(path: String, problemReporter: ProblemReporter) -> [FormatArgument?] {
         // One nice improvement here would be to ensure that each argument is only used in one variable,
         // but that would require us to remember which span of each string maps back to which variable,
         // which is a lot of extra bookkeeping to do at this stage of the project.
@@ -71,15 +71,15 @@ struct StringsdictEntry: Equatable {
 
         let unusedArguments = arguments.enumerated().filter { $0.1 == nil }.map { $0.0 }
         if !unusedArguments.isEmpty {
-            let joinedString = unusedArguments.map { String($0) }.joined(separator: ", ")
+            let joinedString = unusedArguments.map { String($0 + 1) }.joined(separator: ", ")
             problemReporter.report(
                 .warning,
                 path: path,
                 lineNumber: 0,
-                message: "No permutation of '\(key)' uses argument(s) at position \(joinedString)")
+                message: "No permutation of '\(key)' use argument(s) at position \(joinedString)")
         }
 
-        return arguments.compactMap { $0 }
+        return arguments
     }
 
     /**
