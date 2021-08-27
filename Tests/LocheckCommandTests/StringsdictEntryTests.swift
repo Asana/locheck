@@ -135,4 +135,16 @@ class StringsdictEntryTests: XCTestCase {
 
         XCTAssertEqual(entry.allPermutations, ["b o", "b p", "c o", "c p"])
     }
+
+    func testGetCanonicalArgumentList_logsNoErrorsForValidEntry() {
+
+    }
+
+    func testGetCanonicalArgumentList_logsErrorForSpecifierMismatch() {
+
+    }
+
+    func testGetCanonicalArgumentList_logsErrorForUnusedArgument() {
+
+    }
 }

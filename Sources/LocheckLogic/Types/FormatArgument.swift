@@ -15,7 +15,7 @@ struct FormatArgument: Equatable {
     let position: Int
 }
 
-private extension FormatArgument {
+extension FormatArgument {
     /// Accept position as a string.
     init(specifier: String, positionString: String) {
         self.specifier = specifier
