@@ -37,6 +37,20 @@ struct StringsdictEntry: Equatable {
         }
     }
 
+    /**
+     Generates all permutations of this entry, resulting in a bunch of related format strings:
+
+     ```
+     "One apple and %2$d oranges"
+     "%d apples and %2$d oranges"
+     "One apple and one orange"
+     "%d apples and one orange"
+     ```
+
+     It then builds a "canonical" list of `FormatArgument` values representing the "correct"
+     specifier for each argument position, and logs problems if there are any mismatches or
+     missing values.
+     */
     func getCanonicalArgumentList(path: String, problemReporter: ProblemReporter) -> [FormatArgument?] {
         // One nice improvement here would be to ensure that each argument is only used in one variable,
         // but that would require us to remember which span of each string maps back to which variable,
