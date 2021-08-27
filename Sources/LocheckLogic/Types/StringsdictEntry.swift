@@ -14,11 +14,6 @@ struct StringsdictEntry: Equatable {
     let key: String
     let formatKey: LexedStringsdictString
     let rules: [String: StringsdictRule] // derived from XML
-    let orderedRuleKeys: [String] // derived from formatKey
-
-    var orderedRules: [StringsdictRule] {
-        orderedRuleKeys.map { rules[$0]! }
-    }
 
     func validateRuleVariables(path: String, problemReporter: ProblemReporter) {
         let checkRule = { (ruleKey: String, variables: [String]) -> Void in
@@ -61,14 +56,15 @@ struct StringsdictEntry: Equatable {
 
         for string in permutations {
             for arg in string.arguments {
-                if let oldArg = arguments[arg.position] {
+                // Remember arg positions are 1-indexed!
+                if let oldArg = arguments[arg.position - 1] {
                     if arg.specifier != oldArg.specifier {
-                        let originalString = originalStringForArgument[arg.position]
+                        let originalString = originalStringForArgument[oldArg.position]
                         reportError("Two permutations of '\(key)' contain different format specifiers at position \(arg.position). '\(originalString)' uses '\(oldArg.specifier)', and '\(string.string)' uses '\(arg.specifier)'.")
                     }
                 } else {
-                    originalStringForArgument[arg.position] = string.string
-                    arguments[arg.position] = arg
+                    originalStringForArgument[arg.position - 1] = string.string
+                    arguments[arg.position - 1] = arg
                 }
             }
         }
@@ -262,13 +258,12 @@ extension StringsdictEntry {
             hasAllVariables = false
         }
 
-        guard let formatKey = maybeFormatKey, let orderedRuleKeys = maybeOrderedRuleKeys, hasAllVariables else {
+        guard let formatKey = maybeFormatKey, hasAllVariables else {
             return nil
         }
 
         self.key = key
         self.formatKey = LexedStringsdictString(string: formatKey)
-        self.orderedRuleKeys = orderedRuleKeys
         self.rules = rules
 
         validateRuleVariables(path: path, problemReporter: problemReporter)
