@@ -1,6 +1,6 @@
 //
 //  FormatArgument.swift
-//  
+//
 //
 //  Created by Steve Landey on 8/27/21.
 //
@@ -13,12 +13,14 @@ import Foundation
 struct FormatArgument: Equatable {
     let specifier: String
     let position: Int
+    let isPositionExplicit: Bool
 }
 
 extension FormatArgument {
     /// Accept position as a string.
-    init(specifier: String, positionString: String) {
+    init(specifier: String, positionString: String, isPositionExplicit: Bool) {
         self.specifier = specifier
+        self.isPositionExplicit = isPositionExplicit
         // ! is safe here because the regular expression only matches digits.
         position = Int(positionString)!
     }

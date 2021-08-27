@@ -38,11 +38,13 @@ private func parseArguments(string: String) -> [FormatArgument] {
             if let positionString = match.lo_getGroup(in: string, named: "position") {
                 return FormatArgument(
                     specifier: specifier,
-                    positionString: positionString)
+                    positionString: positionString,
+                    isPositionExplicit: true)
             } else {
                 return FormatArgument(
                     specifier: specifier,
-                    position: i + 1)
+                    position: i + 1,
+                    isPositionExplicit: false)
             }
         }
 }

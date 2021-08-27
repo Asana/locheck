@@ -55,26 +55,35 @@ struct StringsdictEntry: Equatable {
         // One nice improvement here would be to ensure that each argument is only used in one variable,
         // but that would require us to remember which span of each string maps back to which variable,
         // which is a lot of extra bookkeeping to do at this stage of the project.
-        //
-        // One thing we could do is require that all arguments have explicit positions in stringsdict files.
 
         let reportError = { (message: String) -> Void in
             // lineNumber is zero because we don't have it from SwiftyXMLParser.
             problemReporter.report(.error, path: path, lineNumber: 0, message: message)
         }
 
+        let reportWarning = { (message: String) -> Void in
+            // lineNumber is zero because we don't have it from SwiftyXMLParser.
+            problemReporter.report(.warning, path: path, lineNumber: 0, message: message)
+        }
+
         let permutations = allPermutations.map { LocalizedString(string: $0, path: path, line: 0) }
-        let numArgs = permutations.flatMap { $0.arguments }.reduce(0, { max($0, $1.position) })
-        var arguments = Array<FormatArgument?>((0..<numArgs).map { _ in nil })
-        var originalStringForArgument = Array<String>((0..<numArgs).map { _ in "" })
+        let numArgs = permutations.flatMap(\.arguments).reduce(0) { max($0, $1.position) }
+        var arguments = [FormatArgument?]((0 ..< numArgs).map { _ in nil })
+        var originalStringForArgument = [String]((0 ..< numArgs).map { _ in "" })
 
         for string in permutations {
             for arg in string.arguments {
+                if !arg.isPositionExplicit {
+                    reportWarning(
+                        "Argument \(arg.position) in permutation '\(string.string) of '\(key)' has an implicit position. Use an explicit position for safety.")
+                }
+
                 // Remember arg positions are 1-indexed!
                 if let oldArg = arguments[arg.position - 1] {
                     if arg.specifier != oldArg.specifier {
                         let originalString = originalStringForArgument[oldArg.position]
-                        reportError("Two permutations of '\(key)' contain different format specifiers at position \(arg.position). '\(originalString)' uses '\(oldArg.specifier)', and '\(string.string)' uses '\(arg.specifier)'.")
+                        reportError(
+                            "Two permutations of '\(key)' contain different format specifiers at position \(arg.position). '\(originalString)' uses '\(oldArg.specifier)', and '\(string.string)' uses '\(arg.specifier)'.")
                     }
                 } else {
                     originalStringForArgument[arg.position - 1] = string.string
@@ -83,14 +92,10 @@ struct StringsdictEntry: Equatable {
             }
         }
 
-        let unusedArguments = arguments.enumerated().filter { $0.1 == nil }.map { $0.0 }
+        let unusedArguments = arguments.enumerated().filter { $0.1 == nil }.map(\.0)
         if !unusedArguments.isEmpty {
             let joinedString = unusedArguments.map { String($0 + 1) }.joined(separator: ", ")
-            problemReporter.report(
-                .warning,
-                path: path,
-                lineNumber: 0,
-                message: "No permutation of '\(key)' use argument(s) at position \(joinedString)")
+            reportWarning("No permutation of '\(key)' use argument(s) at position \(joinedString)")
         }
 
         return arguments

@@ -140,7 +140,7 @@ class StringsdictEntryTests: XCTestCase {
                     specType: "plural",
                     valueType: "d",
                     alternatives: [
-                        "one": LexedStringsdictString(string: "%d %#@level2@"),
+                        "one": LexedStringsdictString(string: "%2$d %#@level2@"),
                         "other": LexedStringsdictString(string: "%2$d other %#@level2@"),
                     ]),
                 "level2": StringsdictRule(
@@ -148,7 +148,7 @@ class StringsdictEntryTests: XCTestCase {
                     specType: "plural",
                     valueType: "d",
                     alternatives: [
-                        "one": LexedStringsdictString(string: "%d"),
+                        "one": LexedStringsdictString(string: "%3$d"),
                         "other": LexedStringsdictString(string: "%3$d other"),
                     ]),
             ])
@@ -158,9 +158,9 @@ class StringsdictEntryTests: XCTestCase {
         XCTAssertEqual(
             argList,
             [
-                FormatArgument(specifier: "d", position: 1),
-                FormatArgument(specifier: "d", position: 2),
-                FormatArgument(specifier: "d", position: 3),
+                FormatArgument(specifier: "d", position: 1, isPositionExplicit: true),
+                FormatArgument(specifier: "d", position: 2, isPositionExplicit: true),
+                FormatArgument(specifier: "d", position: 3, isPositionExplicit: true),
             ])
     }
 
@@ -174,7 +174,7 @@ class StringsdictEntryTests: XCTestCase {
                     specType: "plural",
                     valueType: "d",
                     alternatives: [
-                        "one": LexedStringsdictString(string: "%d %#@level2@"),
+                        "one": LexedStringsdictString(string: "%2$d %#@level2@"),
                         "other": LexedStringsdictString(string: "%2$@ other %#@level2@"), // @ instead of d
                     ]),
                 "level2": StringsdictRule(
@@ -182,7 +182,7 @@ class StringsdictEntryTests: XCTestCase {
                     specType: "plural",
                     valueType: "d",
                     alternatives: [
-                        "one": LexedStringsdictString(string: "%d"),
+                        "one": LexedStringsdictString(string: "%3$d"),
                         "other": LexedStringsdictString(string: "%3$d other"),
                     ]),
             ])
@@ -193,20 +193,21 @@ class StringsdictEntryTests: XCTestCase {
             ProblemReporter.Problem(
                 path: "abc",
                 lineNumber: 0,
-                message: "Two permutations of 'abc' contain different format specifiers at position 2. '%1$d %2$@ other %3$d other' uses '@', and '%1$d %d %3$d other' uses 'd'.",
+                message: "Two permutations of 'abc' contain different format specifiers at position 2. '%1$d %2$@ other %3$d' uses '@', and '%1$d %2$d %3$d' uses 'd'.",
                 severity: .error),
             ProblemReporter.Problem(
                 path: "abc",
                 lineNumber: 0,
-                message: "Two permutations of 'abc' contain different format specifiers at position 2. '%1$d %2$@ other %3$d other' uses '@', and '%1$d %d %d' uses 'd'.",
-                severity: .error)
+                message: "Two permutations of 'abc' contain different format specifiers at position 2. '%1$d %2$@ other %3$d' uses '@', and '%1$d %2$d %3$d other' uses 'd'.",
+                severity: .error),
         ])
         XCTAssertEqual(
             argList,
             [
-                FormatArgument(specifier: "d", position: 1),
-                FormatArgument(specifier: "@", position: 2), // %@ wins because its string sorts first
-                FormatArgument(specifier: "d", position: 3),
+                FormatArgument(specifier: "d", position: 1, isPositionExplicit: true),
+                FormatArgument(specifier: "@", position: 2, isPositionExplicit: true),
+                // %@ wins because its string sorts first
+                FormatArgument(specifier: "d", position: 3, isPositionExplicit: true),
             ])
     }
 
@@ -244,9 +245,9 @@ class StringsdictEntryTests: XCTestCase {
         XCTAssertEqual(
             argList,
             [
-                FormatArgument(specifier: "d", position: 1),
+                FormatArgument(specifier: "d", position: 1, isPositionExplicit: true),
                 nil,
-                FormatArgument(specifier: "d", position: 3),
+                FormatArgument(specifier: "d", position: 3, isPositionExplicit: true),
             ])
     }
 }
