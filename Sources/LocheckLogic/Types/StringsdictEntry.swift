@@ -96,7 +96,7 @@ struct StringsdictEntry: Equatable {
 
      Example input:
      ```
-     sandwich:
+     transportation:
         format key: "%#@cars@ and %#@motorcycles@"
         cars:
             one: "one car"
