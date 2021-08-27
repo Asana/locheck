@@ -63,10 +63,7 @@ func validateStrings(
     problemReporter: ProblemReporter) {
     // MARK: Ensure all base strings appear in this translation
 
-    var translationStringMap = [String: LocalizedStringPair]()
-    for localizedString in translationStrings {
-        translationStringMap[localizedString.key] = localizedString
-    }
+    let translationStringMap = translationStrings.lo_makeDictionary { $0.key }
 
     for baseString in baseStrings where translationStringMap[baseString.key] == nil {
         problemReporter.report(

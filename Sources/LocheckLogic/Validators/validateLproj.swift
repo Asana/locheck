@@ -39,7 +39,7 @@ public func validateLproj(base: LprojFiles, translation: LprojFiles, problemRepo
                 message: "\(baseStringsdictFile.name) missing from translation \(translation.name)")
             continue
         }
-        validateStringsdict(
+        parseAndValidateStringsdict(
             base: baseStringsdictFile,
             translation: translationStringsdictFile,
             translationLanguageName: translation.name,

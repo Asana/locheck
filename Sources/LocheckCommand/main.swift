@@ -80,7 +80,7 @@ struct Stringsdict: ParsableCommand {
         withProblemReporter { problemReporter in
             for file in translation {
                 let translationFile = try! File(path: file.argument)
-                validateStringsdict(
+                parseAndValidateStringsdict(
                     base: try! File(path: base.argument),
                     translation: translationFile,
                     translationLanguageName: translationFile.nameExcludingExtension,
