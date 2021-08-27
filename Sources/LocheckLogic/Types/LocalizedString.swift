@@ -24,27 +24,6 @@ struct LocalizedString: Equatable {
     }
 }
 
-enum LocalizedStringError: Error {
-    case invalidPositionString(String)
-}
-
-/// The contents of one "%d" or "%2$@" argument. (These would be
-/// `FormatArgument(specifier: "d", position: <automatic>)` and
-/// `FormatArgument(specifier: "@", position: 2)`, respectively.)
-struct FormatArgument: Equatable {
-    let specifier: String
-    let position: Int
-}
-
-private extension FormatArgument {
-    /// Accept position as a string.
-    init(specifier: String, positionString: String) {
-        self.specifier = specifier
-        // ! is safe here because the regular expression only matches digits.
-        position = Int(positionString)!
-    }
-}
-
 /// Transform a single string into parsed `FormatSpecifier` objects
 private func parseArguments(string: String) -> [FormatArgument] {
     Expressions.argumentRegex

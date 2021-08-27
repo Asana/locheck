@@ -42,6 +42,10 @@ struct StringsdictEntry: Equatable {
         }
     }
 
+    var canonicalArgumentList: [FormatArgument] {
+        
+    }
+
     /**
      Generate every possible permutation of this string. For example, if your format key is
      `%#@abc@` and you have a rule `abc` with variants `one="xxx"` and `other="yyy"`, this
