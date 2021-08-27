@@ -10,17 +10,17 @@ import Foundation
 struct LexedStringsdictString: Equatable {
     enum Part: Equatable {
         case constant(String)
-        case replacement(String)
+        case variable(String)
     }
 
     let string: String
     let parts: [Part]
 
-    var replacements: [String] {
+    var variables: [String] {
         parts.compactMap {
             switch $0 {
             case .constant: return nil
-            case .replacement(let name): return name
+            case .variable(let name): return name
             }
         }
     }
@@ -50,7 +50,7 @@ extension LexedStringsdictString {
             guard let name = match.lo_getGroup(in: string, named: "name") else {
                 continue
             }
-            parts.append(.replacement(name))
+            parts.append(.variable(name))
         }
 
         if lastMatchEnd < string.endIndex {

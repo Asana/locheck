@@ -8,6 +8,8 @@
 import Foundation
 import SwiftyXMLParser
 
+/// These structs may also be referred to as "grammars" because that is the formal name
+/// for a system of rules defining a set of strings.
 struct StringsdictEntry: Equatable {
     let key: String
     let formatKey: LexedStringsdictString
@@ -19,31 +21,85 @@ struct StringsdictEntry: Equatable {
     }
 
     func validateRuleVariables(path: String, problemReporter: ProblemReporter) {
-        let checkRule = { (ruleKey: String, replacements: [String]) -> Void in
-            for replacement in replacements {
-                if rules[replacement] == nil {
+        let checkRule = { (ruleKey: String, variables: [String]) -> Void in
+            for variable in variables {
+                if rules[variable] == nil {
                     // lineNumber is zero because we don't have it from SwiftyXMLParser.
                     problemReporter.report(
                         .error,
                         path: path,
                         lineNumber: 0,
-                        message: "Variable \(replacement) does not exist in '\(key)' but is used in \(ruleKey)")
+                        message: "Variable \(variable) does not exist in '\(key)' but is used in \(ruleKey)")
                 }
             }
         }
 
-        checkRule("the format key", formatKey.replacements)
+        checkRule("the format key", formatKey.variables)
         for rule in rules.values.sorted(by: { $0.key < $1.key }) {
             for (alternativeKey, alternative) in rule.alternatives {
-                checkRule("'\(rule.key)'.\(alternativeKey)", alternative.replacements)
+                checkRule("'\(rule.key)'.\(alternativeKey)", alternative.variables)
             }
         }
     }
 
+    /**
+     Generate every possible permutation of this string. For example, if your format key is
+     `%#@abc@` and you have a rule `abc` with variants `one="xxx"` and `other="yyy"`, this
+     getter will return `["xxx", "yyy"]`.
+
+     In order to be comprehensive, it needs to recursively expand every rule, including nested
+     rules.
+
+     Example input:
+     ```
+     sandwich:
+        format key: "%#@cars@ and %#@motorcycles@"
+        cars:
+            one: "one car"
+            other: "%1$d cars"
+        motorcycles:
+            one: "one motorcycle with %#@sidecars@"
+            other: "%2$d motorcycle with %#@sidecars@"
+        sidecars:
+            zero: "no sidecar"
+            one: "one sidecar"
+            other: "%3$d sidecars"
+     ```
+
+     Example output:
+     ```
+     [
+         "one car and one motorcycle with no sidecar",
+         "one car and one motorcycle with one sidecar",
+         "one car and one motorcycle with %3$d sidecars",
+         "one car and %2$d motorcycles with no sidecar",
+         "one car and %2$d motorcycles with one sidecar",
+         "one car and %2$d motorcycles with %3$d sidecars",
+         "%1$d cars and one motorcycle with no sidecar",
+         "%1$d cars and one motorcycle with one sidecar",
+         "%1$d cars and one motorcycle with %3$d sidecars",
+         "%1$d cars and %2$d motorcycles with no sidecar",
+         "%1$d cars and %2$d motorcycles with one sidecar",
+         "%1$d cars and %2$d motorcycles with %3$d sidecars",
+     ]
+     ```
+     */
+    var allPermutations: [String] {
+        getAllPermutations(of: formatKey)
+    }
+
+    /**
+     For a given LexedStringsdictString, keep track of the parts for which we've
+     decided on a constant string. The length of `resolvedParts` is less than or
+     equal to the length of `string.parts` because it contains only decisions the
+     algorithm has made.
+     */
     private struct PartialPermutation {
         let string: LexedStringsdictString
         var resolvedParts: [String]
 
+        /// Return the next unresolved part of the string. May be nil if we have
+        /// resolved all parts.
         var nextPart: LexedStringsdictString.Part? {
             if resolvedParts.count < string.parts.count {
                 return string.parts[resolvedParts.count]
@@ -53,15 +109,10 @@ struct StringsdictEntry: Equatable {
         }
     }
 
-    /// Generate every possible permutation of this string. For example, if your format key is
-    /// `%#@abc@` and you have a rule `abc` with variants `one="xxx"` and `other="yyy"`, this
-    /// getter will return `["xxx", "yyy"]`. In order to be comprehensive, it needs to
-    /// recursively expand every rule, including nested rules.
-    var allPermutations: [String] {
-        getAllPermutations(of: formatKey)
-    }
-
     func getAllPermutations(of string: LexedStringsdictString) -> [String] {
+        // Maintain a list of partial permutations. We will append to this list from
+        // the return value of `expand()`. The base case is the string passed as an
+        // argument, with no resolved parts.
         var toExpand = [PartialPermutation(string: string, resolvedParts: [])]
         var results = [String]()
 
@@ -75,30 +126,41 @@ struct StringsdictEntry: Equatable {
         return results
     }
 
+    /**
+     Given a partial permutation, i.e. a `LexedStringsdictString` with zero or more parts
+     replaced by constant strings, return the "next step" in the process. That could be either
+     a new string to add to the result set (if all parts are resolved), a modified copy of the
+     input permutation (if the next part is a constant string), or a list of new partial
+     permutations derived by recursively calling `getAllPermutations()` (if the next part is a
+     variable).
+     */
     private func expand(_ p: PartialPermutation) -> ([PartialPermutation], [String]) {
         switch p.nextPart {
         case .none:
             return ([], [p.resolvedParts.joined()])
-        case .some(let part):
-            switch part {
-            case .constant(let constant):
-                var newPermutation = p
-                newPermutation.resolvedParts.append(constant)
-                return ([newPermutation], [])
-            case .replacement(let replacement):
-                var nextPermutations = [PartialPermutation]()
-                // ! is safe because we validated rules at init time
-                let rule = rules[replacement]!
-                for alternative in rule.alternatives.values.sorted(by: { $0.string < $1.string }) {
-                    for substring in getAllPermutations(of: alternative) {
-                        nextPermutations.append(
-                            PartialPermutation(
-                                string: p.string,
-                                resolvedParts: p.resolvedParts + [substring]))
-                    }
+        case .some(.constant(let constant)):
+            var newPermutation = p
+            // We can immediately "resolve" this because it's a constant string
+            newPermutation.resolvedParts.append(constant)
+            return ([newPermutation], [])
+        case .some(.variable(let variable)):
+            var nextPermutations = [PartialPermutation]()
+            // ! is safe because we validated rules at init time
+            let rule = rules[variable]!
+            // For each alternative, recurse into `getAllPermutations()`, which returns a list of
+            // all possible strings that could be generated by this grammar. For each of those
+            // strings, return a partial permutation using that string in place of the variable.
+            //
+            // Don't bother caching because deep hierarchies are very rare and this is fast.
+            for alternative in rule.alternatives.values.sorted(by: { $0.string < $1.string }) {
+                for substring in getAllPermutations(of: alternative) {
+                    nextPermutations.append(
+                        PartialPermutation(
+                            string: p.string,
+                            resolvedParts: p.resolvedParts + [substring]))
                 }
-                return (nextPermutations, [])
             }
+            return (nextPermutations, [])
         }
     }
 }

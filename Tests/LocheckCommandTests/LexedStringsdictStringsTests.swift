@@ -18,18 +18,18 @@ class LexedStringsdictStringsTests: XCTestCase {
     func testLexJustName() {
         let parts = LexedStringsdictString(string: "%#@abc@").parts
         print(parts)
-        XCTAssertEqual(parts, [.replacement("abc")])
+        XCTAssertEqual(parts, [.variable("abc")])
     }
 
     func testLexConstantAndName() {
         let parts = LexedStringsdictString(string: "abc%#@def@").parts
         print(parts)
-        XCTAssertEqual(parts, [.constant("abc"), .replacement("def")])
+        XCTAssertEqual(parts, [.constant("abc"), .variable("def")])
     }
 
     func testLexNameAndConstant() {
         let parts = LexedStringsdictString(string: "%#@abc@def").parts
         print(parts)
-        XCTAssertEqual(parts, [.replacement("abc"), .constant("def")])
+        XCTAssertEqual(parts, [.variable("abc"), .constant("def")])
     }
 }
