@@ -50,6 +50,7 @@ class ExecutableTests: XCTestCase {
         let stdout = String(data: stdoutPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
         let stderr = String(data: stderrPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
 
+        print(stdout!)
         XCTAssertEqual(stdout!, """
         Validating Examples/Demo_Translation.strings against Examples/Demo_Base.strings
 

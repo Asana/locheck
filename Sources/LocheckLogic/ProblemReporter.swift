@@ -71,7 +71,7 @@ public class ProblemReporter {
     }
 
     public func printSummary() {
-        guard problems.contains(where: { $0.problem.severity == .ignored }) else { return }
+        guard problems.contains(where: { $0.problem.severity != .ignored }) else { return }
         var problemsByFile = [String: [LocalProblem]]()
         for localProblem in problems
             where localProblem.problem as? SummarizableProblem != nil && localProblem.problem.severity != .ignored {
