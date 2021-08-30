@@ -17,15 +17,13 @@ struct StringsdictEntry: Equatable {
 
     func validateRuleVariables(path: String, problemReporter: ProblemReporter) {
         let checkRule = { (ruleKey: String, variables: [String]) -> Void in
-            for variable in variables {
-                if rules[variable] == nil {
-                    // lineNumber is zero because we don't have it from SwiftyXMLParser.
-                    problemReporter.report(
-                        .error,
-                        path: path,
-                        lineNumber: 0,
-                        message: "Variable \(variable) does not exist in '\(key)' but is used in \(ruleKey)")
-                }
+            for variable in variables where rules[variable] == nil {
+                // lineNumber is zero because we don't have it from SwiftyXMLParser.
+                problemReporter.report(
+                    .error,
+                    path: path,
+                    lineNumber: 0,
+                    message: "Variable \(variable) does not exist in '\(key)' but is used in \(ruleKey)")
             }
         }
 
