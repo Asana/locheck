@@ -9,15 +9,7 @@ import Foundation
 import SwiftyXMLParser
 
 /**
- Each entry in stringsdict contains at least one rule, i.e. a variable interpolation. For example:
-
- ```
- "That's %d cool motorcycle(s)!"        // This is the "entry key"
-     Format key: "That's %#@motorcycles@!"
-     motorcycles:                       // this is the 'rule'
-         one: "a cool motorcycle"       // this is one 'alternative'
-         other: "%d cool motorcycles"   // this is another 'alternative
- ```
+ See `Stringsdict.swift` for a comment about what each type represents.
  */
 struct StringsdictRule: Equatable {
     let key: String

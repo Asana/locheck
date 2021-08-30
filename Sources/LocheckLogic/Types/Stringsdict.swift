@@ -20,6 +20,24 @@ private func parseXML(file: File, problemReporter: ProblemReporter) -> XML.Acces
     }
 }
 
+/**
+ Each stringsdict file contains an unsorted list of entry key-value pairs. The key is what appears in your
+ source code (`NSLocalizedString("That's %d cool motorcycle(s)!")`) and the value is what we call an _entry_.
+
+ An entry has a _format key_ () whose value is a string that contains variables.
+ Variables look like `%#@name_of_variable@`. Each variable may be expanded into one of a list of _alternatives_`
+ defined by _rules_.
+
+ Here is a complete example of all the parts of an entry:
+
+ ```
+ "That's %d cool motorcycle(s)!"                            // This is the "entry key"
+     NSStringLocalizedFormatKey: "That's %#@motorcycles@!"  // the format key with a "motorcycles" variable
+    motorcycles:                                            // the 'rule'
+        one: "a cool motorcycle"                            // one 'alternative'
+        other: "%d cool motorcycles"                        // another 'alternative'
+ ```
+ */
 struct Stringsdict: Equatable {
     let entries: [StringsdictEntry]
 
