@@ -18,6 +18,7 @@ private struct StderrOutputStream: TextOutputStream {
 public enum Severity: String {
     case warning
     case error
+    case ignored
 }
 
 public protocol Problem {
@@ -60,7 +61,7 @@ public class ProblemReporter {
         let localProblem = LocalProblem(path: path, lineNumber: lineNumber, problem: problem)
         problems.append(localProblem)
 
-        guard log else { return }
+        guard log, problem.severity != .ignored else { return }
         // Print to stderr with formatting for Xcode error reporting
         print(localProblem.messageForXcode, to: &standardError)
     }
