@@ -15,10 +15,11 @@ public func validateLproj(base: LprojFiles, translation: LprojFiles, problemRepo
     for stringsFile in base.strings {
         guard let translationStringsFile = translation.strings.first(where: { $0.name == stringsFile.name }) else {
             problemReporter.report(
-                .error,
-                path: stringsFile.name,
-                lineNumber: 0,
-                message: "\(stringsFile.name) missing from translation \(translation.name)")
+                LprojFileMissingFromTranslation(
+                    key: stringsFile.name,
+                    language: translation.name),
+                path: stringsFile.path,
+                lineNumber: 0)
             continue
         }
         parseAndValidateStrings(
@@ -33,13 +34,14 @@ public func validateLproj(base: LprojFiles, translation: LprojFiles, problemRepo
             .first(where: { $0.name == baseStringsdictFile.name })
         else {
             problemReporter.report(
-                .error,
-                path: baseStringsdictFile.name,
-                lineNumber: 0,
-                message: "\(baseStringsdictFile.name) missing from translation \(translation.name)")
+                LprojFileMissingFromTranslation(
+                    key: baseStringsdictFile.name,
+                    language: translation.name),
+                path: baseStringsdictFile.path,
+                lineNumber: 0)
             continue
         }
-        validateStringsdict(
+        parseAndValidateStringsdict(
             base: baseStringsdictFile,
             translation: translationStringsdictFile,
             translationLanguageName: translation.name,

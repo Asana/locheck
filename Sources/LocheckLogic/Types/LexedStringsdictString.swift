@@ -53,6 +53,8 @@ extension LexedStringsdictString {
             parts.append(.variable(name))
         }
 
+        // If there are no variables or the last variable ends before the end of the string,
+        // add the remainder of the string as a constant.
         if lastMatchEnd < string.endIndex {
             parts.append(.constant(String(string[lastMatchEnd ..< string.endIndex])))
         }

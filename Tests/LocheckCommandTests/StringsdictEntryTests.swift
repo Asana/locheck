@@ -26,12 +26,8 @@ class StringsdictEntryTests: XCTestCase {
 
         let problemReporter = ProblemReporter(log: false)
         entry.validateRuleVariables(path: "en.stringsdict", problemReporter: problemReporter)
-        XCTAssertEqual(problemReporter.problems, [
-            ProblemReporter.Problem(
-                path: "en.stringsdict",
-                lineNumber: 0,
-                message: "Variable xyz does not exist in 'abc' but is used in the format key",
-                severity: .error),
+        XCTAssertEqual(problemReporter.problems.map(\.messageForXcode), [
+            "en.stringsdict:0: error: Variable xyz does not exist in 'abc' but is used in the format key (stringsdict_entry_has_missing_variable)",
         ])
     }
 
@@ -51,12 +47,8 @@ class StringsdictEntryTests: XCTestCase {
 
         let problemReporter = ProblemReporter(log: false)
         entry.validateRuleVariables(path: "en.stringsdict", problemReporter: problemReporter)
-        XCTAssertEqual(problemReporter.problems, [
-            ProblemReporter.Problem(
-                path: "en.stringsdict",
-                lineNumber: 0,
-                message: "Variable xyz does not exist in 'abc' but is used in 'def'.other",
-                severity: .error),
+        XCTAssertEqual(problemReporter.problems.map(\.messageForXcode), [
+            "en.stringsdict:0: error: Variable xyz does not exist in 'abc' but is used in 'def'.other (stringsdict_entry_has_missing_variable)",
         ])
     }
 
@@ -188,18 +180,9 @@ class StringsdictEntryTests: XCTestCase {
             ])
         let problemReporter = ProblemReporter(log: false)
         let argList = entry.getCanonicalArgumentList(path: "abc", problemReporter: problemReporter)
-        // The same error gets reported "twice" because the @ is encountered first and 'd' appears in 2 other strings.
-        XCTAssertEqual(problemReporter.problems, [
-            ProblemReporter.Problem(
-                path: "abc",
-                lineNumber: 0,
-                message: "Two permutations of 'abc' contain different format specifiers at position 2. '%1$d %2$@ other %3$d' uses '@', and '%1$d %2$d %3$d' uses 'd'.",
-                severity: .error),
-            ProblemReporter.Problem(
-                path: "abc",
-                lineNumber: 0,
-                message: "Two permutations of 'abc' contain different format specifiers at position 2. '%1$d %2$@ other %3$d' uses '@', and '%1$d %2$d %3$d other' uses 'd'.",
-                severity: .error),
+        XCTAssertEqual(problemReporter.problems.map(\.messageForXcode), [
+            "abc:0: error: Two permutations of 'abc' contain different format specifiers at position 2. '%1$d %2$@ other %3$d' uses '@', and '%1$d %2$d %3$d' uses 'd'. (stringsdict_entry_permutations_have_conflicting_specifiers)",
+            "abc:0: error: Two permutations of 'abc' contain different format specifiers at position 2. '%1$d %2$@ other %3$d' uses '@', and '%1$d %2$d %3$d other' uses 'd'. (stringsdict_entry_permutations_have_conflicting_specifiers)",
         ])
         XCTAssertEqual(
             argList,
@@ -235,12 +218,8 @@ class StringsdictEntryTests: XCTestCase {
             ])
         let problemReporter = ProblemReporter(log: false)
         let argList = entry.getCanonicalArgumentList(path: "abc", problemReporter: problemReporter)
-        XCTAssertEqual(problemReporter.problems, [
-            ProblemReporter.Problem(
-                path: "abc",
-                lineNumber: 0,
-                message: "No permutation of 'abc' use argument(s) at position 2",
-                severity: .warning),
+        XCTAssertEqual(problemReporter.problems.map(\.messageForXcode), [
+            "abc:0: warning: No permutation of 'abc' use argument(s) at position 2 (stringsdict_entry_has_unused_arguments)",
         ])
         XCTAssertEqual(
             argList,

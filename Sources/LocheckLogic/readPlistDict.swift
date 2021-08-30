@@ -14,20 +14,18 @@ func readPlistDict(
     problemReporter: ProblemReporter) -> [(String, XML.Element)] {
     guard root.name == "dict" else {
         problemReporter.report(
-            .error,
+            XMLSchemaProblem(message: "Malformed plist; object isn't a dict"),
             path: path,
-            lineNumber: 0,
-            message: "Malformed plist; object isn't a dict")
+            lineNumber: 0)
         return []
     }
     var results = [(String, XML.Element)]()
     for i in stride(from: 0, to: root.childElements.count, by: 2) {
         guard let key = root.childElements[i].text else {
             problemReporter.report(
-                .error,
+                XMLSchemaProblem(message: "Malformed plist; can't find next key in dict"),
                 path: path,
-                lineNumber: 0,
-                message: "Malformed plist; can't find key")
+                lineNumber: 0)
             return []
         }
         results.append((key, root.childElements[i + 1]))

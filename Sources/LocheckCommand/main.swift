@@ -57,6 +57,7 @@ struct Strings: ParsableCommand {
                     translationLanguageName: translationFile.nameExcludingExtension,
                     problemReporter: problemReporter)
             }
+            problemReporter.printSummary()
         }
     }
 }
@@ -80,12 +81,13 @@ struct Stringsdict: ParsableCommand {
         withProblemReporter { problemReporter in
             for file in translation {
                 let translationFile = try! File(path: file.argument)
-                validateStringsdict(
+                parseAndValidateStringsdict(
                     base: try! File(path: base.argument),
                     translation: translationFile,
                     translationLanguageName: translationFile.nameExcludingExtension,
                     problemReporter: problemReporter)
             }
+            problemReporter.printSummary()
         }
     }
 }
@@ -115,6 +117,7 @@ struct Lproj: ParsableCommand {
                     translation: LprojFiles(folder: try! Folder(path: translation.argument)),
                     problemReporter: problemReporter)
             }
+            problemReporter.printSummary()
         }
     }
 }
@@ -177,6 +180,7 @@ struct Discover: ParsableCommand {
                 for translation in translationLproj {
                     validateLproj(base: baseLproj, translation: translation, problemReporter: problemReporter)
                 }
+                problemReporter.printSummary()
             }
         }
     }

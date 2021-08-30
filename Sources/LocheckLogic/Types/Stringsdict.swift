@@ -14,14 +14,31 @@ private func parseXML(file: File, problemReporter: ProblemReporter) -> XML.Acces
         return XML.parse(try file.read())
     } catch {
         problemReporter.report(
-            .error,
+            XMLErrorProblem(message: error.localizedDescription),
             path: file.path,
-            lineNumber: 0,
-            message: "XML error: \(error.localizedDescription)")
+            lineNumber: 0)
         return nil
     }
 }
 
+/**
+ Each stringsdict file contains an unsorted list of entry key-value pairs. The key is what appears in your
+ source code (`NSLocalizedString("That's %d cool motorcycle(s)!")`) and the value is what we call an _entry_.
+
+ An entry has a _format key_ () whose value is a string that contains variables.
+ Variables look like `%#@name_of_variable@`. Each variable may be expanded into one of a list of _alternatives_`
+ defined by _rules_.
+
+ Here is a complete example of all the parts of an entry:
+
+ ```
+ "That's %d cool motorcycle(s)!"                            // This is the "entry key"
+     NSStringLocalizedFormatKey: "That's %#@motorcycles@!"  // the format key with a "motorcycles" variable
+    motorcycles:                                            // the 'rule'
+        one: "a cool motorcycle"                            // one 'alternative'
+        other: "%d cool motorcycles"                        // another 'alternative'
+ ```
+ */
 struct Stringsdict: Equatable {
     let entries: [StringsdictEntry]
 
@@ -35,10 +52,9 @@ struct Stringsdict: Equatable {
         }
         guard let dict = xml.all![0].childElements.first?.childElements.first else {
             problemReporter.report(
-                .error,
+                XMLSchemaProblem(message: "XML schema error: no dict at top level"),
                 path: path,
-                lineNumber: 0,
-                message: "Invalid schema, can't find dict")
+                lineNumber: 0)
             return nil
         }
 

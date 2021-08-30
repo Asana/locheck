@@ -2,6 +2,22 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>Every %d week(s) on %lu days</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@week_frequency@ on %2$lu days</string>
+		<key>week_frequency</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Weekly</string>
+			<key>other</key>
+			<string>Every %d weeks</string>
+		</dict>
+	</dict>
 	<key>%d/%d Completed</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
