@@ -37,7 +37,6 @@ extension StringsdictRule {
                 maybeValueType = valueNode.text
             default:
                 guard let text = valueNode.text else {
-                    print("MISSING TEXT IN", valueKey)
                     return nil
                 }
                 alternatives[valueKey] = LexedStringsdictString(string: text)
