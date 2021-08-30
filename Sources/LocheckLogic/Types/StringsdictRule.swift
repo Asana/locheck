@@ -1,6 +1,6 @@
 //
 //  StringsdictVariable.swift
-//  
+//
 //
 //  Created by Steve Landey on 8/25/21.
 //
@@ -8,14 +8,14 @@
 import Foundation
 import SwiftyXMLParser
 
-struct StringsdictVariable: Equatable {
+struct StringsdictRule: Equatable {
     let key: String
     let specType: String
     let valueType: String
-    let values: [String: LocalizedString]
+    let alternatives: [String: LexedStringsdictString]
 }
 
-extension StringsdictVariable {
+extension StringsdictRule {
     init?(key: String, node: XML.Element, path: String, problemReporter: ProblemReporter) {
         let reportError = { (message: String) -> Void in
             // lineNumber is zero because we don't have it from SwiftyXMLParser.
@@ -24,7 +24,7 @@ extension StringsdictVariable {
 
         var maybeSpecType: String?
         var maybeValueType: String?
-        var values = [String: LocalizedString]()
+        var alternatives = [String: LexedStringsdictString]()
 
         for (valueKey, valueNode) in readPlistDict(root: node, path: path, problemReporter: problemReporter) {
             switch valueKey {
@@ -33,7 +33,7 @@ extension StringsdictVariable {
             case "NSStringFormatValueTypeKey":
                 maybeValueType = valueNode.text
             default:
-                values[valueKey] = LocalizedString(string: valueNode.text ?? "", path: path, line: 0)
+                alternatives[valueKey] = LexedStringsdictString(string: valueNode.text ?? "")
             }
         }
 
@@ -45,17 +45,17 @@ extension StringsdictVariable {
             reportError("Missing NSStringFormatValueTypeKey in \(key)")
         }
 
-        if values.isEmpty {
+        if alternatives.isEmpty {
             reportError("No variables are defined in \(key)")
         }
 
-        guard let specType = maybeSpecType, let valueType = maybeValueType, !values.isEmpty else {
+        guard let specType = maybeSpecType, let valueType = maybeValueType, !alternatives.isEmpty else {
             return nil
         }
 
         self.key = key
         self.specType = specType
         self.valueType = valueType
-        self.values = values
+        self.alternatives = alternatives
     }
 }

@@ -1,5 +1,5 @@
 //
-//  ParsingTests.swift
+//  LocalizedStringPairTests.swift
 //
 //
 //  Created by Steve Landey on 8/18/21.
@@ -9,7 +9,7 @@ import Files
 @testable import LocheckLogic
 import XCTest
 
-class ParsingTests: XCTestCase {
+class LocalizedStringPairTests: XCTestCase {
     func testArgumentParsing() {
         let problemReporter = ProblemReporter(log: false)
         let string = LocalizedStringPair(
@@ -21,9 +21,9 @@ class ParsingTests: XCTestCase {
         XCTAssertEqual(
             string.base.arguments,
             [
-                FormatArgument(specifier: "@", position: 1),
-                FormatArgument(specifier: "d", position: 2),
-                FormatArgument(specifier: "@", position: 3),
+                FormatArgument(specifier: "@", position: 1, isPositionExplicit: true),
+                FormatArgument(specifier: "d", position: 2, isPositionExplicit: true),
+                FormatArgument(specifier: "@", position: 3, isPositionExplicit: false),
             ])
         XCTAssertTrue(problemReporter.problems.isEmpty)
     }
@@ -38,10 +38,13 @@ class ParsingTests: XCTestCase {
             line: 0)!
         XCTAssertEqual(
             string.base.arguments,
-            [FormatArgument(specifier: "@", position: 1), FormatArgument(specifier: "@", position: 2)])
+            [
+                FormatArgument(specifier: "@", position: 1, isPositionExplicit: false),
+                FormatArgument(specifier: "@", position: 2, isPositionExplicit: false),
+            ])
         XCTAssertEqual(
             string.translation.arguments,
-            [FormatArgument(specifier: "@", position: 1)])
+            [FormatArgument(specifier: "@", position: 1, isPositionExplicit: false)])
         XCTAssertTrue(problemReporter.problems.isEmpty)
     }
 
@@ -55,10 +58,16 @@ class ParsingTests: XCTestCase {
             line: 0)!
         XCTAssertEqual(
             string.base.arguments,
-            [FormatArgument(specifier: "@", position: 1), FormatArgument(specifier: "@", position: 2)])
+            [
+                FormatArgument(specifier: "@", position: 1, isPositionExplicit: false),
+                FormatArgument(specifier: "@", position: 2, isPositionExplicit: false),
+            ])
         XCTAssertEqual(
             string.translation.arguments,
-            [FormatArgument(specifier: "@", position: 1), FormatArgument(specifier: "@", position: 2)])
+            [
+                FormatArgument(specifier: "@", position: 1, isPositionExplicit: false),
+                FormatArgument(specifier: "@", position: 2, isPositionExplicit: true),
+            ])
         XCTAssertTrue(problemReporter.problems.isEmpty)
     }
 }

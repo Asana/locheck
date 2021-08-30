@@ -1,6 +1,6 @@
 //
 //  LocalizedString.swift
-//  
+//
 //
 //  Created by Steve Landey on 8/25/21.
 //
@@ -18,30 +18,9 @@ struct LocalizedString: Equatable {
 
     init(string: String, path: String, line: Int?) {
         self.string = string
-        self.arguments = parseArguments(string: string)
+        arguments = parseArguments(string: string)
         self.path = path
         self.line = line
-    }
-}
-
-enum LocalizedStringError: Error {
-    case invalidPositionString(String)
-}
-
-/// The contents of one "%d" or "%2$@" argument. (These would be
-/// `FormatArgument(specifier: "d", position: <automatic>)` and
-/// `FormatArgument(specifier: "@", position: 2)`, respectively.)
-struct FormatArgument: Equatable {
-    let specifier: String
-    let position: Int
-}
-
-private extension FormatArgument {
-    /// Accept position as a string.
-    init(specifier: String, positionString: String) {
-        self.specifier = specifier
-        // ! is safe here because the regular expression only matches digits.
-        position = Int(positionString)!
     }
 }
 
@@ -59,11 +38,13 @@ private func parseArguments(string: String) -> [FormatArgument] {
             if let positionString = match.lo_getGroup(in: string, named: "position") {
                 return FormatArgument(
                     specifier: specifier,
-                    positionString: positionString)
+                    positionString: positionString,
+                    isPositionExplicit: true)
             } else {
                 return FormatArgument(
                     specifier: specifier,
-                    position: i + 1)
+                    position: i + 1,
+                    isPositionExplicit: false)
             }
         }
 }

@@ -30,7 +30,6 @@ class ValidateStringsTests: XCTestCase {
 
         XCTAssertFalse(problemReporter.hasError)
         XCTAssertTrue(problemReporter.problems.isEmpty)
-        print(problemReporter.problems)
     }
 
     func testValid_implicitOrderArgs() {
