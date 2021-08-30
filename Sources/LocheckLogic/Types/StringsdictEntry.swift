@@ -291,7 +291,7 @@ extension StringsdictEntry {
             hasAllVariables = false
         }
 
-        guard let formatKey = maybeFormatKey, hasAllVariables else {
+        guard hasAllVariables else {
             return nil
         }
 
