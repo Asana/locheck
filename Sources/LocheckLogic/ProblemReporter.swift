@@ -30,7 +30,7 @@ public protocol Problem {
  Collect problems found during a run, and log them to the console for Xcode integration if desired.
  */
 public class ProblemReporter {
-    public struct LocalProblem: Error {
+    public struct LocalProblem: Error, Equatable {
         public let path: String
         public let lineNumber: Int
         public let problem: Problem
@@ -38,6 +38,12 @@ public class ProblemReporter {
         /// Unique identifier for this problem on this line of this file
         var identifier: String {
             "\(path)-\(lineNumber)-\(problem.identifier)"
+        }
+
+        var message: String { problem.message } // make it easier to write unit tests
+
+        public static func ==(a: LocalProblem, b: LocalProblem) -> Bool {
+            a.path == b.path && a.lineNumber == b.lineNumber && a.identifier == b.identifier && a.message == b.message
         }
     }
 
