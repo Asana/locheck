@@ -41,7 +41,7 @@ struct StringHasExtraArguments: Problem, Equatable {
 
 struct StringHasInvalidArgument: Problem, Equatable {
     var identifier: String { "string_has_invalid_argument-\(language)-\(key)" }
-    var severity: Severity { .warning }
+    var severity: Severity { .error }
     let key: String
     let language: String
     let argPosition: Int
@@ -49,7 +49,7 @@ struct StringHasInvalidArgument: Problem, Equatable {
     let argSpecifier: String
 
     var message: String {
-        "Specifier for argument \(argPosition) does not match (should be \(baseArgSpecifier), is \(argSpecifier)"
+        "Specifier for argument \(argPosition) does not match (should be \(baseArgSpecifier), is \(argSpecifier))"
     }
 }
 

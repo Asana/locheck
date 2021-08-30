@@ -85,8 +85,8 @@ struct StringsdictEntry: Equatable {
                                 key: key,
                                 position: arg.position,
                                 permutation1: originalString,
-                                permutation2: oldArg.specifier,
-                                specifier1: string.string,
+                                permutation2: string.string,
+                                specifier1: oldArg.specifier,
                                 specifier2: arg.specifier))
                     }
                 } else {
