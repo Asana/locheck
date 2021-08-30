@@ -79,7 +79,7 @@ struct StringsdictEntry: Equatable {
                 // Remember arg positions are 1-indexed!
                 if let oldArg = arguments[arg.position - 1] {
                     if arg.specifier != oldArg.specifier {
-                        let originalString = originalStringForArgument[oldArg.position]
+                        let originalString = originalStringForArgument[oldArg.position - 1]
                         report(
                             StringsdictEntryHasInvalidSpecifier(
                                 key: key,
