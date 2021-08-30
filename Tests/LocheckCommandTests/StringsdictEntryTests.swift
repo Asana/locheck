@@ -181,8 +181,8 @@ class StringsdictEntryTests: XCTestCase {
         let problemReporter = ProblemReporter(log: false)
         let argList = entry.getCanonicalArgumentList(path: "abc", problemReporter: problemReporter)
         XCTAssertEqual(problemReporter.problems.map(\.messageForXcode), [
-            "abc:0: error: Two permutations of 'abc' contain different format specifiers at position 2. '%1$d %2$@ other %3$d' uses '@', and '%1$d %2$d %3$d' uses 'd'. (stringsdict_entry_has_invalid_specifier)",
-            "abc:0: error: Two permutations of 'abc' contain different format specifiers at position 2. '%1$d %2$@ other %3$d' uses '@', and '%1$d %2$d %3$d other' uses 'd'. (stringsdict_entry_has_invalid_specifier)",
+            "abc:0: error: Two permutations of 'abc' contain different format specifiers at position 2. '%1$d %2$@ other %3$d' uses '@', and '%1$d %2$d %3$d' uses 'd'. (stringsdict_entry_permutations_have_conflicting_specifiers)",
+            "abc:0: error: Two permutations of 'abc' contain different format specifiers at position 2. '%1$d %2$@ other %3$d' uses '@', and '%1$d %2$d %3$d other' uses 'd'. (stringsdict_entry_permutations_have_conflicting_specifiers)",
         ])
         XCTAssertEqual(
             argList,

@@ -81,7 +81,7 @@ struct StringsdictEntry: Equatable {
                     if arg.specifier != oldArg.specifier {
                         let originalString = originalStringForArgument[oldArg.position - 1]
                         report(
-                            StringsdictEntryHasInvalidSpecifier(
+                            StringsdictEntryPermutationsHaveConflictingSpecifiers(
                                 key: key,
                                 position: arg.position,
                                 permutation1: originalString,

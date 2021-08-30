@@ -39,7 +39,7 @@ class ParseAndValidateStringsdictTests: XCTestCase {
             "\(packageRootPath)/Examples/Demo_Translation.stringsdict:0: ignored: Argument 2 in permutation '%2$lu jours toutes les %d semaines of 'Every %d week(s) on %lu days' has an implicit position. Use an explicit position for safety. (stringsdict_entry_has_implicit_position)")
         XCTAssertEqual(
             problemReporter.problems[4].messageForXcode,
-            "\(packageRootPath)/Examples/Demo_Translation.stringsdict:0: error: Two permutations of 'Every %d week(s) on %lu days' contain different format specifiers at position 2. '%2$lu jours toutes les %d semaines' uses 'lu', and '%2$lu jours toutes les %d semaines' uses 'd'. (stringsdict_entry_has_invalid_specifier)")
+            "\(packageRootPath)/Examples/Demo_Translation.stringsdict:0: error: Two permutations of 'Every %d week(s) on %lu days' contain different format specifiers at position 2. '%2$lu jours toutes les %d semaines' uses 'lu', and '%2$lu jours toutes les %d semaines' uses 'd'. (stringsdict_entry_permutations_have_conflicting_specifiers)")
         XCTAssertEqual(
             problemReporter.problems[5].messageForXcode,
             "\(packageRootPath)/Examples/Demo_Translation.stringsdict:0: warning: No permutation of 'Every %d week(s) on %lu days' use argument(s) at position 1 (stringsdict_entry_has_unused_arguments)")

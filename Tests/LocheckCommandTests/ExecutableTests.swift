@@ -124,7 +124,7 @@ class ExecutableTests: XCTestCase {
         Examples/Demo_Base.stringsdict:0: warning: '%d/%d Completed' is missing from the the Demo_Translation translation (stringsdict_key_missing_from_translation)
         Examples/Demo_Base.stringsdict:0: warning: 'missing from translation' is missing from the the Demo_Translation translation (stringsdict_key_missing_from_translation)
         Examples/Demo_Translation.stringsdict:0: warning: 'missing from base' is missing from the base translation (stringsdict_key_missing_from_base)
-        Examples/Demo_Translation.stringsdict:0: error: Two permutations of 'Every %d week(s) on %lu days' contain different format specifiers at position 2. '%2$lu jours toutes les %d semaines' uses 'lu', and '%2$lu jours toutes les %d semaines' uses 'd'. (stringsdict_entry_has_invalid_specifier)
+        Examples/Demo_Translation.stringsdict:0: error: Two permutations of 'Every %d week(s) on %lu days' contain different format specifiers at position 2. '%2$lu jours toutes les %d semaines' uses 'lu', and '%2$lu jours toutes les %d semaines' uses 'd'. (stringsdict_entry_permutations_have_conflicting_specifiers)
         Examples/Demo_Translation.stringsdict:0: warning: No permutation of 'Every %d week(s) on %lu days' use argument(s) at position 1 (stringsdict_entry_has_unused_arguments)
         Examples/Demo_Translation.stringsdict:0: warning: 'Every %d week(s) on %lu days' does not use argument 1 (stringsdict_entry_missing_argument)
 

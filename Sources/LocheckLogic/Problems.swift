@@ -123,8 +123,8 @@ struct StringsdictEntryHasInvalidArgument: Problem, StringsdictProblem, Equatabl
     }
 }
 
-struct StringsdictEntryHasInvalidSpecifier: Problem, StringsdictProblem, Equatable {
-    var kindIdentifier: String { "stringsdict_entry_has_invalid_specifier" }
+struct StringsdictEntryPermutationsHaveConflictingSpecifiers: Problem, StringsdictProblem, Equatable {
+    var kindIdentifier: String { "stringsdict_entry_permutations_have_conflicting_specifiers" }
     var uniquifyingInformation: String { "\(key)-\(position)-\(permutation1)-\(permutation2)" }
     var severity: Severity { .error }
     let key: String
