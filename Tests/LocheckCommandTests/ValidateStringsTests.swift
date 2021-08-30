@@ -76,12 +76,12 @@ class ValidateStringsTests: XCTestCase {
         XCTAssertEqual(
             problemReporter.problems,
             [
-                ProblemReporter.Problem(
+                ProblemReporter.LocalProblem(
                     path: "def",
                     lineNumber: 0,
                     message: "Specifier for argument 1 does not match (should be d, is @)",
                     severity: .error),
-                ProblemReporter.Problem(
+                ProblemReporter.LocalProblem(
                     path: "def",
                     lineNumber: 0,
                     message: "Specifier for argument 2 does not match (should be @, is d)",
@@ -135,7 +135,7 @@ class ValidateStringsTests: XCTestCase {
 
         XCTAssertEqual(
             problemReporter.problems, [
-                ProblemReporter.Problem(
+                ProblemReporter.LocalProblem(
                     path: "abc", lineNumber: 1, message: "This string is missing from translation", severity: .warning),
             ])
     }

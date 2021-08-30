@@ -17,9 +17,9 @@ struct StringsdictRule: Equatable {
 
 extension StringsdictRule {
     init?(key: String, node: XML.Element, path: String, problemReporter: ProblemReporter) {
-        let reportError = { (message: String) -> Void in
+        let report = { (problem: Problem) -> Void in
             // lineNumber is zero because we don't have it from SwiftyXMLParser.
-            problemReporter.report(.error, path: path, lineNumber: 0, message: message)
+            problemReporter.report(problem, path: path, lineNumber: 0)
         }
 
         var maybeSpecType: String?
@@ -38,15 +38,15 @@ extension StringsdictRule {
         }
 
         if maybeSpecType == nil {
-            reportError("Missing NSStringFormatSpecTypeKey in \(key)")
+            report(StringsdictEntryMissingFormatSpecTypeProblem(key: key))
         }
 
         if maybeValueType == nil {
-            reportError("Missing NSStringFormatValueTypeKey in \(key)")
+            report(StringsdictEntryMissingFormatValueTypeProblem(key: key))
         }
 
         if alternatives.isEmpty {
-            reportError("No variables are defined in \(key)")
+            report(StringsdictEntryContainsNoVariablesProblem(key: key))
         }
 
         guard let specType = maybeSpecType, let valueType = maybeValueType, !alternatives.isEmpty else {

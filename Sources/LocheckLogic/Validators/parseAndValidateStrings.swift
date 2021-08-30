@@ -67,10 +67,11 @@ func validateStrings(
 
     for baseString in baseStrings where translationStringMap[baseString.key] == nil {
         problemReporter.report(
-            .warning,
+            StringsKeyMissingFromTranslation(
+                key: baseString.key,
+                language: translationLanguageName),
             path: baseString.path,
-            lineNumber: baseString.line,
-            message: "This string is missing from \(translationLanguageName)")
+            lineNumber: baseString.line)
     }
 
     // MARK: Validate arguments
@@ -84,29 +85,34 @@ func validateStrings(
         let hasDuplicates = translationArgumentPositions.count != translationString.translation.arguments.count
 
         if !missingArgumentPositions.isEmpty {
-            let args = missingArgumentPositions.sorted().map { String($0) }.joined(separator: ", ")
+            let args = missingArgumentPositions.sorted().map { String($0) }
             problemReporter.report(
-                .warning,
+                StringHasMissingArguments(
+                    key: translationString.key,
+                    language: translationLanguageName,
+                    args: args),
                 path: translationString.path,
-                lineNumber: translationString.line,
-                message: "Does not include arguments \(args)")
+                lineNumber: translationString.line)
         }
 
         if !extraArgumentPositions.isEmpty {
-            let args = extraArgumentPositions.sorted().map { String($0) }.joined(separator: ", ")
+            let args = extraArgumentPositions.sorted().map { String($0) }
             problemReporter.report(
-                .error,
+                StringHasExtraArguments(
+                    key: translationString.key,
+                    language: translationLanguageName,
+                    args: args),
                 path: translationString.path,
-                lineNumber: translationString.line,
-                message: "Translation includes arguments that don't exist in the source: \(args) (original has \(baseArgumentPositions); \(translationString.translation.string)")
+                lineNumber: translationString.line)
         }
 
         if hasDuplicates {
             problemReporter.report(
-                .warning,
+                StringHasDuplicateArguments(
+                    key: translationString.key,
+                    language: translationLanguageName),
                 path: translationString.path,
-                lineNumber: translationString.line,
-                message: "Some arguments appear more than once in this translation")
+                lineNumber: translationString.line)
         }
 
         let baseArgs = translationString.base.arguments.sorted(by: { $0.position < $1.position })
@@ -117,10 +123,14 @@ func validateStrings(
             }
             if arg.specifier != baseArg.specifier {
                 problemReporter.report(
-                    .error,
+                    StringHasInvalidArgument(
+                        key: translationString.key,
+                        language: translationLanguageName,
+                        argPosition: arg.position,
+                        baseArgSpecifier: baseArg.specifier,
+                        argSpecifier: arg.specifier),
                     path: translationString.path,
-                    lineNumber: translationString.line,
-                    message: "Specifier for argument \(arg.position) does not match (should be \(baseArg.specifier), is \(arg.specifier))")
+                    lineNumber: translationString.line)
             }
         }
     }

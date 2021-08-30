@@ -20,10 +20,12 @@ struct StringsdictEntry: Equatable {
             for variable in variables where rules[variable] == nil {
                 // lineNumber is zero because we don't have it from SwiftyXMLParser.
                 problemReporter.report(
-                    .error,
+                    StringsdictEntryHasMissingVariable(
+                        key: key,
+                        variable: variable,
+                        ruleKey: ruleKey),
                     path: path,
-                    lineNumber: 0,
-                    message: "Variable \(variable) does not exist in '\(key)' but is used in \(ruleKey)")
+                    lineNumber: 0)
             }
         }
 
@@ -54,14 +56,9 @@ struct StringsdictEntry: Equatable {
         // but that would require us to remember which span of each string maps back to which variable,
         // which is a lot of extra bookkeeping to do at this stage of the project.
 
-        let reportError = { (message: String) -> Void in
+        let report = { (problem: Problem) -> Void in
             // lineNumber is zero because we don't have it from SwiftyXMLParser.
-            problemReporter.report(.error, path: path, lineNumber: 0, message: message)
-        }
-
-        let reportWarning = { (message: String) -> Void in
-            // lineNumber is zero because we don't have it from SwiftyXMLParser.
-            problemReporter.report(.warning, path: path, lineNumber: 0, message: message)
+            problemReporter.report(problem, path: path, lineNumber: 0)
         }
 
         let permutations = allPermutations.map { LocalizedString(string: $0, path: path, line: 0) }
@@ -72,16 +69,25 @@ struct StringsdictEntry: Equatable {
         for string in permutations {
             for arg in string.arguments {
                 if !arg.isPositionExplicit {
-                    reportWarning(
-                        "Argument \(arg.position) in permutation '\(string.string) of '\(key)' has an implicit position. Use an explicit position for safety.")
+                    report(
+                        StringsdictEntryHasImplicitPosition(
+                            key: key,
+                            position: arg.position,
+                            permutation: string.string))
                 }
 
                 // Remember arg positions are 1-indexed!
                 if let oldArg = arguments[arg.position - 1] {
                     if arg.specifier != oldArg.specifier {
                         let originalString = originalStringForArgument[oldArg.position]
-                        reportError(
-                            "Two permutations of '\(key)' contain different format specifiers at position \(arg.position). '\(originalString)' uses '\(oldArg.specifier)', and '\(string.string)' uses '\(arg.specifier)'.")
+                        report(
+                            StringsdictEntryHasInvalidSpecifier(
+                                key: key,
+                                position: arg.position,
+                                permutation1: originalString,
+                                permutation2: oldArg.specifier,
+                                specifier1: string.string,
+                                specifier2: arg.specifier))
                     }
                 } else {
                     originalStringForArgument[arg.position - 1] = string.string
@@ -92,8 +98,10 @@ struct StringsdictEntry: Equatable {
 
         let unusedArguments = arguments.enumerated().filter { $0.1 == nil }.map(\.0)
         if !unusedArguments.isEmpty {
-            let joinedString = unusedArguments.map { String($0 + 1) }.joined(separator: ", ")
-            reportWarning("No permutation of '\(key)' use argument(s) at position \(joinedString)")
+            report(
+                StringsdictEntryHasUnusedArguments(
+                    key: key,
+                    positions: unusedArguments))
         }
 
         return arguments
@@ -224,9 +232,9 @@ struct StringsdictEntry: Equatable {
 
 extension StringsdictEntry {
     init?(key: String, node: XML.Element, path: String, problemReporter: ProblemReporter) {
-        let reportError = { (message: String) -> Void in
+        let report = { (problem: Problem) -> Void in
             // lineNumber is zero because we don't have it from SwiftyXMLParser.
-            problemReporter.report(.error, path: path, lineNumber: 0, message: message)
+            problemReporter.report(problem, path: path, lineNumber: 0)
         }
 
         var maybeFormatKey: String?
@@ -238,13 +246,13 @@ extension StringsdictEntry {
             path: path,
             problemReporter: problemReporter) {
             guard let valueText = valueNode.text else {
-                reportError("No value for key \(key).\(valueKey)")
+                report(XMLSchemaProblem(message: "No value for key \(key).\(valueKey)"))
                 return nil
             }
             switch valueKey {
             case "NSStringLocalizedFormatKey":
                 guard valueNode.name == "string" else {
-                    reportError("Unexpected value for key \(valueKey): \(valueNode.name)")
+                    report(XMLSchemaProblem(message: "Unexpected value for key \(valueKey): \(valueNode.name)"))
                     return nil
                 }
                 maybeFormatKey = valueText
@@ -263,15 +271,23 @@ extension StringsdictEntry {
             }
         }
 
-        if maybeFormatKey == nil {
-            reportError("\(key) contains no value for NSStringLocalizedFormatKey")
+        guard let formatKey = maybeFormatKey else {
+            report(XMLSchemaProblem(message: "\(key) contains no value for NSStringLocalizedFormatKey"))
+            return nil
         }
         if maybeOrderedRuleKeys == nil {
-            reportError("\(key) contains no variables in its format key: \(maybeFormatKey ?? "<unknown>")")
+            report(
+                StringsdictEntryHasNoVariables(
+                    key: key,
+                    formatKey: formatKey))
         }
         var hasAllVariables = true
         for variableKey in maybeOrderedRuleKeys ?? [] where rules[variableKey] == nil {
-            reportError("Rule \(variableKey) is not defined in \(key)")
+            report(
+                StringsdictEntryHasMissingVariable(
+                    key: key,
+                    variable: variableKey,
+                    ruleKey: "format key"))
             hasAllVariables = false
         }
 

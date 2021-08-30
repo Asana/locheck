@@ -14,10 +14,8 @@ private func parseXML(file: File, problemReporter: ProblemReporter) -> XML.Acces
         return XML.parse(try file.read())
     } catch {
         problemReporter.report(
-            .error,
-            path: file.path,
-            lineNumber: 0,
-            message: "XML error: \(error.localizedDescription)")
+            XMLErrorProblem(message: error.localizedDescription),
+            path: file.path, lineNumber: 0)
         return nil
     }
 }
@@ -35,10 +33,9 @@ struct Stringsdict: Equatable {
         }
         guard let dict = xml.all![0].childElements.first?.childElements.first else {
             problemReporter.report(
-                .error,
+                XMLSchemaProblem(message: "XML schema error: no dict at top level"),
                 path: path,
-                lineNumber: 0,
-                message: "Invalid schema, can't find dict")
+                lineNumber: 0)
             return nil
         }
 

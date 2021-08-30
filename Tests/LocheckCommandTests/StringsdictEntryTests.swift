@@ -27,7 +27,7 @@ class StringsdictEntryTests: XCTestCase {
         let problemReporter = ProblemReporter(log: false)
         entry.validateRuleVariables(path: "en.stringsdict", problemReporter: problemReporter)
         XCTAssertEqual(problemReporter.problems, [
-            ProblemReporter.Problem(
+            ProblemReporter.LocalProblem(
                 path: "en.stringsdict",
                 lineNumber: 0,
                 message: "Variable xyz does not exist in 'abc' but is used in the format key",
@@ -52,7 +52,7 @@ class StringsdictEntryTests: XCTestCase {
         let problemReporter = ProblemReporter(log: false)
         entry.validateRuleVariables(path: "en.stringsdict", problemReporter: problemReporter)
         XCTAssertEqual(problemReporter.problems, [
-            ProblemReporter.Problem(
+            ProblemReporter.LocalProblem(
                 path: "en.stringsdict",
                 lineNumber: 0,
                 message: "Variable xyz does not exist in 'abc' but is used in 'def'.other",
@@ -190,12 +190,12 @@ class StringsdictEntryTests: XCTestCase {
         let argList = entry.getCanonicalArgumentList(path: "abc", problemReporter: problemReporter)
         // The same error gets reported "twice" because the @ is encountered first and 'd' appears in 2 other strings.
         XCTAssertEqual(problemReporter.problems, [
-            ProblemReporter.Problem(
+            ProblemReporter.LocalProblem(
                 path: "abc",
                 lineNumber: 0,
                 message: "Two permutations of 'abc' contain different format specifiers at position 2. '%1$d %2$@ other %3$d' uses '@', and '%1$d %2$d %3$d' uses 'd'.",
                 severity: .error),
-            ProblemReporter.Problem(
+            ProblemReporter.LocalProblem(
                 path: "abc",
                 lineNumber: 0,
                 message: "Two permutations of 'abc' contain different format specifiers at position 2. '%1$d %2$@ other %3$d' uses '@', and '%1$d %2$d %3$d other' uses 'd'.",
@@ -236,7 +236,7 @@ class StringsdictEntryTests: XCTestCase {
         let problemReporter = ProblemReporter(log: false)
         let argList = entry.getCanonicalArgumentList(path: "abc", problemReporter: problemReporter)
         XCTAssertEqual(problemReporter.problems, [
-            ProblemReporter.Problem(
+            ProblemReporter.LocalProblem(
                 path: "abc",
                 lineNumber: 0,
                 message: "No permutation of 'abc' use argument(s) at position 2",
