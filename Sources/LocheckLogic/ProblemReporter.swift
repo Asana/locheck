@@ -40,10 +40,10 @@ public class ProblemReporter {
             "\(path)-\(lineNumber)-\(problem.identifier)"
         }
 
-        var message: String { problem.message } // make it easier to write unit tests
+        var messageForXcode: String { "\(path):\(lineNumber): \(problem.severity.rawValue): \(problem.message)" }
 
         public static func ==(a: LocalProblem, b: LocalProblem) -> Bool {
-            a.path == b.path && a.lineNumber == b.lineNumber && a.identifier == b.identifier && a.message == b.message
+            a.path == b.path && a.lineNumber == b.lineNumber && a.identifier == b.identifier && a.messageForXcode == b.messageForXcode
         }
     }
 
@@ -57,11 +57,12 @@ public class ProblemReporter {
     }
 
     public func report(_ problem: Problem, path: String, lineNumber: Int) {
-        problems.append(LocalProblem(path: path, lineNumber: lineNumber, problem: problem))
+        let localProblem = LocalProblem(path: path, lineNumber: lineNumber, problem: problem)
+        problems.append(localProblem)
 
         guard log else { return }
         // Print to stderr with formatting for Xcode error reporting
-        print("\(path):\(lineNumber): \(problem.severity.rawValue): \(problem.message)", to: &standardError)
+        print(localProblem.messageForXcode, to: &standardError)
     }
 
     /**
