@@ -57,6 +57,7 @@ struct Strings: ParsableCommand {
                     translationLanguageName: translationFile.nameExcludingExtension,
                     problemReporter: problemReporter)
             }
+            problemReporter.printSummary()
         }
     }
 }
@@ -116,6 +117,7 @@ struct Lproj: ParsableCommand {
                     translation: LprojFiles(folder: try! Folder(path: translation.argument)),
                     problemReporter: problemReporter)
             }
+            problemReporter.printSummary()
         }
     }
 }
@@ -178,6 +180,7 @@ struct Discover: ParsableCommand {
                 for translation in translationLproj {
                     validateLproj(base: baseLproj, translation: translation, problemReporter: problemReporter)
                 }
+                problemReporter.printSummary()
             }
         }
     }
