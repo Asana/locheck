@@ -69,8 +69,6 @@ class ExecutableTests: XCTestCase {
     }
 
     func testExampleOutput_stringsdict() throws {
-        XCTSkip()
-        return
         let binary = productsDirectory.appendingPathComponent("locheck")
 
         let process = Process()
