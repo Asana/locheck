@@ -28,6 +28,12 @@ public protocol Problem {
     var message: String { get }
 }
 
+public protocol SummarizableProblem: Problem {
+    // Provide the string key, allowing errors to be grouped and displayed in a nice
+    // human-readable format
+    var key: String { get }
+}
+
 /**
  Collect problems found during a run, and log them to the console for Xcode integration if desired.
  */
@@ -37,9 +43,11 @@ public class ProblemReporter {
         public let lineNumber: Int
         public let problem: Problem
 
-        var messageForXcode: String { "\(path):\(lineNumber): \(problem.severity.rawValue): \(problem.message) (\(problem.kindIdentifier))" }
+        var messageForXcode: String {
+            "\(path):\(lineNumber): \(problem.severity.rawValue): \(problem.message) (\(problem.kindIdentifier))"
+        }
 
-        public static func ==(a: LocalProblem, b: LocalProblem) -> Bool {
+        public static func == (a: LocalProblem, b: LocalProblem) -> Bool {
             a.path == b.path && a.lineNumber == b.lineNumber && a.messageForXcode == b.messageForXcode
         }
     }
@@ -60,6 +68,31 @@ public class ProblemReporter {
         guard log, problem.severity != .ignored else { return }
         // Print to stderr with formatting for Xcode error reporting
         print(localProblem.messageForXcode, to: &standardError)
+    }
+
+    public func printSummary() {
+        var problemsByFile = [String: [LocalProblem]]()
+        for localProblem in problems
+            where localProblem.problem as? SummarizableProblem != nil && localProblem.problem.severity != .ignored {
+            if problemsByFile[localProblem.path] == nil {
+                problemsByFile[localProblem.path] = []
+            }
+            problemsByFile[localProblem.path]!.append(localProblem)
+        }
+
+        print("\nSUMMARY:")
+
+        for path in problemsByFile.keys.sorted() {
+            print(path)
+            let problems = problemsByFile[path]!.map { $0.problem as! SummarizableProblem }
+            let keys = Set(problems.map(\.key))
+            for key in keys.sorted() {
+                print("  \(key):")
+                for problem in problems.filter({ $0.key == key }).map(\.message).sorted() {
+                    print("    \(problem)")
+                }
+            }
+        }
     }
 
     /**

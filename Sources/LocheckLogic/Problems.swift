@@ -7,6 +7,14 @@
 
 import Foundation
 
+protocol StringsdictProblem: SummarizableProblem {
+    var key: String { get }
+}
+
+protocol StringsProblem: SummarizableProblem {
+    var key: String { get }
+}
+
 struct LprojFileMissingFromTranslation: Problem, Equatable {
     var kindIdentifier: String { "lproj_file_missing_from_translation" }
     var uniquifyingInformation: String { "\(language)-\(key)" }
@@ -17,7 +25,7 @@ struct LprojFileMissingFromTranslation: Problem, Equatable {
     var message: String { "\(key) missing from \(language)" }
 }
 
-struct StringHasDuplicateArguments: Problem, Equatable {
+struct StringHasDuplicateArguments: Problem, StringsProblem, Equatable {
     var kindIdentifier: String { "string_has_duplicate_arguments" }
     var uniquifyingInformation: String { "\(language)-\(key)" }
     var severity: Severity { .warning }
@@ -29,7 +37,7 @@ struct StringHasDuplicateArguments: Problem, Equatable {
     }
 }
 
-struct StringHasExtraArguments: Problem, Equatable {
+struct StringHasExtraArguments: Problem, StringsProblem, Equatable {
     var kindIdentifier: String { "string_has_extra_arguments" }
     var uniquifyingInformation: String { "\(language)-\(key)" }
     var severity: Severity { .warning }
@@ -42,7 +50,7 @@ struct StringHasExtraArguments: Problem, Equatable {
     }
 }
 
-struct StringHasInvalidArgument: Problem, Equatable {
+struct StringHasInvalidArgument: Problem, StringsProblem, Equatable {
     var kindIdentifier: String { "string_has_invalid_argument" }
     var uniquifyingInformation: String { "\(language)-\(key)" }
     var severity: Severity { .error }
@@ -57,7 +65,7 @@ struct StringHasInvalidArgument: Problem, Equatable {
     }
 }
 
-struct StringHasMissingArguments: Problem, Equatable {
+struct StringHasMissingArguments: Problem, StringsProblem, Equatable {
     var kindIdentifier: String { "string_has_missing_arguments" }
     var uniquifyingInformation: String { "\(language)-\(key)" }
     var severity: Severity { .warning }
@@ -68,7 +76,7 @@ struct StringHasMissingArguments: Problem, Equatable {
     var message: String { "Does not include argument(s) at \(args.joined(separator: ", "))" }
 }
 
-struct StringsKeyMissingFromTranslation: Problem, Equatable {
+struct StringsKeyMissingFromTranslation: Problem, StringsProblem, Equatable {
     var kindIdentifier: String { "strings_key_missing_from_translation" }
     var uniquifyingInformation: String { "\(language)-\(key)" }
     var severity: Severity { .warning }
@@ -78,7 +86,7 @@ struct StringsKeyMissingFromTranslation: Problem, Equatable {
     var message: String { "This string is missing from \(language)" }
 }
 
-struct StringsdictEntryContainsNoVariablesProblem: Problem, Equatable {
+struct StringsdictEntryContainsNoVariablesProblem: Problem, StringsdictProblem, Equatable {
     var kindIdentifier: String { "stringsdict_entry_contains_no_variables" }
     var uniquifyingInformation: String { "\(key)" }
     var severity: Severity { .warning }
@@ -87,7 +95,7 @@ struct StringsdictEntryContainsNoVariablesProblem: Problem, Equatable {
     var message: String { "'\(key)' contains no variables" }
 }
 
-struct StringsdictEntryHasImplicitPosition: Problem, Equatable {
+struct StringsdictEntryHasImplicitPosition: Problem, StringsdictProblem, Equatable {
     var kindIdentifier: String { "stringsdict_entry_has_implicit_position" }
     var uniquifyingInformation: String { "\(key)-\(position)-\(permutation)" }
     // We have code to detect this, but without a way of disabling it per-project yet, it's not reported.
@@ -101,7 +109,7 @@ struct StringsdictEntryHasImplicitPosition: Problem, Equatable {
     }
 }
 
-struct StringsdictEntryHasInvalidArgument: Problem, Equatable {
+struct StringsdictEntryHasInvalidArgument: Problem, StringsdictProblem, Equatable {
     var kindIdentifier: String { "stringsdict_entry_has_invalid_argument" }
     var uniquifyingInformation: String { "\(key)-\(position)" }
     var severity: Severity { .error }
@@ -115,7 +123,7 @@ struct StringsdictEntryHasInvalidArgument: Problem, Equatable {
     }
 }
 
-struct StringsdictEntryHasInvalidSpecifier: Problem, Equatable {
+struct StringsdictEntryHasInvalidSpecifier: Problem, StringsdictProblem, Equatable {
     var kindIdentifier: String { "stringsdict_entry_has_invalid_specifier" }
     var uniquifyingInformation: String { "\(key)-\(position)-\(permutation1)-\(permutation2)" }
     var severity: Severity { .error }
@@ -131,7 +139,7 @@ struct StringsdictEntryHasInvalidSpecifier: Problem, Equatable {
     }
 }
 
-struct StringsdictEntryHasMissingVariable: Problem, Equatable {
+struct StringsdictEntryHasMissingVariable: Problem, StringsdictProblem, Equatable {
     var kindIdentifier: String { "stringsdict_entry_has_missing_variable" }
     var uniquifyingInformation: String { "\(variable)-\(key)" }
     var severity: Severity { .error }
@@ -144,7 +152,7 @@ struct StringsdictEntryHasMissingVariable: Problem, Equatable {
     }
 }
 
-struct StringsdictEntryHasNoVariables: Problem, Equatable {
+struct StringsdictEntryHasNoVariables: Problem, StringsdictProblem, Equatable {
     var kindIdentifier: String { "stringsdict_entry_has_no_variables-" }
     var uniquifyingInformation: String { "\(key)" }
     var severity: Severity { .error }
@@ -156,7 +164,7 @@ struct StringsdictEntryHasNoVariables: Problem, Equatable {
     }
 }
 
-struct StringsdictEntryHasTooManyArguments: Problem, Equatable {
+struct StringsdictEntryHasTooManyArguments: Problem, StringsdictProblem, Equatable {
     var kindIdentifier: String { "stringsdict_entry_has_too_many_arguments" }
     var uniquifyingInformation: String { "\(key)" }
     var severity: Severity { .error }
@@ -168,7 +176,7 @@ struct StringsdictEntryHasTooManyArguments: Problem, Equatable {
     }
 }
 
-struct StringsdictEntryHasUnusedArguments: Problem, Equatable {
+struct StringsdictEntryHasUnusedArguments: Problem, StringsdictProblem, Equatable {
     var kindIdentifier: String { "stringsdict_entry_has_unused_arguments" }
     var uniquifyingInformation: String { "\(key)-\(positions)" }
     var severity: Severity { .warning }
@@ -182,7 +190,7 @@ struct StringsdictEntryHasUnusedArguments: Problem, Equatable {
     }
 }
 
-struct StringsdictEntryHasUnverifiableArgument: Problem, Equatable {
+struct StringsdictEntryHasUnverifiableArgument: Problem, StringsdictProblem, Equatable {
     var kindIdentifier: String { "stringsdict_entry_has_unverifiable_argument" }
     var uniquifyingInformation: String { "\(key)-\(position)" }
     var severity: Severity { .warning }
@@ -194,7 +202,7 @@ struct StringsdictEntryHasUnverifiableArgument: Problem, Equatable {
     }
 }
 
-struct StringsdictEntryMissingArgument: Problem, Equatable {
+struct StringsdictEntryMissingArgument: Problem, StringsdictProblem, Equatable {
     var kindIdentifier: String { "stringsdict_entry_missing_argument" }
     var uniquifyingInformation: String { "\(key)-\(position)" }
     var severity: Severity { .warning }
@@ -204,7 +212,7 @@ struct StringsdictEntryMissingArgument: Problem, Equatable {
     var message: String { "'\(key)' does not use argument \(position)" }
 }
 
-struct StringsdictEntryMissingFormatSpecTypeProblem: Problem, Equatable {
+struct StringsdictEntryMissingFormatSpecTypeProblem: Problem, StringsdictProblem, Equatable {
     var kindIdentifier: String { "stringsdict_entry_missing_format_spec_type" }
     var uniquifyingInformation: String { "\(key)" }
     var severity: Severity { .error }
@@ -213,7 +221,7 @@ struct StringsdictEntryMissingFormatSpecTypeProblem: Problem, Equatable {
     var message: String { "'\(key)' is missing NSStringFormatSpecTypeKey" }
 }
 
-struct StringsdictEntryMissingFormatValueTypeProblem: Problem, Equatable {
+struct StringsdictEntryMissingFormatValueTypeProblem: Problem, StringsdictProblem, Equatable {
     var kindIdentifier: String { "stringsdict_entry_missing_format_spec_value" }
     var uniquifyingInformation: String { "\(key)" }
     var severity: Severity { .error }
@@ -222,7 +230,7 @@ struct StringsdictEntryMissingFormatValueTypeProblem: Problem, Equatable {
     var message: String { "'\(key)' is missing NSStringFormatValueTypeKey" }
 }
 
-struct StringsdictKeyMissingFromBase: Problem, Equatable {
+struct StringsdictKeyMissingFromBase: Problem, StringsdictProblem, Equatable {
     var kindIdentifier: String { "stringsdict_key_missing_from_base" }
     var uniquifyingInformation: String { "\(key)" }
     var severity: Severity { .warning }
@@ -231,7 +239,7 @@ struct StringsdictKeyMissingFromBase: Problem, Equatable {
     var message: String { "'\(key)' is missing from the base translation" }
 }
 
-struct StringsdictKeyMissingFromTranslation: Problem, Equatable {
+struct StringsdictKeyMissingFromTranslation: Problem, StringsdictProblem, Equatable {
     var kindIdentifier: String { "stringsdict_key_missing_from_translation" }
     var uniquifyingInformation: String { "\(language)-\(key)" }
     var severity: Severity { .warning }

@@ -86,6 +86,7 @@ struct Stringsdict: ParsableCommand {
                     translationLanguageName: translationFile.nameExcludingExtension,
                     problemReporter: problemReporter)
             }
+            problemReporter.printSummary()
         }
     }
 }
