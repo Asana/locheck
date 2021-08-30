@@ -76,8 +76,8 @@ class ValidateStringsTests: XCTestCase {
         XCTAssertEqual(
             problemReporter.problems.map(\.messageForXcode),
             [
-                "def:0: error: Specifier for argument 1 does not match (should be d, is @)",
-                "def:0: error: Specifier for argument 2 does not match (should be @, is d)",
+                "def:0: error: Specifier for argument 1 does not match (should be d, is @) (string_has_invalid_argument)",
+                "def:0: error: Specifier for argument 2 does not match (should be @, is d) (string_has_invalid_argument)",
             ])
     }
 
@@ -127,7 +127,7 @@ class ValidateStringsTests: XCTestCase {
 
         XCTAssertEqual(
             problemReporter.problems.map(\.messageForXcode), [
-                "abc:1: warning: This string is missing from translation",
+                "abc:1: warning: This string is missing from translation (strings_key_missing_from_translation)",
             ])
     }
 }

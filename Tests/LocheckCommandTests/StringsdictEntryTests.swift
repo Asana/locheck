@@ -27,7 +27,7 @@ class StringsdictEntryTests: XCTestCase {
         let problemReporter = ProblemReporter(log: false)
         entry.validateRuleVariables(path: "en.stringsdict", problemReporter: problemReporter)
         XCTAssertEqual(problemReporter.problems.map(\.messageForXcode), [
-            "en.stringsdict:0: error: Variable xyz does not exist in 'abc' but is used in the format key",
+            "en.stringsdict:0: error: Variable xyz does not exist in 'abc' but is used in the format key (stringsdict_entry_has_missing_variable)",
         ])
     }
 
@@ -48,7 +48,7 @@ class StringsdictEntryTests: XCTestCase {
         let problemReporter = ProblemReporter(log: false)
         entry.validateRuleVariables(path: "en.stringsdict", problemReporter: problemReporter)
         XCTAssertEqual(problemReporter.problems.map(\.messageForXcode), [
-            "en.stringsdict:0: error: Variable xyz does not exist in 'abc' but is used in 'def'.other",
+            "en.stringsdict:0: error: Variable xyz does not exist in 'abc' but is used in 'def'.other (stringsdict_entry_has_missing_variable)",
         ])
     }
 
@@ -181,8 +181,8 @@ class StringsdictEntryTests: XCTestCase {
         let problemReporter = ProblemReporter(log: false)
         let argList = entry.getCanonicalArgumentList(path: "abc", problemReporter: problemReporter)
         XCTAssertEqual(problemReporter.problems.map(\.messageForXcode), [
-            "abc:0: error: Two permutations of 'abc' contain different format specifiers at position 2. '%1$d %2$@ other %3$d' uses '@', and '%1$d %2$d %3$d' uses 'd'.",
-            "abc:0: error: Two permutations of 'abc' contain different format specifiers at position 2. '%1$d %2$@ other %3$d' uses '@', and '%1$d %2$d %3$d other' uses 'd'.",
+            "abc:0: error: Two permutations of 'abc' contain different format specifiers at position 2. '%1$d %2$@ other %3$d' uses '@', and '%1$d %2$d %3$d' uses 'd'. (stringsdict_entry_has_invalid_specifier)",
+            "abc:0: error: Two permutations of 'abc' contain different format specifiers at position 2. '%1$d %2$@ other %3$d' uses '@', and '%1$d %2$d %3$d other' uses 'd'. (stringsdict_entry_has_invalid_specifier)",
         ])
         XCTAssertEqual(
             argList,
@@ -219,7 +219,7 @@ class StringsdictEntryTests: XCTestCase {
         let problemReporter = ProblemReporter(log: false)
         let argList = entry.getCanonicalArgumentList(path: "abc", problemReporter: problemReporter)
         XCTAssertEqual(problemReporter.problems.map(\.messageForXcode), [
-            "abc:0: warning: No permutation of 'abc' use argument(s) at position 2",
+            "abc:0: warning: No permutation of 'abc' use argument(s) at position 2 (stringsdict_entry_has_unused_arguments)",
         ])
         XCTAssertEqual(
             argList,

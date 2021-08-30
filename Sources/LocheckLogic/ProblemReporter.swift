@@ -22,7 +22,8 @@ public enum Severity: String {
 }
 
 public protocol Problem {
-    var identifier: String { get }
+    var kindIdentifier: String { get }
+    var uniquifyingInformation: String { get }
     var severity: Severity { get }
     var message: String { get }
 }
@@ -36,15 +37,10 @@ public class ProblemReporter {
         public let lineNumber: Int
         public let problem: Problem
 
-        /// Unique identifier for this problem on this line of this file
-        var identifier: String {
-            "\(path)-\(lineNumber)-\(problem.identifier)"
-        }
-
-        var messageForXcode: String { "\(path):\(lineNumber): \(problem.severity.rawValue): \(problem.message)" }
+        var messageForXcode: String { "\(path):\(lineNumber): \(problem.severity.rawValue): \(problem.message) (\(problem.kindIdentifier))" }
 
         public static func ==(a: LocalProblem, b: LocalProblem) -> Bool {
-            a.path == b.path && a.lineNumber == b.lineNumber && a.identifier == b.identifier && a.messageForXcode == b.messageForXcode
+            a.path == b.path && a.lineNumber == b.lineNumber && a.messageForXcode == b.messageForXcode
         }
     }
 

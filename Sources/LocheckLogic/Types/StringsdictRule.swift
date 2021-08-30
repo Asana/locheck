@@ -33,7 +33,11 @@ extension StringsdictRule {
             case "NSStringFormatValueTypeKey":
                 maybeValueType = valueNode.text
             default:
-                alternatives[valueKey] = LexedStringsdictString(string: valueNode.text ?? "")
+                guard let text = valueNode.text else {
+                    print("MISSING TEXT IN", valueKey)
+                    return nil
+                }
+                alternatives[valueKey] = LexedStringsdictString(string: text)
             }
         }
 

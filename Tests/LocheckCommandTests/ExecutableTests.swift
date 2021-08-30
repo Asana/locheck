@@ -57,13 +57,13 @@ class ExecutableTests: XCTestCase {
         """)
 
         XCTAssertEqual(stderr, """
-        Examples/Demo_Base.strings:3: warning: This string is missing from Demo_Translation
-        Examples/Demo_Translation.strings:3: warning: Does not include argument(s) at 1
-        Examples/Demo_Translation.strings:3: warning: Some arguments appear more than once in this translation
-        Examples/Demo_Translation.strings:3: error: Specifier for argument 2 does not match (should be @, is ld)
-        Examples/Demo_Translation.strings:5: error: Specifier for argument 2 does not match (should be d, is @)
-        Examples/Demo_Translation.strings:5: error: Specifier for argument 1 does not match (should be @, is d)
-        Examples/Demo_Translation.strings:7: warning: Does not include argument(s) at 1
+        Examples/Demo_Base.strings:3: warning: This string is missing from Demo_Translation (strings_key_missing_from_translation)
+        Examples/Demo_Translation.strings:3: warning: Does not include argument(s) at 1 (string_has_missing_arguments)
+        Examples/Demo_Translation.strings:3: warning: Some arguments appear more than once in this translation (string_has_duplicate_arguments)
+        Examples/Demo_Translation.strings:3: error: Specifier for argument 2 does not match (should be @, is ld) (string_has_invalid_argument)
+        Examples/Demo_Translation.strings:5: error: Specifier for argument 2 does not match (should be d, is @) (string_has_invalid_argument)
+        Examples/Demo_Translation.strings:5: error: Specifier for argument 1 does not match (should be @, is d) (string_has_invalid_argument)
+        Examples/Demo_Translation.strings:7: warning: Does not include argument(s) at 1 (string_has_missing_arguments)
 
         """)
     }
@@ -92,9 +92,9 @@ class ExecutableTests: XCTestCase {
         """)
 
         XCTAssertEqual(stderr, """
-        Examples/Demo_Base.stringsdict:0: warning: '%d/%d Completed' is missing from the the Demo_Translation translation
-        Examples/Demo_Base.stringsdict:0: warning: 'missing from translation' is missing from the the Demo_Translation translation
-        Examples/Demo_Translation.stringsdict:0: warning: 'missing from base' is missing from the base translation
+        Examples/Demo_Base.stringsdict:0: warning: '%d/%d Completed' is missing from the the Demo_Translation translation (stringsdict_key_missing_from_translation)
+        Examples/Demo_Base.stringsdict:0: warning: 'missing from translation' is missing from the the Demo_Translation translation (stringsdict_key_missing_from_translation)
+        Examples/Demo_Translation.stringsdict:0: warning: 'missing from base' is missing from the base translation (stringsdict_key_missing_from_base)
 
         """)
     }
