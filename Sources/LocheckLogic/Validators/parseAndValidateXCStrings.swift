@@ -67,7 +67,7 @@ func validateStrings(
 
     for baseString in baseStrings where translationStringMap[baseString.key] == nil {
         problemReporter.report(
-            StringsKeyMissingFromTranslation(
+            KeyMissingFromTranslation(
                 key: baseString.key,
                 language: translationLanguageName),
             path: baseString.path,

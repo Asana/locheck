@@ -20,5 +20,15 @@ public func parseAndValidateAndroidStrings(
         return
     }
 
-    print(base.plurals["number_days_after_completion"] ?? "nil")
+    validateAndroidStrings(
+        base: base,
+        translation: translation,
+        translationLanguageName: translationLanguageName,
+        problemReporter: problemReporter)
 }
+
+func validateAndroidStrings(
+    base: AndroidStringsFile,
+    translation: AndroidStringsFile,
+    translationLanguageName: String,
+    problemReporter: ProblemReporter) {}

@@ -8,6 +8,34 @@
 import Files
 import Foundation
 
+func validateKeyPresence(
+    basePath: String,
+    baseKeys: Set<String>,
+    baseLineNumberMap: [String: Int],
+    translationPath: String,
+    translationKeys: Set<String>,
+    translationLineNumberMap: [String: Int],
+    translationLanguageName: String,
+    problemReporter: ProblemReporter) {
+    for key in baseKeys.sorted() {
+        if !translationKeys.contains(key) {
+            problemReporter.report(
+                KeyMissingFromTranslation(key: key, language: translationLanguageName),
+                path: basePath,
+                lineNumber: baseLineNumberMap[key])
+        }
+    }
+
+    for key in translationKeys.sorted() {
+        if !baseKeys.contains(key) {
+            problemReporter.report(
+                KeyMissingFromBase(key: key),
+                path: translationPath,
+                lineNumber: translationLineNumberMap[key])
+        }
+    }
+}
+
 public func parseAndValidateStringsdict(
     base baseFile: File,
     translation translationFile: File,
@@ -21,24 +49,19 @@ public func parseAndValidateStringsdict(
     }
 
     let report = { (path: String, problem: Problem) -> Void in
-        // lineNumber is zero because we don't have it from SwiftyXMLParser.
-        problemReporter.report(problem, path: path, lineNumber: 0)
+        // lineNumber is nil because we don't have it from SwiftyXMLParser.
+        problemReporter.report(problem, path: path, lineNumber: nil)
     }
 
-    let baseKeys = Set(base.entries.map(\.key))
-    let translationKeys = Set(translation.entries.map(\.key))
-
-    for key in baseKeys.sorted() {
-        if !translationKeys.contains(key) {
-            report(baseFile.path, StringsdictKeyMissingFromTranslation(key: key, language: translationLanguageName))
-        }
-    }
-
-    for key in translationKeys.sorted() {
-        if !baseKeys.contains(key) {
-            report(translationFile.path, StringsdictKeyMissingFromBase(key: key))
-        }
-    }
+    validateKeyPresence(
+        basePath: baseFile.path,
+        baseKeys: Set(base.entries.map(\.key)),
+        baseLineNumberMap: [:], // don't have line numbers
+        translationPath: translationFile.path,
+        translationKeys: Set(translation.entries.map(\.key)),
+        translationLineNumberMap: [:], // don't have line numbers
+        translationLanguageName: translationLanguageName,
+        problemReporter: problemReporter)
 
     let baseEntries = base.entries.lo_makeDictionary { $0.key }
     for translation in translation.entries {

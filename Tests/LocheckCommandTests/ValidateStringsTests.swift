@@ -122,12 +122,12 @@ class ValidateStringsTests: XCTestCase {
                     path: "def",
                     line: nil)!,
             ],
-            translationLanguageName: "translation",
+            translationLanguageName: "trnsltn",
             problemReporter: problemReporter)
 
         XCTAssertEqual(
             problemReporter.problems.map(\.messageForXcode), [
-                "abc:1: warning: This string is missing from translation (strings_key_missing_from_translation)",
+                "abc:1: warning: 'missing' is missing from trnsltn (key_missing_from_translation)",
             ])
     }
 }

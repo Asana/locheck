@@ -32,7 +32,7 @@ extension AndroidStringsFile {
             problemReporter.report(
                 XMLSchemaProblem(message: "XML schema error: no dict at top level"),
                 path: path,
-                lineNumber: 0)
+                lineNumber: nil)
             return nil
         }
 

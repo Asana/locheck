@@ -16,7 +16,7 @@ func parseXML(file: File, problemReporter: ProblemReporter) -> XML.Accessor? {
         problemReporter.report(
             XMLErrorProblem(message: error.localizedDescription),
             path: file.path,
-            lineNumber: 0)
+            lineNumber: nil)
         return nil
     }
 }

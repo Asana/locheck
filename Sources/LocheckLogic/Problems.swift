@@ -17,7 +17,7 @@ protocol StringsProblem: SummarizableProblem {
 
 struct DuplicateEntries: Problem, Equatable {
     var kindIdentifier: String { "duplicate_entries" }
-    var uniquifyingInformation: String { if let context = context { return "\(context)-\(name)" } else { return name } }
+    var uniquifyingInformation: String { "\(context ?? "<root>")-\(name)" }
     var severity: Severity { .error }
     let context: String?
     let name: String
@@ -29,6 +29,25 @@ struct DuplicateEntries: Problem, Equatable {
             return "'\(name)' appears twice"
         }
     }
+}
+
+struct KeyMissingFromBase: Problem, StringsdictProblem, Equatable {
+    var kindIdentifier: String { "key_missing_from_base" }
+    var uniquifyingInformation: String { "\(key)" }
+    var severity: Severity { .warning }
+    let key: String
+
+    var message: String { "'\(key)' is missing from the base translation" }
+}
+
+struct KeyMissingFromTranslation: Problem, StringsProblem, Equatable {
+    var kindIdentifier: String { "key_missing_from_translation" }
+    var uniquifyingInformation: String { "\(language)-\(key)" }
+    var severity: Severity { .warning }
+    let key: String
+    let language: String
+
+    var message: String { "'\(key)' is missing from \(language)" }
 }
 
 struct LprojFileMissingFromTranslation: Problem, Equatable {
@@ -90,16 +109,6 @@ struct StringHasMissingArguments: Problem, StringsProblem, Equatable {
     let args: [String]
 
     var message: String { "Does not include argument(s) at \(args.joined(separator: ", "))" }
-}
-
-struct StringsKeyMissingFromTranslation: Problem, StringsProblem, Equatable {
-    var kindIdentifier: String { "strings_key_missing_from_translation" }
-    var uniquifyingInformation: String { "\(language)-\(key)" }
-    var severity: Severity { .warning }
-    let key: String
-    let language: String
-
-    var message: String { "This string is missing from \(language)" }
 }
 
 struct StringsdictEntryContainsNoVariablesProblem: Problem, StringsdictProblem, Equatable {
@@ -244,25 +253,6 @@ struct StringsdictEntryMissingFormatValueTypeProblem: Problem, StringsdictProble
     let key: String
 
     var message: String { "'\(key)' is missing NSStringFormatValueTypeKey" }
-}
-
-struct StringsdictKeyMissingFromBase: Problem, StringsdictProblem, Equatable {
-    var kindIdentifier: String { "stringsdict_key_missing_from_base" }
-    var uniquifyingInformation: String { "\(key)" }
-    var severity: Severity { .warning }
-    let key: String
-
-    var message: String { "'\(key)' is missing from the base translation" }
-}
-
-struct StringsdictKeyMissingFromTranslation: Problem, StringsdictProblem, Equatable {
-    var kindIdentifier: String { "stringsdict_key_missing_from_translation" }
-    var uniquifyingInformation: String { "\(language)-\(key)" }
-    var severity: Severity { .warning }
-    let key: String
-    let language: String
-
-    var message: String { "'\(key)' is missing from the the \(language) translation" }
 }
 
 struct XMLErrorProblem: Problem, Equatable {

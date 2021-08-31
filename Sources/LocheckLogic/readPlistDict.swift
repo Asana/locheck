@@ -16,7 +16,7 @@ func readPlistDict(
         problemReporter.report(
             XMLSchemaProblem(message: "Malformed plist; object isn't a dict"),
             path: path,
-            lineNumber: 0)
+            lineNumber: nil)
         return []
     }
     var results = [(String, XML.Element)]()
@@ -25,7 +25,7 @@ func readPlistDict(
             problemReporter.report(
                 XMLSchemaProblem(message: "Malformed plist; can't find next key in dict"),
                 path: path,
-                lineNumber: 0)
+                lineNumber: nil)
             return []
         }
         results.append((key, root.childElements[i + 1]))

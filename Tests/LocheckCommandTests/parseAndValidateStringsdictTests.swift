@@ -27,13 +27,13 @@ class ParseAndValidateStringsdictTests: XCTestCase {
         XCTAssertEqual(problemReporter.problems.count, 8)
         XCTAssertEqual(
             problemReporter.problems[0].messageForXcode,
-            "\(packageRootPath)/Examples/Demo_Base.stringsdict:0: warning: '%d/%d Completed' is missing from the the Demo_Translation translation (stringsdict_key_missing_from_translation)")
+            "\(packageRootPath)/Examples/Demo_Base.stringsdict:0: warning: '%d/%d Completed' is missing from Demo_Translation (key_missing_from_translation)")
         XCTAssertEqual(
             problemReporter.problems[1].messageForXcode,
-            "\(packageRootPath)/Examples/Demo_Base.stringsdict:0: warning: 'missing from translation' is missing from the the Demo_Translation translation (stringsdict_key_missing_from_translation)")
+            "\(packageRootPath)/Examples/Demo_Base.stringsdict:0: warning: 'missing from translation' is missing from Demo_Translation (key_missing_from_translation)")
         XCTAssertEqual(
             problemReporter.problems[2].messageForXcode,
-            "\(packageRootPath)/Examples/Demo_Translation.stringsdict:0: warning: 'missing from base' is missing from the base translation (stringsdict_key_missing_from_base)")
+            "\(packageRootPath)/Examples/Demo_Translation.stringsdict:0: warning: 'missing from base' is missing from the base translation (key_missing_from_base)")
         XCTAssertEqual(
             problemReporter.problems[3].messageForXcode,
             "\(packageRootPath)/Examples/Demo_Translation.stringsdict:0: ignored: Argument 2 in permutation '%2$lu jours toutes les %d semaines of 'Every %d week(s) on %lu days' has an implicit position. Use an explicit position for safety. (stringsdict_entry_has_implicit_position)")
