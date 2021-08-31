@@ -31,4 +31,24 @@ func validateAndroidStrings(
     base: AndroidStringsFile,
     translation: AndroidStringsFile,
     translationLanguageName: String,
-    problemReporter: ProblemReporter) {}
+    problemReporter: ProblemReporter) {
+    validateKeyPresence(
+        basePath: base.path,
+        baseKeys: Set(base.strings.map(\.key)),
+        baseLineNumberMap: [:], // don't have line numbers
+        translationPath: translation.path,
+        translationKeys: Set(translation.strings.map(\.key)),
+        translationLineNumberMap: [:], // don't have line numbers
+        translationLanguageName: translationLanguageName,
+        problemReporter: problemReporter)
+
+    validateKeyPresence(
+        basePath: base.path,
+        baseKeys: Set(base.plurals.map(\.key)),
+        baseLineNumberMap: [:], // don't have line numbers
+        translationPath: translation.path,
+        translationKeys: Set(translation.plurals.map(\.key)),
+        translationLineNumberMap: [:], // don't have line numbers
+        translationLanguageName: translationLanguageName,
+        problemReporter: problemReporter)
+}

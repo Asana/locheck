@@ -47,49 +47,60 @@ public func parseAndValidateStringsdict(
     guard let translation = Stringsdict(path: translationFile.path, problemReporter: problemReporter) else {
         return
     }
+    validateStringsdict(
+        base: base,
+        translation: translation,
+        translationLanguageName: translationLanguageName,
+        problemReporter: problemReporter)
+}
 
+func validateStringsdict(
+    base baseStringsdict: Stringsdict,
+    translation translationStringsdict: Stringsdict,
+    translationLanguageName: String,
+    problemReporter: ProblemReporter) {
     let report = { (path: String, problem: Problem) -> Void in
         // lineNumber is nil because we don't have it from SwiftyXMLParser.
         problemReporter.report(problem, path: path, lineNumber: nil)
     }
 
     validateKeyPresence(
-        basePath: baseFile.path,
-        baseKeys: Set(base.entries.map(\.key)),
+        basePath: baseStringsdict.path,
+        baseKeys: Set(baseStringsdict.entries.map(\.key)),
         baseLineNumberMap: [:], // don't have line numbers
-        translationPath: translationFile.path,
-        translationKeys: Set(translation.entries.map(\.key)),
+        translationPath: translationStringsdict.path,
+        translationKeys: Set(translationStringsdict.entries.map(\.key)),
         translationLineNumberMap: [:], // don't have line numbers
         translationLanguageName: translationLanguageName,
         problemReporter: problemReporter)
 
-    let baseEntries = base.entries.lo_makeDictionary { $0.key }
-    for translation in translation.entries {
+    let baseEntries = baseStringsdict.entries.lo_makeDictionary { $0.key }
+    for translation in translationStringsdict.entries {
         let translationArgs = translation.getCanonicalArgumentList(
-            path: translationFile.path,
+            path: translationStringsdict.path,
             problemReporter: problemReporter)
         guard let baseArgs = baseEntries[translation.key]?
-            .getCanonicalArgumentList(path: baseFile.path, problemReporter: problemReporter) else {
+            .getCanonicalArgumentList(path: baseStringsdict.path, problemReporter: problemReporter) else {
             continue // error already logged above
         }
 
         if translationArgs.count > baseArgs.count {
             let extraArgs = translationArgs.dropFirst(baseArgs.count).map { $0?.specifier ?? "<missing>" }
             report(
-                translationFile.path,
+                translationStringsdict.path,
                 StringsdictEntryHasTooManyArguments(key: translation.key, extraArgs: extraArgs))
         }
 
         for (i, maybeBaseArg) in baseArgs.enumerated() {
             guard i < translationArgs.count, let translationArg = translationArgs[i] else {
                 report(
-                    translationFile.path,
+                    translationStringsdict.path,
                     StringsdictEntryMissingArgument(key: translation.key, position: i + 1))
                 continue
             }
             guard let baseArg = maybeBaseArg else {
                 report(
-                    translationFile.path,
+                    translationStringsdict.path,
                     StringsdictEntryHasUnverifiableArgument(
                         key: translation.key,
                         position: translationArg.position))
@@ -97,7 +108,7 @@ public func parseAndValidateStringsdict(
             }
             if translationArg.specifier != baseArg.specifier {
                 report(
-                    translationFile.path,
+                    translationStringsdict.path,
                     StringsdictEntryHasInvalidArgument(
                         key: translation.key,
                         position: translationArg.position,
