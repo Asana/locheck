@@ -41,7 +41,7 @@ public func validateLproj(base: LprojFiles, translation: LprojFiles, problemRepo
                 lineNumber: 0)
             continue
         }
-        parseAndValidateXCStringsdict(
+        parseAndValidateStringsdict(
             base: baseStringsdictFile,
             translation: translationStringsdictFile,
             translationLanguageName: translation.name,

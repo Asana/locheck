@@ -1,5 +1,5 @@
 //
-//  parseAndValidateXCStringsdictTests.swift
+//  parseAndValidateStringsdictTests.swift
 //
 //
 //  Created by Steve Landey on 8/30/21.
@@ -19,7 +19,7 @@ class ParseAndValidateStringsdictTests: XCTestCase {
 
     func testParseAndValidateDemoFiles() {
         let problemReporter = ProblemReporter(log: false)
-        parseAndValidateXCStringsdict(
+        parseAndValidateStringsdict(
             base: try! File(path: "\(packageRootPath)/Examples/Demo_Base.stringsdict"),
             translation: try! File(path: "\(packageRootPath)/Examples/Demo_Translation.stringsdict"),
             translationLanguageName: "Demo_Translation",

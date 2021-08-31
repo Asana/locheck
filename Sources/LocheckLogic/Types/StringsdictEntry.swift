@@ -61,7 +61,7 @@ struct StringsdictEntry: Equatable {
             problemReporter.report(problem, path: path, lineNumber: 0)
         }
 
-        let permutations = allPermutations.map { LocalizedString(string: $0, path: path, line: 0) }
+        let permutations = allPermutations.map { FormatString(string: $0, path: path, line: nil) }
         let numArgs = permutations.flatMap(\.arguments).reduce(0) { max($0, $1.position) }
         var arguments = [FormatArgument?]((0 ..< numArgs).map { _ in nil })
         var originalStringForArgument = [String]((0 ..< numArgs).map { _ in "" })

@@ -15,6 +15,22 @@ protocol StringsProblem: SummarizableProblem {
     var key: String { get }
 }
 
+struct DuplicateEntries: Problem, Equatable {
+    var kindIdentifier: String { "duplicate_entries" }
+    var uniquifyingInformation: String { if let context = context { return "\(context)-\(name)" } else { return name } }
+    var severity: Severity { .error }
+    let context: String?
+    let name: String
+
+    var message: String {
+        if let context = context {
+            return "'\(name)' appears twice in '\(context)'"
+        } else {
+            return "'\(name)' appears twice"
+        }
+    }
+}
+
 struct LprojFileMissingFromTranslation: Problem, Equatable {
     var kindIdentifier: String { "lproj_file_missing_from_translation" }
     var uniquifyingInformation: String { "\(language)-\(key)" }

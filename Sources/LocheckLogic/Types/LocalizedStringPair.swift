@@ -15,19 +15,21 @@ import Foundation
  "base string with an argument %@" = "translated string with an argument %@";
  ```
  */
-struct LocalizedStringPair {
+struct LocalizedStringPair: Equatable {
     let key: String
     let string: String
-    let base: LocalizedString
-    let translation: LocalizedString
+    let base: FormatString
+    let translation: FormatString
     let path: String
-    let line: Int
+    let line: Int?
+}
 
+extension LocalizedStringPair {
     init?(
         string: String,
         path: String,
-        line: Int,
-        baseStringMap: [String: LocalizedString]? = nil) { // only pass for translation strings
+        line: Int?,
+        baseStringMap: [String: FormatString]? = nil) { // only pass for translation strings
         guard
             let match = Expressions.stringPairRegex.lo_matches(in: string).first,
             let keySequence = match.lo_getGroup(in: string, named: "key")?.dropFirst().dropLast(),
@@ -45,8 +47,8 @@ struct LocalizedStringPair {
         if let base = baseStringMap?[key] {
             self.base = base
         } else {
-            base = LocalizedString(string: key, path: path, line: line)
+            base = FormatString(string: key, path: path, line: line)
         }
-        translation = LocalizedString(string: String(valueSequence), path: path, line: line)
+        translation = FormatString(string: String(valueSequence), path: path, line: line)
     }
 }

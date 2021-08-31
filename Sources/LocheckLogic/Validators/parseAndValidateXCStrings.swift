@@ -26,7 +26,7 @@ public func parseAndValidateXCStrings(
                 line: $0.0 + 1)
         }
 
-    var baseStringMap = [String: LocalizedString]()
+    var baseStringMap = [String: FormatString]()
     for (i, line) in base.lo_lines.enumerated() {
         guard let basePair = LocalizedStringPair(
             string: line,

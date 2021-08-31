@@ -9,18 +9,6 @@ import Files
 import Foundation
 import SwiftyXMLParser
 
-private func parseXML(file: File, problemReporter: ProblemReporter) -> XML.Accessor? {
-    do {
-        return XML.parse(try file.read())
-    } catch {
-        problemReporter.report(
-            XMLErrorProblem(message: error.localizedDescription),
-            path: file.path,
-            lineNumber: 0)
-        return nil
-    }
-}
-
 /**
  Each stringsdict file contains an unsorted list of entry key-value pairs. The key is what appears in your
  source code (`NSLocalizedString("That's %d cool motorcycle(s)!")`) and the value is what we call an _entry_.
