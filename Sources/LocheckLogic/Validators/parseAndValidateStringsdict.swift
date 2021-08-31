@@ -1,5 +1,5 @@
 //
-//  parseAndValidateStringsdict.swift
+//  parseAndValidateXCStringsdict.swift
 //
 //
 //  Created by Steve Landey on 8/17/21.
@@ -8,7 +8,7 @@
 import Files
 import Foundation
 
-public func parseAndValidateStringsdict(
+public func parseAndValidateXCStringsdict(
     base baseFile: File,
     translation translationFile: File,
     translationLanguageName: String,

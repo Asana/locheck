@@ -80,7 +80,7 @@ locheck lproj MyApp/en.lproj MyApp/fr.lproj
 You can directly compare `.strings` files against each other. Again, pass the base language first, followed by the rest.
 
 ```sh
-locheck strings MyApp/en.lproj/Localizable.strings MyApp/fr.lproj/Localizable.strings
+locheck xcstrings MyApp/en.lproj/Localizable.strings MyApp/fr.lproj/Localizable.strings
 ```
 
 ## Contributing

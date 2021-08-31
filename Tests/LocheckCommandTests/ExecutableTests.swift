@@ -37,7 +37,7 @@ class ExecutableTests: XCTestCase {
 
         let process = Process()
         process.executableURL = binary
-        process.arguments = ["strings", "Examples/Demo_Base.strings", "Examples/Demo_Translation.strings"]
+        process.arguments = ["xcstrings", "Examples/Demo_Base.strings", "Examples/Demo_Translation.strings"]
 
         let stdoutPipe = Pipe()
         let stderrPipe = Pipe()

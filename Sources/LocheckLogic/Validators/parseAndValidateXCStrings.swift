@@ -1,5 +1,5 @@
 //
-//  parseAndValidateStrings.swift
+//  parseAndValidateXCStrings.swift
 //
 //
 //  Created by Steve Landey on 8/17/21.
@@ -11,7 +11,7 @@ import Foundation
 /**
  Directly compare two `.strings` files
  */
-public func parseAndValidateStrings(
+public func parseAndValidateXCStrings(
     base: File,
     translation: File,
     translationLanguageName: String,
