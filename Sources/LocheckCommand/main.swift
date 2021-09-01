@@ -307,8 +307,8 @@ struct DiscoverValues: ParsableCommand {
                 return // caught by validation already
             }
 
-            print("Source of truth: \(primaryValues)")
-            print("Translations to check: \(translationValues)")
+            print("Source of truth: \(primaryValues.path)")
+            print("Translations to check: \(translationValues.count)")
 
             withProblemReporter(ignore: ignore) { problemReporter in
                 for translation in translationValues {

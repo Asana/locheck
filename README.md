@@ -65,7 +65,7 @@ Other install methods may be added upon request as we discover people's needs. T
 
 ## Usage
 
-There are a few ways to invoke `locheck` depending on how much magic you want.
+There are a few ways to invoke `locheck` depending on how much magic you want. In all cases, Locheck will write to stderr for Xcode integration, and stdout for a human-readable summary. Pull requests for additional output formats will probably be accepted.
 
 ### `discoverlproj`
 
@@ -88,6 +88,8 @@ locheck discovervalues ./commons/src/main/res
 ### Other ways
 
 Run `locheck --help` to see a list of all commands. The rest of the commands just let you directly compare individual files of different types.
+
+## Example output
 
 ## Contributing
 
