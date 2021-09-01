@@ -75,12 +75,20 @@ You can pass a list of `lproj` files to `locheck lproj`, starting with the base 
 locheck lproj MyApp/en.lproj MyApp/fr.lproj
 ```
 
-### `strings`
+### `xcstrings`
 
 You can directly compare `.strings` files against each other. Again, pass the base language first, followed by the rest.
 
 ```sh
 locheck xcstrings MyApp/en.lproj/Localizable.strings MyApp/fr.lproj/Localizable.strings
+```
+
+### `androidstrings` (experimental!)
+
+You can directly compare `android.xml` files against each other. Locheck only looks for missing keys.
+
+```sh
+locheck androidstrings ./common/src/main/res/values/strings.xml ./common/src/main/res/values-LANG/strings.xml
 ```
 
 ## Contributing
