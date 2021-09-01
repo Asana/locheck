@@ -100,7 +100,6 @@ struct AndroidStrings: ParsableCommand {
                     problemReporter: problemReporter)
             }
             problemReporter.printSummary()
-            print("Be aware that Android validation is incomplete.")
         }
     }
 }
