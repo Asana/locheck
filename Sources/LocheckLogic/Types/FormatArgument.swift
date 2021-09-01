@@ -10,7 +10,7 @@ import Foundation
 /// The contents of one "%d" or "%2$@" argument. (These would be
 /// `FormatArgument(specifier: "d", position: <automatic>)` and
 /// `FormatArgument(specifier: "@", position: 2)`, respectively.)
-struct FormatArgument: Equatable {
+struct FormatArgument: Equatable, Hashable {
     let specifier: String
     let position: Int
     let isPositionExplicit: Bool

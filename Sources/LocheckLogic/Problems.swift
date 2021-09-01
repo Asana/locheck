@@ -60,6 +60,17 @@ struct LprojFileMissingFromTranslation: Problem, Equatable {
     var message: String { "\(key) missing from \(language)" }
 }
 
+struct PhraseHasMissingArguments: Problem, StringsProblem, Equatable {
+    var kindIdentifier: String { "phrase_has_missing_arguments" }
+    var uniquifyingInformation: String { "\(language)-\(key)" }
+    var severity: Severity { .warning }
+    let key: String
+    let language: String
+    let args: [String]
+
+    var message: String { "Does not include argument(s): \(args.joined(separator: ", "))" }
+}
+
 struct StringHasDuplicateArguments: Problem, StringsProblem, Equatable {
     var kindIdentifier: String { "string_has_duplicate_arguments" }
     var uniquifyingInformation: String { "\(language)-\(key)" }
@@ -108,7 +119,7 @@ struct StringHasMissingArguments: Problem, StringsProblem, Equatable {
     let language: String
     let args: [String]
 
-    var message: String { "Does not include argument(s) at \(args.joined(separator: ", "))" }
+    var message: String { "'\(key)' does not include argument(s) at \(args.joined(separator: ", "))" }
 }
 
 struct StringsdictEntryContainsNoVariablesProblem: Problem, StringsdictProblem, Equatable {

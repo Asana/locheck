@@ -20,8 +20,8 @@ struct AndroidString: Equatable {
 
 struct AndroidStringsFile: Equatable {
     let path: String
-    let strings: [String: AndroidString]
-    let plurals: [String: AndroidPlural]
+    let strings: [AndroidString]
+    let plurals: [AndroidPlural]
 }
 
 extension AndroidStringsFile {
@@ -38,8 +38,11 @@ extension AndroidStringsFile {
             return nil
         }
 
-        var strings = [String: AndroidString]()
-        var plurals = [String: AndroidPlural]()
+        var strings = [AndroidString]()
+        var plurals = [AndroidPlural]()
+
+        var seenKeys = Set<String>()
+
         for (i, element) in list.enumerated() {
             guard let key = element.attributes["name"] else {
                 problemReporter.report(
@@ -48,10 +51,11 @@ extension AndroidStringsFile {
                     lineNumber: nil)
                 continue
             }
-            guard strings[key] == nil else {
+            guard !seenKeys.contains(key) else {
                 problemReporter.report(DuplicateEntries(context: nil, name: key), path: path, lineNumber: nil)
                 continue
             }
+            seenKeys.insert(key)
 
             guard !(element.attributes["translatable"] == "false") else {
                 continue // skip on purpose!
@@ -59,9 +63,9 @@ extension AndroidStringsFile {
 
             switch element.name {
             case "string":
-                strings[key] = AndroidString(
+                strings.append(AndroidString(
                     key: key,
-                    value: FormatString(string: element.text ?? "", path: path, line: nil))
+                    value: FormatString(string: element.text ?? "", path: path, line: nil)))
             case "plurals":
                 var values = [String: FormatString]()
                 for child in element.childElements {
@@ -88,7 +92,7 @@ extension AndroidStringsFile {
                     }
                     values[childKey] = FormatString(string: child.text ?? "", path: path, line: nil)
                 }
-                plurals[key] = AndroidPlural(key: key, values: values)
+                plurals.append(AndroidPlural(key: key, values: values))
             default:
                 problemReporter.report(
                     XMLSchemaProblem(message: "Item \(i + 1) has unknown type: '\(element.name)'"),
