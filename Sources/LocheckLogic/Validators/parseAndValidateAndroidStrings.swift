@@ -58,9 +58,9 @@ func validateAndroidStrings(
             continue // We already threw an error for this in validateKeyPresence()
         }
 
-        let baseArgs = baseString.value.arguments
+        let baseArgs = baseString.value.arguments.sorted(by: { $0.position < $1.position })
         let basePhraseArgs = baseString.value.phraseArguments
-        let translationArgs = translationString.value.arguments
+        let translationArgs = translationString.value.arguments.sorted(by: { $0.position < $1.position })
         let translationPhraseArgs = translationString.value.phraseArguments
 
         guard translationArgs != baseArgs || translationPhraseArgs != basePhraseArgs else {
@@ -114,6 +114,24 @@ func validateAndroidStrings(
                     args: Array(phraseMissingFromBase).sorted()),
                 path: base.path,
                 lineNumber: nil)
+        }
+
+
+        for arg in translationString.value.arguments {
+            guard let baseArg = baseArgs.first(where: { $0.position == arg.position }) else {
+                continue // we already logged an error for this above
+            }
+            if arg.specifier != baseArg.specifier {
+                problemReporter.report(
+                    StringHasInvalidArgument(
+                        key: translationString.key,
+                        language: translationLanguageName,
+                        argPosition: arg.position,
+                        baseArgSpecifier: baseArg.specifier,
+                        argSpecifier: arg.specifier),
+                    path: translation.path,
+                    lineNumber: nil)
+            }
         }
     }
 }

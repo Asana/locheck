@@ -46,7 +46,7 @@ struct XCStrings: ParsableCommand {
     private var translation: [FileArg]
 
     @Option(help: ignoreHelpText)
-    private var ignore: [String]
+    private var ignore = [String]()
 
     func validate() throws {
         try base.validate(ext: "strings")
@@ -80,7 +80,7 @@ struct AndroidStrings: ParsableCommand {
     private var translation: [FileArg]
 
     @Option(help: ignoreHelpText)
-    private var ignore: [String]
+    private var ignore = [String]()
 
     func validate() throws {
         try base.validate(ext: "xml")
@@ -117,7 +117,7 @@ struct Stringsdict: ParsableCommand {
     private var translation: [FileArg]
 
     @Option(help: ignoreHelpText)
-    private var ignore: [String]
+    private var ignore = [String]()
 
     func validate() throws {
         try base.validate(ext: "stringsdict")
@@ -150,7 +150,7 @@ struct Lproj: ParsableCommand {
     private var translation: [DirectoryArg]
 
     @Option(help: ignoreHelpText)
-    private var ignore: [String]
+    private var ignore = [String]()
 
     func validate() throws {
         try base.validate(ext: "lproj")
@@ -183,7 +183,7 @@ struct Discover: ParsableCommand {
     private var directories: [DirectoryArg]
 
     @Option(help: ignoreHelpText)
-    private var ignore: [String]
+    private var ignore = [String]()
 
     func validate() throws {
         for directory in directories {

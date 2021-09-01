@@ -119,7 +119,7 @@ func validateStrings(
 
         for arg in translationString.translation.arguments {
             guard let baseArg = baseArgs.first(where: { $0.position == arg.position }) else {
-                continue
+                continue // we already logged an error for this above
             }
             if arg.specifier != baseArg.specifier {
                 problemReporter.report(
