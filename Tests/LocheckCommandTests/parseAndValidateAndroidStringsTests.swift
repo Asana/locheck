@@ -25,7 +25,7 @@ class ParseAndValidateAndroidStringsTests: XCTestCase {
             translationLanguageName: "demo",
             problemReporter: problemReporter)
 
-        XCTAssertEqual(problemReporter.problems.count, 2)
+        XCTAssertEqual(problemReporter.problems.count, 5)
         let problems = problemReporter.problems.map(\.problem)
         CastAndAssertEqual(problems[0], KeyMissingFromTranslation(key: "missing_from_translation", language: "demo"))
         CastAndAssertEqual(problems[1], KeyMissingFromBase(key: "missing_from_base"))

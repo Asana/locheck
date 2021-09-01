@@ -105,7 +105,10 @@ public class ProblemReporter {
             errorCount == 1 ? "1 error" : "\(errorCount) errors",
         ]
         print(aggregates.joined(separator: ", "))
-        print("Ignored", ignoredProblemIdentifiers.joined(separator: (", ")))
+
+        if !ignoredProblemIdentifiers.isEmpty {
+            print("Ignored", ignoredProblemIdentifiers.joined(separator: (", ")))
+        }
     }
 
     /**
