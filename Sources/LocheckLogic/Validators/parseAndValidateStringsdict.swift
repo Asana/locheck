@@ -35,10 +35,10 @@ func validateStringsdict(
     validateKeyPresence(
         basePath: baseStringsdict.path,
         baseKeys: Set(baseStringsdict.entries.map(\.key)),
-        baseLineNumberMap: [:], // don't have line numbers
+        baseLineNumberMap: baseStringsdict.entries.lo_makeDictionary(makeKey: \.key, makeValue: \.line),
         translationPath: translationStringsdict.path,
         translationKeys: Set(translationStringsdict.entries.map(\.key)),
-        translationLineNumberMap: [:], // don't have line numbers
+        translationLineNumberMap: translationStringsdict.entries.lo_makeDictionary(makeKey: \.key, makeValue: \.line),
         translationLanguageName: translationLanguageName,
         problemReporter: problemReporter)
 

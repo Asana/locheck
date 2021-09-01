@@ -31,23 +31,24 @@ func validateAndroidStrings(
     translation: AndroidStringsFile,
     translationLanguageName: String,
     problemReporter: ProblemReporter) {
+
     validateKeyPresence(
         basePath: base.path,
         baseKeys: Set(base.strings.map(\.key)),
-        baseLineNumberMap: [:], // don't have line numbers
+        baseLineNumberMap: base.strings.lo_makeDictionary(makeKey: \.key, makeValue: \.line),
         translationPath: translation.path,
         translationKeys: Set(translation.strings.map(\.key)),
-        translationLineNumberMap: [:], // don't have line numbers
+        translationLineNumberMap: translation.strings.lo_makeDictionary(makeKey: \.key, makeValue: \.line),
         translationLanguageName: translationLanguageName,
         problemReporter: problemReporter)
 
     validateKeyPresence(
         basePath: base.path,
         baseKeys: Set(base.plurals.map(\.key)),
-        baseLineNumberMap: [:], // don't have line numbers
+        baseLineNumberMap: base.plurals.lo_makeDictionary(makeKey: \.key, makeValue: \.line),
         translationPath: translation.path,
         translationKeys: Set(translation.plurals.map(\.key)),
-        translationLineNumberMap: [:], // don't have line numbers
+        translationLineNumberMap: translation.plurals.lo_makeDictionary(makeKey: \.key, makeValue: \.line),
         translationLanguageName: translationLanguageName,
         problemReporter: problemReporter)
 
