@@ -255,7 +255,9 @@ extension StringsdictEntry {
             switch valueKey {
             case "NSStringLocalizedFormatKey":
                 guard valueNode.name == "string" else {
-                    report(XMLSchemaProblem(message: "Unexpected value for key \(valueKey): \(valueNode.name)"), valueNode.lineNumberStart)
+                    report(
+                        XMLSchemaProblem(message: "Unexpected value for key \(valueKey): \(valueNode.name)"),
+                        valueNode.lineNumberStart)
                     return nil
                 }
                 maybeFormatKey = valueText

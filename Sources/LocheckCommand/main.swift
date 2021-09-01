@@ -19,7 +19,14 @@ struct Locheck: ParsableCommand {
         .lproj files, `lproj` operates on specific .lproj files, and `strings` operates on
         specific .strings files.
         """,
-        subcommands: [DiscoverLproj.self, DiscoverValues.self, Lproj.self, XCStrings.self, Stringsdict.self, AndroidStrings.self])
+        subcommands: [
+            DiscoverLproj.self,
+            DiscoverValues.self,
+            Lproj.self,
+            XCStrings.self,
+            Stringsdict.self,
+            AndroidStrings.self,
+        ])
 }
 
 private func withProblemReporter(ignore: [String], _ block: (ProblemReporter) -> Void) {
@@ -32,7 +39,8 @@ private func withProblemReporter(ignore: [String], _ block: (ProblemReporter) ->
     print("Finished validating")
 }
 
-private let ignoreHelpText: ArgumentHelp = "Ignore a rule completely. The most common values are key_missing_from_base and key_missing_from_translation, for when you know keys are missing and it's OK."
+private let ignoreHelpText: ArgumentHelp =
+    "Ignore a rule completely. The most common values are key_missing_from_base and key_missing_from_translation, for when you know keys are missing and it's OK."
 
 struct XCStrings: ParsableCommand {
     static let configuration = CommandConfiguration(
@@ -180,7 +188,8 @@ struct DiscoverLproj: ParsableCommand {
     @Option(help: "The authoritative language. Defaults to 'en'. ")
     private var base = "en"
 
-    @Argument(help: "One or more directories full of .lproj files, with one of them being authoritative (defined by --base).")
+    @Argument(
+        help: "One or more directories full of .lproj files, with one of them being authoritative (defined by --base).")
     private var directories: [DirectoryArg]
 
     @Option(help: ignoreHelpText)
@@ -199,7 +208,6 @@ struct DiscoverLproj: ParsableCommand {
                 } else {
                     hasTranslation = true
                 }
-
             }
 
             if !hasBase {

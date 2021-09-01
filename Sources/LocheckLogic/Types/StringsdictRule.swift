@@ -21,7 +21,7 @@ struct StringsdictRule: Equatable {
 
 extension StringsdictRule {
     init?(key: String, node: XML.Element, path: String, problemReporter: ProblemReporter) {
-        self.line = node.lineNumberStart
+        line = node.lineNumberStart
 
         let report = { (problem: Problem) -> Void in
             problemReporter.report(problem, path: path, lineNumber: node.lineNumberStart)

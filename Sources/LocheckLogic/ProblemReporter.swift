@@ -98,8 +98,8 @@ public class ProblemReporter {
             }
         }
 
-        let warningCount = problems.filter({ $0.problem.severity == .warning }).count
-        let errorCount = problems.filter({ $0.problem.severity == .error }).count
+        let warningCount = problems.filter { $0.problem.severity == .warning }.count
+        let errorCount = problems.filter { $0.problem.severity == .error }.count
         let aggregates: [String] = [
             warningCount == 1 ? "1 warning" : "\(warningCount) warnings",
             errorCount == 1 ? "1 error" : "\(errorCount) errors",
@@ -107,7 +107,7 @@ public class ProblemReporter {
         print(aggregates.joined(separator: ", "))
 
         if !ignoredProblemIdentifiers.isEmpty {
-            print("Ignored", ignoredProblemIdentifiers.joined(separator: (", ")))
+            print("Ignored", ignoredProblemIdentifiers.joined(separator: ", "))
         }
     }
 

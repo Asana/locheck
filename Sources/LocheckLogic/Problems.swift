@@ -97,7 +97,9 @@ struct PhraseHasExtraArguments: Problem, StringsProblem, Equatable {
     let language: String
     let args: [String]
 
-    var message: String { "Translation of '\(key)' includes arguments that don't exist in the source: \(args.joined(separator: ", "))" }
+    var message: String {
+        "Translation of '\(key)' includes arguments that don't exist in the source: \(args.joined(separator: ", "))"
+    }
 }
 
 struct StringHasDuplicateArguments: Problem, StringsProblem, Equatable {

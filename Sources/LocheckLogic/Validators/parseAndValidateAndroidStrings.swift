@@ -31,7 +31,6 @@ func validateAndroidStrings(
     translation: AndroidStringsFile,
     translationLanguageName: String,
     problemReporter: ProblemReporter) {
-
     validateKeyPresence(
         basePath: base.path,
         baseKeys: Set(base.strings.map(\.key)),
@@ -96,7 +95,7 @@ func validateAndroidStrings(
                     language: translationLanguageName,
                     args: Array(argsMissingFromTranslation.sorted().map { String($0) })),
                 path: translation.path,
-                lineNumber:  baseString.line)
+                lineNumber: baseString.line)
         }
         if !phraseMissingFromTranslation.isEmpty {
             problemReporter.report(
@@ -116,7 +115,6 @@ func validateAndroidStrings(
                 path: translation.path,
                 lineNumber: baseString.line)
         }
-
 
         for arg in translationString.value.arguments {
             guard let baseArg = baseArgs.first(where: { $0.position == arg.position }) else {

@@ -27,8 +27,8 @@ public struct AndroidStringsFile: Equatable {
     let plurals: [AndroidPlural]
 }
 
-extension AndroidStringsFile {
-    public init?(path: String, problemReporter: ProblemReporter) {
+public extension AndroidStringsFile {
+    init?(path: String, problemReporter: ProblemReporter) {
         self.path = path
         guard let xml = parseXML(file: try! File(path: path), problemReporter: problemReporter) else {
             return nil
@@ -55,7 +55,10 @@ extension AndroidStringsFile {
                 continue
             }
             guard !seenKeys.contains(key) else {
-                problemReporter.report(DuplicateEntries(context: nil, name: key), path: path, lineNumber: element.lineNumberStart)
+                problemReporter.report(
+                    DuplicateEntries(context: nil, name: key),
+                    path: path,
+                    lineNumber: element.lineNumberStart)
                 continue
             }
             seenKeys.insert(key)
@@ -68,7 +71,10 @@ extension AndroidStringsFile {
             case "string":
                 if let cdata = element.CDATA {
                     guard let string = String(data: cdata, encoding: .utf8) else {
-                        problemReporter.report(CDATACannotBeDecoded(key: key), path: path, lineNumber: element.lineNumberStart)
+                        problemReporter.report(
+                            CDATACannotBeDecoded(key: key),
+                            path: path,
+                            lineNumber: element.lineNumberStart)
                         continue
                     }
                     strings.append(

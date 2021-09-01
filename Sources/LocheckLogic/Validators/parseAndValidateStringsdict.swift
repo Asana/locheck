@@ -31,7 +31,6 @@ func validateStringsdict(
     translation translationStringsdict: Stringsdict,
     translationLanguageName: String,
     problemReporter: ProblemReporter) {
-
     validateKeyPresence(
         basePath: baseStringsdict.path,
         baseKeys: Set(baseStringsdict.entries.map(\.key)),
