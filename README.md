@@ -8,9 +8,7 @@ An Xcode and Android localization file validator. Make sure your `.strings`, `.s
 
 ## What does it do?
 
-Locheck can perform two kinds of checks on `.strings` files.
-1. A string appears in `Localizable.strings` for your base language but is missing elsewhere. This is a source of UI bugs.
-2. A translated string uses incorrect arguments, for example a mismatched specifier or invalid position. This is a source of crashes:
+Locheck can perform many kinds of checks on localization files. The simplest one is making sure all strings appear in both the base language and translations, but it can also make sure all your format specifiers are consistent, even in `.stringsdict` files.
 
 Consider this string:
 
@@ -18,10 +16,22 @@ Consider this string:
 "Send %d donuts to %@" = "%@ to donuts %d send";
 ```
 
-The translation reads naturally on its own, but this would crash your app when iOS tries to format a number as an Objective-C object and and Objective-C object as a number. Instead, it should look like this:
+```xml
+<!-- values/strings.xml -->
+<string name="send_donuts">Send %d donuts to %s</string>
+<!-- values-translation/strings.xml -->
+<string name="send_donuts">%s to donuts %d send</string>
+```
+
+The translation reads naturally on its own, but this would crash your app when iOS or Android tries to format a number as a string and a string as a number. Instead, the translation should look like this:
 
 ```swift
 "Send %d donuts to %@" = "%1$@ to donuts %2$d send";
+```
+
+```xml
+<!-- values-translation/strings.xml -->
+<string name="send_donuts">%1$s to donuts %2$d send</string>
 ```
 
 Locheck will make sure you get it right.
@@ -51,53 +61,33 @@ mint install Asana/locheck --link
 locheck [...]
 ```
 
-Other install methods may be added upon request as we discover people's needs.
+Other install methods may be added upon request as we discover people's needs. This project is very new and setting up new installation methods takes time.
 
 ## Usage
 
-There are three ways to invoke `locheck` depending on how much magic you want.
+There are a few ways to invoke `locheck` depending on how much magic you want.
 
-### `discover`
+### `discoverlproj`
 
-The simplest way is to use `discover` and point to a directory containing all your `.lproj` files:
+The simplest way to use Locheck with Xcode is to use `discoverlproj` and point to a directory containing all your `.lproj` files:
 
 ```sh
-locheck discover "MyApp/Supporting Files" --default en # use English as the base language
+locheck discoverlproj "MyApp/Supporting Files" --default en # use English as the base language
 ```
 
 If you use a language besides English as your base, you'll need to pass it as an argument as shown in the example. Locheck does not try to read your xcodeproj file to figure it out.
 
-### `lproj`
+### `discovervalues`
 
-You can pass a list of `lproj` files to `locheck lproj`, starting with the base language.
-
-```sh
-locheck lproj MyApp/en.lproj MyApp/fr.lproj
-```
-
-### `xcstrings`
-
-You can directly compare `.strings` files against each other. Again, pass the base language first, followed by the rest.
+The simplest way to use Locheck on Android is to use `discovervalues` and point to a directory containing all your `values[-*]` directories, i.e. your `res/` directory.
 
 ```sh
-locheck xcstrings MyApp/en.lproj/Localizable.strings MyApp/fr.lproj/Localizable.strings
+locheck discovervalues ./commons/src/main/res
 ```
 
-### `xcstringsdict`
+### Other ways
 
-You can directly compare `.stringsdict` files against each other. Again, pass the base language first, followed by the rest.
-
-```sh
-locheck xcstrings MyApp/en.lproj/Localizable.stringsdict MyApp/fr.lproj/Localizable.stringsdict
-```
-
-### `androidstrings` (experimental!)
-
-You can directly compare `android.xml` files against each other.
-
-```sh
-locheck androidstrings ./common/src/main/res/values/strings.xml ./common/src/main/res/values-LANG/strings.xml
-```
+Run `locheck --help` to see a list of all commands. The rest of the commands just let you directly compare individual files of different types.
 
 ## Contributing
 
