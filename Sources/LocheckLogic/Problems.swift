@@ -89,6 +89,17 @@ struct PhraseHasMissingArguments: Problem, StringsProblem, Equatable {
     var message: String { "'\(key)' does not include argument(s): \(args.joined(separator: ", "))" }
 }
 
+struct PhraseHasExtraArguments: Problem, StringsProblem, Equatable {
+    var kindIdentifier: String { "string_has_extra_arguments" }
+    var uniquifyingInformation: String { "\(language)-\(key)" }
+    var severity: Severity { .error }
+    let key: String
+    let language: String
+    let args: [String]
+
+    var message: String { "Translation of '\(key)' includes arguments that don't exist in the source: \(args.joined(separator: ", "))" }
+}
+
 struct StringHasDuplicateArguments: Problem, StringsProblem, Equatable {
     var kindIdentifier: String { "string_has_duplicate_arguments" }
     var uniquifyingInformation: String { "\(language)-\(key)" }
@@ -110,7 +121,7 @@ struct StringHasExtraArguments: Problem, StringsProblem, Equatable {
     let args: [String]
 
     var message: String {
-        "Translation includes arguments that don't exist in the source: \(args.joined(separator: ", "))"
+        "Translation of '\(key)' includes arguments that don't exist in the source: \(args.joined(separator: ", "))"
     }
 }
 

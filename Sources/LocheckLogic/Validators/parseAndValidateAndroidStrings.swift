@@ -91,11 +91,11 @@ func validateAndroidStrings(
         }
         if !argsMissingFromBase.isEmpty {
             problemReporter.report(
-                StringHasMissingArguments(
-                    key: baseString.key,
+                StringHasExtraArguments(
+                    key: translationString.key,
                     language: translationLanguageName,
                     args: Array(argsMissingFromTranslation.sorted().map { String($0) })),
-                path: base.path,
+                path: translation.path,
                 lineNumber:  baseString.line)
         }
         if !phraseMissingFromTranslation.isEmpty {
@@ -109,11 +109,11 @@ func validateAndroidStrings(
         }
         if !phraseMissingFromBase.isEmpty {
             problemReporter.report(
-                PhraseHasMissingArguments(
+                PhraseHasExtraArguments(
                     key: translationString.key,
                     language: translationLanguageName,
                     args: Array(phraseMissingFromBase).sorted()),
-                path: base.path,
+                path: translation.path,
                 lineNumber: baseString.line)
         }
 
