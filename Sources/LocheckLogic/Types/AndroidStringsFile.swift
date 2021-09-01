@@ -18,14 +18,14 @@ struct AndroidString: Equatable {
     let value: FormatString
 }
 
-struct AndroidStringsFile: Equatable {
+public struct AndroidStringsFile: Equatable {
     let path: String
     let strings: [AndroidString]
     let plurals: [AndroidPlural]
 }
 
 extension AndroidStringsFile {
-    init?(path: String, problemReporter: ProblemReporter) {
+    public init?(path: String, problemReporter: ProblemReporter) {
         self.path = path
         guard let xml = parseXML(file: try! File(path: path), problemReporter: problemReporter) else {
             return nil

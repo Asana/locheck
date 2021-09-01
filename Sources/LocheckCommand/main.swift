@@ -19,7 +19,7 @@ struct Locheck: ParsableCommand {
         .lproj files, `lproj` operates on specific .lproj files, and `strings` operates on
         specific .strings files.
         """,
-        subcommands: [Discover.self, Lproj.self, XCStrings.self, AndroidStrings.self, Stringsdict.self])
+        subcommands: [DiscoverLproj.self, DiscoverValues.self, Lproj.self, XCStrings.self, Stringsdict.self, AndroidStrings.self])
 }
 
 private func withProblemReporter(ignore: [String], _ block: (ProblemReporter) -> Void) {
@@ -172,14 +172,15 @@ struct Lproj: ParsableCommand {
     }
 }
 
-struct Discover: ParsableCommand {
+struct DiscoverLproj: ParsableCommand {
     static let configuration = CommandConfiguration(
+        commandName: "discoverlproj",
         abstract: "Automatically find .lproj files within a directory and compare them")
 
-    @Option(help: "The authoritative language. Defaults to 'en'.")
+    @Option(help: "The authoritative language. Defaults to 'en'. ")
     private var base = "en"
 
-    @Argument(help: "One or more directories full of .lproj files, with one of them being authoritative.")
+    @Argument(help: "One or more directories full of .lproj files, with one of them being authoritative (defined by --base).")
     private var directories: [DirectoryArg]
 
     @Option(help: ignoreHelpText)
@@ -192,20 +193,25 @@ struct Discover: ParsableCommand {
             var hasBase = false
             var hasTranslation = false
 
-            for folder in try! Folder(path: directory.argument).subfolders {
-                if folder.extension != "lproj" { continue }
-                if folder.name == "\(base).lproj" { hasBase = true } else { hasTranslation = true }
+            for folder in try! Folder(path: directory.argument).subfolders where folder.extension == "lproj" {
+                if folder.name == "\(base).lproj" {
+                    hasBase = true
+                } else {
+                    hasTranslation = true
+                }
+
             }
 
             if !hasBase {
-                throw ValidationError("Can't find \(base).lproj in \(directory.argument)")
+                throw ValidationError("Can't find \(base).lproj or values/ directory in \(directory.argument)")
             }
             if !hasTranslation {
-                throw ValidationError("Can't find any translation .lproj folders in in \(directory.argument)")
+                throw ValidationError("Can't find any translation .lproj or values/ folders in \(directory.argument)")
             }
         }
     }
 
+    // TODO: Use two different commands
     func run() {
         for directory in directories {
             print("Discovering .lproj files in \(directory.argument)")
@@ -213,8 +219,7 @@ struct Discover: ParsableCommand {
             var maybePrimaryLproj: LprojFiles!
             var translationLproj = [LprojFiles]()
 
-            for folder in try! Folder(path: directory.argument).subfolders {
-                if folder.extension != "lproj" { continue }
+            for folder in try! Folder(path: directory.argument).subfolders where folder.extension == "lproj" {
                 if folder.name == "\(base).lproj" {
                     maybePrimaryLproj = LprojFiles(folder: folder)
                 } else {
@@ -232,6 +237,80 @@ struct Discover: ParsableCommand {
             withProblemReporter(ignore: ignore) { problemReporter in
                 for translation in translationLproj {
                     validateLproj(base: baseLproj, translation: translation, problemReporter: problemReporter)
+                }
+                problemReporter.printSummary()
+            }
+        }
+    }
+}
+
+struct DiscoverValues: ParsableCommand {
+    static let configuration = CommandConfiguration(
+        commandName: "discovervalues",
+        abstract: "Automatically find values/ directories files within a directory and compare their strings.xml files")
+
+    @Argument(help: "One or more directories full of values[-*]/ directories, with one of them being authoritative.")
+    private var directories: [DirectoryArg]
+
+    @Option(help: ignoreHelpText)
+    private var ignore = [String]()
+
+    func validate() throws {
+        for directory in directories {
+            try directory.validate()
+
+            var hasBase = false
+            var hasTranslation = false
+
+            for folder in try Folder(path: directory.argument).subfolders where folder.name.hasPrefix("values") {
+                if folder.name == "values" {
+                    hasBase = true
+                } else {
+                    hasTranslation = true
+                }
+
+                _ = try folder.file(named: "strings.xml") // make sure it exists
+            }
+
+            if !hasBase {
+                throw ValidationError("Can't find values/ directory in \(directory.argument)")
+            }
+            if !hasTranslation {
+                throw ValidationError("Can't find any values-*/ directories in \(directory.argument)")
+            }
+        }
+    }
+
+    // TODO: Use two different commands
+    func run() {
+        for directory in directories {
+            print("Discovering values[-*]/strings.xml files in \(directory.argument)")
+
+            var maybePrimaryValues: File?
+            var translationValues = [File]()
+
+            for folder in try! Folder(path: directory.argument).subfolders where folder.name.hasPrefix("values") {
+                if folder.name == "values" {
+                    maybePrimaryValues = try! folder.file(named: "strings.xml")
+                } else if folder.name.hasPrefix("values-") {
+                    translationValues.append(try! folder.file(named: "strings.xml")) // validated earlier
+                }
+            }
+
+            guard let primaryValues = maybePrimaryValues else {
+                return // caught by validation already
+            }
+
+            print("Source of truth: \(primaryValues)")
+            print("Translations to check: \(translationValues)")
+
+            withProblemReporter(ignore: ignore) { problemReporter in
+                for translation in translationValues {
+                    parseAndValidateAndroidStrings(
+                        base: primaryValues,
+                        translation: translation,
+                        translationLanguageName: String(translation.parent!.name.dropFirst("values-".count)),
+                        problemReporter: problemReporter)
                 }
                 problemReporter.printSummary()
             }
