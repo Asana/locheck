@@ -92,11 +92,20 @@ public class ProblemReporter {
             let keys = Set(problems.map(\.key))
             for key in keys.sorted() {
                 print("  \(key):")
-                for problem in problems.filter({ $0.key == key }).map(\.message).sorted() {
-                    print("    \(problem)")
+                for problem in problems.filter({ $0.key == key }) {
+                    print("    \(problem.severity.rawValue.uppercased()): \(problem.message)")
                 }
             }
         }
+
+        let warningCount = problems.filter({ $0.problem.severity == .warning }).count
+        let errorCount = problems.filter({ $0.problem.severity == .error }).count
+        let aggregates: [String] = [
+            warningCount == 1 ? "1 warning" : "\(warningCount) warnings",
+            errorCount == 1 ? "1 error" : "\(errorCount) errors",
+        ]
+        print(aggregates.joined(separator: ", "))
+        print("Ignored", ignoredProblemIdentifiers.joined(separator: (", ")))
     }
 
     /**
