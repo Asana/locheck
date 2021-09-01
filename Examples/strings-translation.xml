@@ -9,7 +9,7 @@
     <!-- Native plurals -->
     <plurals name="number_of_errors">
         <item quantity="one">Ein Fehler ist aufgetreten.</item>
-        <item quantity="other"> %d Fehler sind aufgetreten.</item>
+        <item quantity="other">%d Fehler sind aufgetreten.</item>
     </plurals>
 
     <!-- Phrase templates -->

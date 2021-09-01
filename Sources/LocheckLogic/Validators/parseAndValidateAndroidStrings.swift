@@ -13,10 +13,9 @@ public func parseAndValidateAndroidStrings(
     translation translationFile: File,
     translationLanguageName: String,
     problemReporter: ProblemReporter) {
-    guard let base = AndroidStringsFile(path: baseFile.path, problemReporter: problemReporter) else {
-        return
-    }
-    guard let translation = AndroidStringsFile(path: translationFile.path, problemReporter: problemReporter) else {
+    guard
+        let base = AndroidStringsFile(path: baseFile.path, problemReporter: problemReporter),
+        let translation = AndroidStringsFile(path: translationFile.path, problemReporter: problemReporter) else {
         return
     }
 
@@ -66,6 +65,13 @@ func validateAndroidStrings(
 
         guard translationArgs != baseArgs || translationPhraseArgs != basePhraseArgs else {
             continue // no errors
+        }
+
+        if !translationPhraseArgs.isEmpty && !translationArgs.isEmpty {
+            problemReporter.report(
+                PhraseAndNativeArgumentsAreBothPresent(key: translationString.key),
+                path: translation.path,
+                lineNumber: nil)
         }
 
         let argsMissingFromTranslation = Set(baseArgs.map(\.position)).subtracting(Set(translationArgs.map(\.position)))

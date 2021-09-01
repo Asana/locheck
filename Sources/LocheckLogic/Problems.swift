@@ -69,6 +69,15 @@ struct LprojFileMissingFromTranslation: Problem, Equatable {
     var message: String { "\(key) missing from \(language)" }
 }
 
+struct PhraseAndNativeArgumentsAreBothPresent: Problem, StringsProblem, Equatable {
+    var kindIdentifier: String { "phrase_and_native_arguments_are_both_present" }
+    var uniquifyingInformation: String { key }
+    var severity: Severity { .warning }
+    let key: String
+
+    var message: String { "'\(key)' contains both native (%d) and phrase-style ({arg}) arguments" }
+}
+
 struct PhraseHasMissingArguments: Problem, StringsProblem, Equatable {
     var kindIdentifier: String { "phrase_has_missing_arguments" }
     var uniquifyingInformation: String { "\(language)-\(key)" }
@@ -77,7 +86,7 @@ struct PhraseHasMissingArguments: Problem, StringsProblem, Equatable {
     let language: String
     let args: [String]
 
-    var message: String { "Does not include argument(s): \(args.joined(separator: ", "))" }
+    var message: String { "'\(key)' does not include argument(s): \(args.joined(separator: ", "))" }
 }
 
 struct StringHasDuplicateArguments: Problem, StringsProblem, Equatable {
