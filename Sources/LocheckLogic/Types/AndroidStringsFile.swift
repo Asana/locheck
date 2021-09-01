@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  AndroidStringsFile.swift
 //
 //
 //  Created by Steve Landey on 8/31/21.
