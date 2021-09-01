@@ -22,8 +22,8 @@ struct Locheck: ParsableCommand {
         subcommands: [Discover.self, Lproj.self, XCStrings.self, AndroidStrings.self, Stringsdict.self])
 }
 
-private func withProblemReporter(_ block: (ProblemReporter) -> Void) {
-    let problemReporter = ProblemReporter()
+private func withProblemReporter(ignore: [String], _ block: (ProblemReporter) -> Void) {
+    let problemReporter = ProblemReporter(ignoredProblemIdentifiers: ignore)
     block(problemReporter)
     if problemReporter.hasError {
         print("Errors found")
@@ -43,13 +43,16 @@ struct XCStrings: ParsableCommand {
     @Argument(help: "Non-authoritative .strings files that need to be validated")
     private var translation: [FileArg]
 
+    @Option(help: "Add a rule to ignore completely")
+    private var ignore: [String]
+
     func validate() throws {
         try base.validate(ext: "strings")
         try translation.forEach { try $0.validate(ext: "strings") }
     }
 
     func run() {
-        withProblemReporter { problemReporter in
+        withProblemReporter(ignore: ignore) { problemReporter in
             for file in translation {
                 let translationFile = try! File(path: file.argument)
                 parseAndValidateXCStrings(
@@ -74,13 +77,16 @@ struct AndroidStrings: ParsableCommand {
     @Argument(help: "Non-authoritative strings.xml files that need to be validated")
     private var translation: [FileArg]
 
+    @Option(help: "Add a rule to ignore completely")
+    private var ignore: [String]
+
     func validate() throws {
         try base.validate(ext: "xml")
         try translation.forEach { try $0.validate(ext: "xml") }
     }
 
     func run() {
-        withProblemReporter { problemReporter in
+        withProblemReporter(ignore: ignore) { problemReporter in
             for file in translation {
                 let translationFile = try! File(path: file.argument)
                 var translationLanguageName = translationFile.parent!.nameExcludingExtension
@@ -109,13 +115,16 @@ struct Stringsdict: ParsableCommand {
     @Argument(help: "Non-authoritative .stringsdict files that need to be validated")
     private var translation: [FileArg]
 
+    @Option(help: "Add a rule to ignore completely")
+    private var ignore: [String]
+
     func validate() throws {
         try base.validate(ext: "stringsdict")
         try translation.forEach { try $0.validate(ext: "stringsdict") }
     }
 
     func run() {
-        withProblemReporter { problemReporter in
+        withProblemReporter(ignore: ignore) { problemReporter in
             for file in translation {
                 let translationFile = try! File(path: file.argument)
                 parseAndValidateStringsdict(
@@ -139,6 +148,9 @@ struct Lproj: ParsableCommand {
     @Argument(help: "Non-authoritative .lproj directories that need to be validated")
     private var translation: [DirectoryArg]
 
+    @Option(help: "Add a rule to ignore completely")
+    private var ignore: [String]
+
     func validate() throws {
         try base.validate(ext: "lproj")
         try translation.forEach { try $0.validate(ext: "lproj") }
@@ -147,7 +159,7 @@ struct Lproj: ParsableCommand {
     func run() {
         print("Validating \(translation.count) lproj files against \(try! Folder(path: base.argument).name)")
 
-        withProblemReporter { problemReporter in
+        withProblemReporter(ignore: ignore) { problemReporter in
             for translation in translation {
                 validateLproj(
                     base: LprojFiles(folder: try! Folder(path: base.argument)),
@@ -168,6 +180,9 @@ struct Discover: ParsableCommand {
 
     @Argument(help: "One or more directories full of .lproj files, with one of them being authoritative.")
     private var directories: [DirectoryArg]
+
+    @Option(help: "Add a rule to ignore completely")
+    private var ignore: [String]
 
     func validate() throws {
         for directory in directories {
@@ -213,7 +228,7 @@ struct Discover: ParsableCommand {
             print("Source of truth: \(baseLproj.path)")
             print("Translations to check: \(translationLproj.count)")
 
-            withProblemReporter { problemReporter in
+            withProblemReporter(ignore: ignore) { problemReporter in
                 for translation in translationLproj {
                     validateLproj(base: baseLproj, translation: translation, problemReporter: problemReporter)
                 }

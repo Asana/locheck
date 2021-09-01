@@ -56,12 +56,15 @@ public class ProblemReporter {
     public private(set) var problems = [LocalProblem]()
 
     public var log: Bool
+    public let ignoredProblemIdentifiers: Set<String>
 
-    public init(log: Bool = true) {
+    public init(log: Bool = true, ignoredProblemIdentifiers: [String] = []) {
         self.log = log
+        self.ignoredProblemIdentifiers = Set(ignoredProblemIdentifiers)
     }
 
     public func report(_ problem: Problem, path: String, lineNumber: Int?) {
+        guard !ignoredProblemIdentifiers.contains(problem.kindIdentifier) else { return }
         let localProblem = LocalProblem(path: path, lineNumber: lineNumber, problem: problem)
         problems.append(localProblem)
 
