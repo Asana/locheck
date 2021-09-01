@@ -40,7 +40,10 @@ private func withProblemReporter(ignore: [String], _ block: (ProblemReporter) ->
 }
 
 private let ignoreHelpText: ArgumentHelp =
-    "Ignore a rule completely. The most common values are key_missing_from_base and key_missing_from_translation, for when you know keys are missing and it's OK."
+    "Ignore a rule completely."
+
+private let ignoreMissingHelpText: ArgumentHelp =
+    "Ignore 'missing string' errors. Shorthand for '--ignore key_missing_from_base --ignore key_missing_from_translation'."
 
 struct XCStrings: ParsableCommand {
     static let configuration = CommandConfiguration(
@@ -56,13 +59,20 @@ struct XCStrings: ParsableCommand {
     @Option(help: ignoreHelpText)
     private var ignore = [String]()
 
+    @Flag(help: ignoreMissingHelpText)
+    private var ignoreMissing = false
+
+    private var ignoreWithShorthand: [String] {
+        ignore + (ignoreMissing ? ["key_missing_from_base", "key_missing_from_translation"] : [])
+    }
+
     func validate() throws {
         try base.validate(ext: "strings")
         try translation.forEach { try $0.validate(ext: "strings") }
     }
 
     func run() {
-        withProblemReporter(ignore: ignore) { problemReporter in
+        withProblemReporter(ignore: ignoreWithShorthand) { problemReporter in
             for file in translation {
                 let translationFile = try! File(path: file.argument)
                 parseAndValidateXCStrings(
@@ -90,13 +100,20 @@ struct AndroidStrings: ParsableCommand {
     @Option(help: ignoreHelpText)
     private var ignore = [String]()
 
+    @Flag(help: ignoreMissingHelpText)
+    private var ignoreMissing = false
+
+    private var ignoreWithShorthand: [String] {
+        ignore + (ignoreMissing ? ["key_missing_from_base", "key_missing_from_translation"] : [])
+    }
+
     func validate() throws {
         try base.validate(ext: "xml")
         try translation.forEach { try $0.validate(ext: "xml") }
     }
 
     func run() {
-        withProblemReporter(ignore: ignore) { problemReporter in
+        withProblemReporter(ignore: ignoreWithShorthand) { problemReporter in
             for file in translation {
                 let translationFile = try! File(path: file.argument)
                 var translationLanguageName = translationFile.parent!.nameExcludingExtension
@@ -127,13 +144,20 @@ struct Stringsdict: ParsableCommand {
     @Option(help: ignoreHelpText)
     private var ignore = [String]()
 
+    @Flag(help: ignoreMissingHelpText)
+    private var ignoreMissing = false
+
+    private var ignoreWithShorthand: [String] {
+        ignore + (ignoreMissing ? ["key_missing_from_base", "key_missing_from_translation"] : [])
+    }
+
     func validate() throws {
         try base.validate(ext: "stringsdict")
         try translation.forEach { try $0.validate(ext: "stringsdict") }
     }
 
     func run() {
-        withProblemReporter(ignore: ignore) { problemReporter in
+        withProblemReporter(ignore: ignoreWithShorthand) { problemReporter in
             for file in translation {
                 let translationFile = try! File(path: file.argument)
                 parseAndValidateStringsdict(
@@ -160,6 +184,13 @@ struct Lproj: ParsableCommand {
     @Option(help: ignoreHelpText)
     private var ignore = [String]()
 
+    @Flag(help: ignoreMissingHelpText)
+    private var ignoreMissing = false
+
+    private var ignoreWithShorthand: [String] {
+        ignore + (ignoreMissing ? ["key_missing_from_base", "key_missing_from_translation"] : [])
+    }
+
     func validate() throws {
         try base.validate(ext: "lproj")
         try translation.forEach { try $0.validate(ext: "lproj") }
@@ -168,7 +199,7 @@ struct Lproj: ParsableCommand {
     func run() {
         print("Validating \(translation.count) lproj files against \(try! Folder(path: base.argument).name)")
 
-        withProblemReporter(ignore: ignore) { problemReporter in
+        withProblemReporter(ignore: ignoreWithShorthand) { problemReporter in
             for translation in translation {
                 validateLproj(
                     base: LprojFiles(folder: try! Folder(path: base.argument)),
@@ -194,6 +225,13 @@ struct DiscoverLproj: ParsableCommand {
 
     @Option(help: ignoreHelpText)
     private var ignore = [String]()
+
+    @Flag(help: ignoreMissingHelpText)
+    private var ignoreMissing = false
+
+    private var ignoreWithShorthand: [String] {
+        ignore + (ignoreMissing ? ["key_missing_from_base", "key_missing_from_translation"] : [])
+    }
 
     func validate() throws {
         for directory in directories {
@@ -241,7 +279,7 @@ struct DiscoverLproj: ParsableCommand {
             print("Source of truth: \(baseLproj.path)")
             print("Translations to check: \(translationLproj.count)")
 
-            withProblemReporter(ignore: ignore) { problemReporter in
+            withProblemReporter(ignore: ignoreWithShorthand) { problemReporter in
                 for translation in translationLproj {
                     validateLproj(base: baseLproj, translation: translation, problemReporter: problemReporter)
                 }
@@ -261,6 +299,13 @@ struct DiscoverValues: ParsableCommand {
 
     @Option(help: ignoreHelpText)
     private var ignore = [String]()
+
+    @Flag(help: ignoreMissingHelpText)
+    private var ignoreMissing = false
+
+    private var ignoreWithShorthand: [String] {
+        ignore + (ignoreMissing ? ["key_missing_from_base", "key_missing_from_translation"] : [])
+    }
 
     func validate() throws {
         for directory in directories {
@@ -310,7 +355,7 @@ struct DiscoverValues: ParsableCommand {
             print("Source of truth: \(primaryValues.path)")
             print("Translations to check: \(translationValues.count)")
 
-            withProblemReporter(ignore: ignore) { problemReporter in
+            withProblemReporter(ignore: ignoreWithShorthand) { problemReporter in
                 for translation in translationValues {
                     parseAndValidateAndroidStrings(
                         base: primaryValues,
