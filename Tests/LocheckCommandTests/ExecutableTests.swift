@@ -54,7 +54,7 @@ class ExecutableTests: XCTestCase {
         XCTAssertEqual(stdout!, """
         Validating Examples/Demo_Translation.strings against Examples/Demo_Base.strings
 
-        SUMMARY:
+        Summary:
         Examples/Demo_Base.strings
           missing:
             WARNING: 'missing' is missing from Demo_Translation
@@ -105,7 +105,7 @@ class ExecutableTests: XCTestCase {
 
         XCTAssertEqual(stdout!, """
 
-        SUMMARY:
+        Summary:
         Examples/Demo_Base.stringsdict
           %d/%d Completed:
             WARNING: '%d/%d Completed' is missing from Demo_Translation

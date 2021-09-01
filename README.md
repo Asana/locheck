@@ -102,7 +102,7 @@ Translations to check: 12
 /.../android/commons/src/main/res/values-ko/strings.xml:1426: warning: 'created_video_phrase_template' does not include argument(s): author_name (phrase_has_missing_arguments)
 [...]
 
-SUMMARY:
+Summary:
 /.../android/commons/src/main/res/values-ko/strings.xml
     could_not_mark_as_milestone:
         ERROR: Translation of 'could_not_mark_as_milestone' includes arguments that don't exist in the source: task_name

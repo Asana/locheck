@@ -84,7 +84,7 @@ public class ProblemReporter {
             problemsByFile[localProblem.path]!.append(localProblem)
         }
 
-        print("\nSUMMARY:")
+        print("\nSummary:")
 
         for path in problemsByFile.keys.sorted() {
             print(path)
