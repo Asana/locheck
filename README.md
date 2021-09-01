@@ -91,6 +91,35 @@ Run `locheck --help` to see a list of all commands. The rest of the commands jus
 
 ## Example output
 
+```
+> locheck discovervalues $ANDROID/commons/src/main/res --ignore key_missing_from_translation --ignore key_missing_from_base
+Discovering values[-*]/strings.xml files in /.../android/commons/src/main/res
+Source of truth: /.../android/commons/src/main/res/values/strings.xml
+Translations to check: 12
+/.../android/commons/src/main/res/values-de/strings.xml:242: error: Translation of 'could_not_mark_as_milestone' includes arguments that don't exist in the source: task_name (string_has_extra_arguments)
+/.../android/commons/src/main/res/values-de/strings.xml:899: warning: 'organization_required_mfa_help_text' does not include argument(s): authy_url, duo_mobile_url, microsoft_authenticator_url (phrase_has_missing_arguments)
+/.../android/commons/src/main/res/values-ko/strings.xml:1403: error: Translation of 'what_are_a_few_tasks_you_have_to_do_for_project_name' includes arguments that don't exist in the source: projectName (string_has_extra_arguments)
+/.../android/commons/src/main/res/values-ko/strings.xml:1426: warning: 'created_video_phrase_template' does not include argument(s): author_name (phrase_has_missing_arguments)
+[...]
+
+SUMMARY:
+/.../android/commons/src/main/res/values-ko/strings.xml
+    could_not_mark_as_milestone:
+        ERROR: Translation of 'could_not_mark_as_milestone' includes arguments that don't exist in the source: task_name
+    created_video_phrase_template:
+        WARNING: 'created_video_phrase_template' does not include argument(s): author_name
+        ERROR: Translation of 'created_video_phrase_template' includes arguments that don't exist in the source: userName1
+    organization_required_mfa_help_text:
+        WARNING: 'organization_required_mfa_help_text' does not include argument(s): authy_url, duo_mobile_url, microsoft_authenticator_url
+    what_are_a_few_tasks_you_have_to_do_for_project_name:
+        WARNING: 'what_are_a_few_tasks_you_have_to_do_for_project_name' does not include argument(s): project_name
+        ERROR: Translation of 'what_are_a_few_tasks_you_have_to_do_for_project_name' includes arguments that don't exist in the source: projectName
+[...]
+20 warnings, 29 errors
+Ignored key_missing_from_translation, key_missing_from_base
+Errors found
+```
+
 ## Contributing
 
 GitHub issues and pull requests are very welcome! Please format your code with `swiftformat Sources Tests` before opening your PR, otherwise tests will fail and we cannot merge your branch. We also run SwiftLint to help ensure best practices.
