@@ -211,7 +211,6 @@ struct DiscoverLproj: ParsableCommand {
         }
     }
 
-    // TODO: Use two different commands
     func run() {
         for directory in directories {
             print("Discovering .lproj files in \(directory.argument)")
@@ -281,7 +280,6 @@ struct DiscoverValues: ParsableCommand {
         }
     }
 
-    // TODO: Use two different commands
     func run() {
         for directory in directories {
             print("Discovering values[-*]/strings.xml files in \(directory.argument)")
