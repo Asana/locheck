@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://opensource.org/licenses/MIT)
 [![Build](https://github.com/stevelandeyasana/locheck/actions/workflows/tests.yml/badge.svg)](https://github.com/stevelandeyasana/locheck/actions/workflows/tests.yml)
 
-An Xcode localization file validator. Make sure your `.strings` files do not have any errors!
+An Xcode and Android localization file validator. Make sure your `.strings`, `.stringsdict`, and `strings.xml` files do not have any errors!
 
 ## What does it do?
 
@@ -83,9 +83,17 @@ You can directly compare `.strings` files against each other. Again, pass the ba
 locheck xcstrings MyApp/en.lproj/Localizable.strings MyApp/fr.lproj/Localizable.strings
 ```
 
+### `xcstringsdict`
+
+You can directly compare `.stringsdict` files against each other. Again, pass the base language first, followed by the rest.
+
+```sh
+locheck xcstrings MyApp/en.lproj/Localizable.stringsdict MyApp/fr.lproj/Localizable.stringsdict
+```
+
 ### `androidstrings` (experimental!)
 
-You can directly compare `android.xml` files against each other. Locheck only looks for missing keys.
+You can directly compare `android.xml` files against each other.
 
 ```sh
 locheck androidstrings ./common/src/main/res/values/strings.xml ./common/src/main/res/values-LANG/strings.xml
