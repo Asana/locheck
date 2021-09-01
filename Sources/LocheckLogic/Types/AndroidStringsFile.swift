@@ -63,9 +63,21 @@ extension AndroidStringsFile {
 
             switch element.name {
             case "string":
-                strings.append(AndroidString(
-                    key: key,
-                    value: FormatString(string: element.text ?? "", path: path, line: nil)))
+                if let cdata = element.CDATA {
+                    guard let string = String(data: cdata, encoding: .utf8) else {
+                        problemReporter.report(CDATACannotBeDecoded(key: key), path: path, lineNumber: nil)
+                        continue
+                    }
+                    strings.append(
+                        AndroidString(
+                            key: key,
+                            value: FormatString(string: string, path: path, line: nil)))
+                } else {
+                    strings.append(
+                        AndroidString(
+                            key: key,
+                            value: FormatString(string: element.text ?? "", path: path, line: nil)))
+                }
             case "plurals":
                 var values = [String: FormatString]()
                 for child in element.childElements {
