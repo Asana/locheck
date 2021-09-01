@@ -52,6 +52,11 @@ extension AndroidStringsFile {
                 problemReporter.report(DuplicateEntries(context: nil, name: key), path: path, lineNumber: nil)
                 continue
             }
+
+            guard !(element.attributes["translatable"] == "false") else {
+                continue // skip on purpose!
+            }
+
             switch element.name {
             case "string":
                 strings[key] = AndroidString(
