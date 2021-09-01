@@ -10,12 +10,15 @@ import SwiftyXMLParser
 
 struct AndroidPlural: Equatable {
     let key: String
+    let line: Int
     let values: [String: FormatString]
 }
 
 struct AndroidString: Equatable {
     let key: String
     let value: FormatString
+
+    var line: Int { value.line }
 }
 
 public struct AndroidStringsFile: Equatable {
@@ -34,7 +37,7 @@ extension AndroidStringsFile {
             problemReporter.report(
                 XMLSchemaProblem(message: "XML schema error: no dict at top level"),
                 path: path,
-                lineNumber: nil)
+                lineNumber: 0)
             return nil
         }
 
@@ -48,11 +51,11 @@ extension AndroidStringsFile {
                 problemReporter.report(
                     XMLSchemaProblem(message: "Item \(i + 1) is missing 'name' attribute"),
                     path: path,
-                    lineNumber: nil)
+                    lineNumber: element.lineNumberStart)
                 continue
             }
             guard !seenKeys.contains(key) else {
-                problemReporter.report(DuplicateEntries(context: nil, name: key), path: path, lineNumber: nil)
+                problemReporter.report(DuplicateEntries(context: nil, name: key), path: path, lineNumber: element.lineNumberStart)
                 continue
             }
             seenKeys.insert(key)
@@ -65,18 +68,18 @@ extension AndroidStringsFile {
             case "string":
                 if let cdata = element.CDATA {
                     guard let string = String(data: cdata, encoding: .utf8) else {
-                        problemReporter.report(CDATACannotBeDecoded(key: key), path: path, lineNumber: nil)
+                        problemReporter.report(CDATACannotBeDecoded(key: key), path: path, lineNumber: element.lineNumberStart)
                         continue
                     }
                     strings.append(
                         AndroidString(
                             key: key,
-                            value: FormatString(string: string, path: path, line: nil)))
+                            value: FormatString(string: string, path: path, line: element.lineNumberStart)))
                 } else {
                     strings.append(
                         AndroidString(
                             key: key,
-                            value: FormatString(string: element.text ?? "", path: path, line: nil)))
+                            value: FormatString(string: element.text ?? "", path: path, line: element.lineNumberStart)))
                 }
             case "plurals":
                 var values = [String: FormatString]()
@@ -85,31 +88,31 @@ extension AndroidStringsFile {
                         problemReporter.report(
                             XMLSchemaProblem(message: "Item \(i + 1) has a malformed child (not an 'item')"),
                             path: path,
-                            lineNumber: nil)
+                            lineNumber: element.lineNumberStart)
                         continue
                     }
                     guard let childKey = child.attributes["quantity"] else {
                         problemReporter.report(
                             XMLSchemaProblem(message: "A child of item \(i + 1) is missing 'quantity' attribute"),
                             path: path,
-                            lineNumber: nil)
+                            lineNumber: element.lineNumberStart)
                         continue
                     }
                     guard values[childKey] == nil else {
                         problemReporter.report(
                             DuplicateEntries(context: key, name: childKey),
                             path: path,
-                            lineNumber: nil)
+                            lineNumber: element.lineNumberStart)
                         continue
                     }
-                    values[childKey] = FormatString(string: child.text ?? "", path: path, line: nil)
+                    values[childKey] = FormatString(string: child.text ?? "", path: path, line: element.lineNumberStart)
                 }
-                plurals.append(AndroidPlural(key: key, values: values))
+                plurals.append(AndroidPlural(key: key, line: element.lineNumberStart, values: values))
             default:
                 problemReporter.report(
                     XMLSchemaProblem(message: "Item \(i + 1) has unknown type: '\(element.name)'"),
                     path: path,
-                    lineNumber: nil)
+                    lineNumber: element.lineNumberStart)
             }
         }
 

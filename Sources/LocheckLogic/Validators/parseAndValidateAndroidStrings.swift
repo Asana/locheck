@@ -71,7 +71,7 @@ func validateAndroidStrings(
             problemReporter.report(
                 PhraseAndNativeArgumentsAreBothPresent(key: translationString.key),
                 path: translation.path,
-                lineNumber: nil)
+                lineNumber: translationString.line)
         }
 
         let argsMissingFromTranslation = Set(baseArgs.map(\.position)).subtracting(Set(translationArgs.map(\.position)))
@@ -86,7 +86,7 @@ func validateAndroidStrings(
                     language: translationLanguageName,
                     args: Array(argsMissingFromTranslation.sorted().map { String($0) })),
                 path: translation.path,
-                lineNumber: nil)
+                lineNumber: translationString.line)
         }
         if !argsMissingFromBase.isEmpty {
             problemReporter.report(
@@ -95,7 +95,7 @@ func validateAndroidStrings(
                     language: translationLanguageName,
                     args: Array(argsMissingFromTranslation.sorted().map { String($0) })),
                 path: base.path,
-                lineNumber: nil)
+                lineNumber:  baseString.line)
         }
         if !phraseMissingFromTranslation.isEmpty {
             problemReporter.report(
@@ -104,7 +104,7 @@ func validateAndroidStrings(
                     language: translationLanguageName,
                     args: Array(phraseMissingFromTranslation).sorted()),
                 path: translation.path,
-                lineNumber: nil)
+                lineNumber: translationString.line)
         }
         if !phraseMissingFromBase.isEmpty {
             problemReporter.report(
@@ -113,7 +113,7 @@ func validateAndroidStrings(
                     language: translationLanguageName,
                     args: Array(phraseMissingFromBase).sorted()),
                 path: base.path,
-                lineNumber: nil)
+                lineNumber: baseString.line)
         }
 
 
@@ -130,7 +130,7 @@ func validateAndroidStrings(
                         baseArgSpecifier: baseArg.specifier,
                         argSpecifier: arg.specifier),
                     path: translation.path,
-                    lineNumber: nil)
+                    lineNumber: translationString.line)
             }
         }
     }

@@ -31,10 +31,6 @@ func validateStringsdict(
     translation translationStringsdict: Stringsdict,
     translationLanguageName: String,
     problemReporter: ProblemReporter) {
-    let report = { (path: String, problem: Problem) -> Void in
-        // lineNumber is nil because we don't have it from SwiftyXMLParser.
-        problemReporter.report(problem, path: path, lineNumber: nil)
-    }
 
     validateKeyPresence(
         basePath: baseStringsdict.path,
@@ -58,34 +54,38 @@ func validateStringsdict(
 
         if translationArgs.count > baseArgs.count {
             let extraArgs = translationArgs.dropFirst(baseArgs.count).map { $0?.specifier ?? "<missing>" }
-            report(
-                translationStringsdict.path,
-                StringsdictEntryHasTooManyArguments(key: translation.key, extraArgs: extraArgs))
+            problemReporter.report(
+                StringsdictEntryHasTooManyArguments(key: translation.key, extraArgs: extraArgs),
+                path: translationStringsdict.path,
+                lineNumber: translation.line)
         }
 
         for (i, maybeBaseArg) in baseArgs.enumerated() {
             guard i < translationArgs.count, let translationArg = translationArgs[i] else {
-                report(
-                    translationStringsdict.path,
-                    StringsdictEntryMissingArgument(key: translation.key, position: i + 1))
+                problemReporter.report(
+                    StringsdictEntryMissingArgument(key: translation.key, position: i + 1),
+                    path: translationStringsdict.path,
+                    lineNumber: translation.line)
                 continue
             }
             guard let baseArg = maybeBaseArg else {
-                report(
-                    translationStringsdict.path,
+                problemReporter.report(
                     StringsdictEntryHasUnverifiableArgument(
                         key: translation.key,
-                        position: translationArg.position))
+                        position: translationArg.position),
+                    path: translationStringsdict.path,
+                    lineNumber: translation.line)
                 continue
             }
             if translationArg.specifier != baseArg.specifier {
-                report(
-                    translationStringsdict.path,
+                problemReporter.report(
                     StringsdictEntryHasInvalidArgument(
                         key: translation.key,
                         position: translationArg.position,
                         baseSpecifier: baseArg.specifier,
-                        translationSpecifier: translationArg.specifier))
+                        translationSpecifier: translationArg.specifier),
+                    path: translationStringsdict.path,
+                    lineNumber: translation.line)
             }
         }
     }

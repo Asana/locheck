@@ -13,6 +13,7 @@ import SwiftyXMLParser
  */
 struct StringsdictRule: Equatable {
     let key: String
+    let line: Int
     let specType: String
     let valueType: String
     let alternatives: [String: LexedStringsdictString]
@@ -20,9 +21,10 @@ struct StringsdictRule: Equatable {
 
 extension StringsdictRule {
     init?(key: String, node: XML.Element, path: String, problemReporter: ProblemReporter) {
+        self.line = node.lineNumberStart
+
         let report = { (problem: Problem) -> Void in
-            // lineNumber is nil because we don't have it from SwiftyXMLParser.
-            problemReporter.report(problem, path: path, lineNumber: nil)
+            problemReporter.report(problem, path: path, lineNumber: node.lineNumberStart)
         }
 
         var maybeSpecType: String?
