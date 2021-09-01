@@ -17,13 +17,13 @@ class ValidateStringsTests: XCTestCase {
                 LocalizedStringPair(
                     string: "\"present\" = \"present\";",
                     path: "abc",
-                    line: 0)!,
+                    line: nil)!,
             ],
             translationStrings: [
                 LocalizedStringPair(
                     string: "\"present\" = \"tneserp\";",
                     path: "def",
-                    line: 0)!,
+                    line: nil)!,
             ],
             translationLanguageName: "translation",
             problemReporter: problemReporter)
@@ -39,13 +39,13 @@ class ValidateStringsTests: XCTestCase {
                 LocalizedStringPair(
                     string: "\"present %d %@\" = \"present %d %@\";",
                     path: "abc",
-                    line: 0)!,
+                    line: nil)!,
             ],
             translationStrings: [
                 LocalizedStringPair(
                     string: "\"present %d %@\" = \"%d %@\";",
                     path: "def",
-                    line: 0)!,
+                    line: nil)!,
             ],
             translationLanguageName: "translation",
             problemReporter: problemReporter)
@@ -61,13 +61,13 @@ class ValidateStringsTests: XCTestCase {
                 LocalizedStringPair(
                     string: "\"present %d %@\" = \"present %d %@\";",
                     path: "abc",
-                    line: 0)!,
+                    line: nil)!,
             ],
             translationStrings: [
                 LocalizedStringPair(
                     string: "\"present %d %@\" = \"%@ %d tneserp\";", // specifiers swapped
                     path: "def",
-                    line: 0)!,
+                    line: nil)!,
             ],
             translationLanguageName: "translation",
             problemReporter: problemReporter)
@@ -88,13 +88,13 @@ class ValidateStringsTests: XCTestCase {
                 LocalizedStringPair(
                     string: "\"present %1$d %2$@\" = \"present %1$d %2$@\";",
                     path: "abc",
-                    line: 0)!,
+                    line: nil)!,
             ],
             translationStrings: [
                 LocalizedStringPair(
                     string: "\"present %1$d %2$@\" = \"tneserp %2$@ %1$d\";",
                     path: "def",
-                    line: 0)!,
+                    line: nil)!,
             ],
             translationLanguageName: "translation",
             problemReporter: problemReporter)
@@ -110,7 +110,7 @@ class ValidateStringsTests: XCTestCase {
                 LocalizedStringPair(
                     string: "\"present\" = \"present\";",
                     path: "abc",
-                    line: 0)!,
+                    line: nil)!,
                 LocalizedStringPair(
                     string: "\"missing\" = \"missing\";",
                     path: "abc",
@@ -120,14 +120,14 @@ class ValidateStringsTests: XCTestCase {
                 LocalizedStringPair(
                     string: "\"present\" = \"tneserp\";",
                     path: "def",
-                    line: 0)!,
+                    line: nil)!,
             ],
-            translationLanguageName: "translation",
+            translationLanguageName: "trnsltn",
             problemReporter: problemReporter)
 
         XCTAssertEqual(
             problemReporter.problems.map(\.messageForXcode), [
-                "abc:1: warning: This string is missing from translation (strings_key_missing_from_translation)",
+                "abc:1: warning: 'missing' is missing from trnsltn (key_missing_from_translation)",
             ])
     }
 }

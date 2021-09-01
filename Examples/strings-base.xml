@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Phrase plurals -->
+    <plurals name="plural_number_of_projects">
+        <item quantity="one">{number_of_projects} project</item>
+        <item quantity="other">{number_of_projects} projects</item>
+    </plurals>
+
+    <!-- Native plurals -->
+    <plurals name="number_of_errors">
+        <item quantity="one">There was an error.</item>
+        <item quantity="other">There were %d errors.</item>
+    </plurals>
+
+    <!-- Phrase templates -->
+    <string name="could_not_add_collaborator_to_object">Could not add {user_name} to \"{object_name}\"</string>
+
+    <!-- Native templates -->
+    <string name="group_members_with_count">%1$s (%2$d)</string>
+
+    <!-- Non-translatable (missing from translation, will not show warning) -->
+    <string name="photos_icon_content_description" translatable="false">Photos</string>
+
+    <!-- Missing from translation -->
+    <string name="missing_from_translation">Missing from translation</string>
+</resources>

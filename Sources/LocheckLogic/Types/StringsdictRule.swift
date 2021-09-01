@@ -21,8 +21,8 @@ struct StringsdictRule: Equatable {
 extension StringsdictRule {
     init?(key: String, node: XML.Element, path: String, problemReporter: ProblemReporter) {
         let report = { (problem: Problem) -> Void in
-            // lineNumber is zero because we don't have it from SwiftyXMLParser.
-            problemReporter.report(problem, path: path, lineNumber: 0)
+            // lineNumber is nil because we don't have it from SwiftyXMLParser.
+            problemReporter.report(problem, path: path, lineNumber: nil)
         }
 
         var maybeSpecType: String?

@@ -9,18 +9,6 @@ import Files
 import Foundation
 import SwiftyXMLParser
 
-private func parseXML(file: File, problemReporter: ProblemReporter) -> XML.Accessor? {
-    do {
-        return XML.parse(try file.read())
-    } catch {
-        problemReporter.report(
-            XMLErrorProblem(message: error.localizedDescription),
-            path: file.path,
-            lineNumber: 0)
-        return nil
-    }
-}
-
 /**
  Each stringsdict file contains an unsorted list of entry key-value pairs. The key is what appears in your
  source code (`NSLocalizedString("That's %d cool motorcycle(s)!")`) and the value is what we call an _entry_.
@@ -40,13 +28,16 @@ private func parseXML(file: File, problemReporter: ProblemReporter) -> XML.Acces
  ```
  */
 struct Stringsdict: Equatable {
+    let path: String
     let entries: [StringsdictEntry]
 
-    init(entries: [StringsdictEntry]) {
+    init(path: String, entries: [StringsdictEntry]) {
+        self.path = path
         self.entries = entries
     }
 
     init?(path: String, problemReporter: ProblemReporter) {
+        self.path = path
         guard let xml = parseXML(file: try! File(path: path), problemReporter: problemReporter) else {
             return nil
         }
@@ -54,7 +45,7 @@ struct Stringsdict: Equatable {
             problemReporter.report(
                 XMLSchemaProblem(message: "XML schema error: no dict at top level"),
                 path: path,
-                lineNumber: 0)
+                lineNumber: nil)
             return nil
         }
 

@@ -40,11 +40,11 @@ public protocol SummarizableProblem: Problem {
 public class ProblemReporter {
     public struct LocalProblem: Error, Equatable {
         public let path: String
-        public let lineNumber: Int
+        public let lineNumber: Int?
         public let problem: Problem
 
         var messageForXcode: String {
-            "\(path):\(lineNumber): \(problem.severity.rawValue): \(problem.message) (\(problem.kindIdentifier))"
+            "\(path):\(lineNumber ?? 0): \(problem.severity.rawValue): \(problem.message) (\(problem.kindIdentifier))"
         }
 
         public static func == (a: LocalProblem, b: LocalProblem) -> Bool {
@@ -61,7 +61,7 @@ public class ProblemReporter {
         self.log = log
     }
 
-    public func report(_ problem: Problem, path: String, lineNumber: Int) {
+    public func report(_ problem: Problem, path: String, lineNumber: Int?) {
         let localProblem = LocalProblem(path: path, lineNumber: lineNumber, problem: problem)
         problems.append(localProblem)
 

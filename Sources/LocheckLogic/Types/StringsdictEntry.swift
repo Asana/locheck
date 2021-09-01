@@ -18,14 +18,14 @@ struct StringsdictEntry: Equatable {
     func validateRuleVariables(path: String, problemReporter: ProblemReporter) {
         let checkRule = { (ruleKey: String, variables: [String]) -> Void in
             for variable in variables where rules[variable] == nil {
-                // lineNumber is zero because we don't have it from SwiftyXMLParser.
+                // lineNumber is nil because we don't have it from SwiftyXMLParser.
                 problemReporter.report(
                     StringsdictEntryHasMissingVariable(
                         key: key,
                         variable: variable,
                         ruleKey: ruleKey),
                     path: path,
-                    lineNumber: 0)
+                    lineNumber: nil)
             }
         }
 
@@ -57,11 +57,11 @@ struct StringsdictEntry: Equatable {
         // which is a lot of extra bookkeeping to do at this stage of the project.
 
         let report = { (problem: Problem) -> Void in
-            // lineNumber is zero because we don't have it from SwiftyXMLParser.
-            problemReporter.report(problem, path: path, lineNumber: 0)
+            // lineNumber is nil because we don't have it from SwiftyXMLParser.
+            problemReporter.report(problem, path: path, lineNumber: nil)
         }
 
-        let permutations = allPermutations.map { LocalizedString(string: $0, path: path, line: 0) }
+        let permutations = allPermutations.map { FormatString(string: $0, path: path, line: nil) }
         let numArgs = permutations.flatMap(\.arguments).reduce(0) { max($0, $1.position) }
         var arguments = [FormatArgument?]((0 ..< numArgs).map { _ in nil })
         var originalStringForArgument = [String]((0 ..< numArgs).map { _ in "" })
@@ -233,8 +233,8 @@ struct StringsdictEntry: Equatable {
 extension StringsdictEntry {
     init?(key: String, node: XML.Element, path: String, problemReporter: ProblemReporter) {
         let report = { (problem: Problem) -> Void in
-            // lineNumber is zero because we don't have it from SwiftyXMLParser.
-            problemReporter.report(problem, path: path, lineNumber: 0)
+            // lineNumber is nil because we don't have it from SwiftyXMLParser.
+            problemReporter.report(problem, path: path, lineNumber: nil)
         }
 
         var maybeFormatKey: String?

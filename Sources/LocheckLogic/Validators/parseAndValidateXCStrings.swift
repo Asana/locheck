@@ -1,5 +1,5 @@
 //
-//  parseAndValidateStrings.swift
+//  parseAndValidateXCStrings.swift
 //
 //
 //  Created by Steve Landey on 8/17/21.
@@ -11,7 +11,7 @@ import Foundation
 /**
  Directly compare two `.strings` files
  */
-public func parseAndValidateStrings(
+public func parseAndValidateXCStrings(
     base: File,
     translation: File,
     translationLanguageName: String,
@@ -26,7 +26,7 @@ public func parseAndValidateStrings(
                 line: $0.0 + 1)
         }
 
-    var baseStringMap = [String: LocalizedString]()
+    var baseStringMap = [String: FormatString]()
     for (i, line) in base.lo_lines.enumerated() {
         guard let basePair = LocalizedStringPair(
             string: line,
@@ -67,7 +67,7 @@ func validateStrings(
 
     for baseString in baseStrings where translationStringMap[baseString.key] == nil {
         problemReporter.report(
-            StringsKeyMissingFromTranslation(
+            KeyMissingFromTranslation(
                 key: baseString.key,
                 language: translationLanguageName),
             path: baseString.path,

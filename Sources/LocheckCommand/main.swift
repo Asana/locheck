@@ -19,7 +19,7 @@ struct Locheck: ParsableCommand {
         .lproj files, `lproj` operates on specific .lproj files, and `strings` operates on
         specific .strings files.
         """,
-        subcommands: [Discover.self, Lproj.self, Strings.self, Stringsdict.self])
+        subcommands: [Discover.self, Lproj.self, XCStrings.self, AndroidStrings.self, Stringsdict.self])
 }
 
 private func withProblemReporter(_ block: (ProblemReporter) -> Void) {
@@ -32,8 +32,9 @@ private func withProblemReporter(_ block: (ProblemReporter) -> Void) {
     print("Finished validating")
 }
 
-struct Strings: ParsableCommand {
+struct XCStrings: ParsableCommand {
     static let configuration = CommandConfiguration(
+        commandName: "xcstrings",
         abstract: "Directly compare .strings files")
 
     @Argument(help: "An authoritative .strings file")
@@ -51,13 +52,49 @@ struct Strings: ParsableCommand {
         withProblemReporter { problemReporter in
             for file in translation {
                 let translationFile = try! File(path: file.argument)
-                parseAndValidateStrings(
+                parseAndValidateXCStrings(
                     base: try! File(path: base.argument),
                     translation: translationFile,
                     translationLanguageName: translationFile.nameExcludingExtension,
                     problemReporter: problemReporter)
             }
             problemReporter.printSummary()
+        }
+    }
+}
+
+struct AndroidStrings: ParsableCommand {
+    static let configuration = CommandConfiguration(
+        commandName: "androidstrings",
+        abstract: "Directly compare strings.xml files")
+
+    @Argument(help: "An authoritative strings.xml file")
+    private var base: FileArg
+
+    @Argument(help: "Non-authoritative strings.xml files that need to be validated")
+    private var translation: [FileArg]
+
+    func validate() throws {
+        try base.validate(ext: "xml")
+        try translation.forEach { try $0.validate(ext: "xml") }
+    }
+
+    func run() {
+        withProblemReporter { problemReporter in
+            for file in translation {
+                let translationFile = try! File(path: file.argument)
+                var translationLanguageName = translationFile.parent!.nameExcludingExtension
+                if translationLanguageName.hasPrefix("values-") {
+                    translationLanguageName = String(translationLanguageName.dropFirst("values-".count))
+                }
+                parseAndValidateAndroidStrings(
+                    base: try! File(path: base.argument),
+                    translation: translationFile,
+                    translationLanguageName: translationLanguageName,
+                    problemReporter: problemReporter)
+            }
+            problemReporter.printSummary()
+            print("Be aware that Android validation is incomplete.")
         }
     }
 }

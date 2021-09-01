@@ -69,12 +69,19 @@ struct Expressions {
 
     // Technically length modifiers are invalid for @ and potentially some others, but in practice
     // it probably doesn't matter.
-    private static let argumentExpression =
+    private static let nativeArgumentExpression =
         "%((?<position>\\d+)\\$)?(?<specifier>(\(lengthExpression))?(\(specifierExpression)))"
-    static let argumentRegex = try! NSRegularExpression(pattern: Expressions.argumentExpression, options: [])
+    static let nativeArgumentRegex = try! NSRegularExpression(
+        pattern: Expressions.nativeArgumentExpression,
+        options: [])
 
-    private static let stringsdictArgumentExpression = #"%#@(?<name>.*?)@"#
+    private static let stringsdictArgumentExpression = #"%#@(?<name>.+?)@"#
     static let stringsdictArgumentRegex = try! NSRegularExpression(
         pattern: Expressions.stringsdictArgumentExpression,
+        options: [])
+
+    private static let phraseArgumentExpression = #"\{(?<name>\w+?)\}"#
+    static let phraseArgumentRegex = try! NSRegularExpression(
+        pattern: Expressions.phraseArgumentExpression,
         options: [])
 }
