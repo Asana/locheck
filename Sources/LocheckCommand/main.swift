@@ -32,6 +32,8 @@ private func withProblemReporter(ignore: [String], _ block: (ProblemReporter) ->
     print("Finished validating")
 }
 
+private let ignoreHelpText: ArgumentHelp = "Ignore a rule completely. The most common values are key_missing_from_base and key_missing_from_translation, for when you know keys are missing and it's OK."
+
 struct XCStrings: ParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "xcstrings",
@@ -43,7 +45,7 @@ struct XCStrings: ParsableCommand {
     @Argument(help: "Non-authoritative .strings files that need to be validated")
     private var translation: [FileArg]
 
-    @Option(help: "Add a rule to ignore completely")
+    @Option(help: ignoreHelpText)
     private var ignore: [String]
 
     func validate() throws {
@@ -77,7 +79,7 @@ struct AndroidStrings: ParsableCommand {
     @Argument(help: "Non-authoritative strings.xml files that need to be validated")
     private var translation: [FileArg]
 
-    @Option(help: "Add a rule to ignore completely")
+    @Option(help: ignoreHelpText)
     private var ignore: [String]
 
     func validate() throws {
@@ -114,7 +116,7 @@ struct Stringsdict: ParsableCommand {
     @Argument(help: "Non-authoritative .stringsdict files that need to be validated")
     private var translation: [FileArg]
 
-    @Option(help: "Add a rule to ignore completely")
+    @Option(help: ignoreHelpText)
     private var ignore: [String]
 
     func validate() throws {
@@ -147,7 +149,7 @@ struct Lproj: ParsableCommand {
     @Argument(help: "Non-authoritative .lproj directories that need to be validated")
     private var translation: [DirectoryArg]
 
-    @Option(help: "Add a rule to ignore completely")
+    @Option(help: ignoreHelpText)
     private var ignore: [String]
 
     func validate() throws {
@@ -180,7 +182,7 @@ struct Discover: ParsableCommand {
     @Argument(help: "One or more directories full of .lproj files, with one of them being authoritative.")
     private var directories: [DirectoryArg]
 
-    @Option(help: "Add a rule to ignore completely")
+    @Option(help: ignoreHelpText)
     private var ignore: [String]
 
     func validate() throws {
