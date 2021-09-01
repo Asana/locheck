@@ -31,7 +31,7 @@ The translation reads naturally on its own, but this would crash your app when i
 
 ```xml
 <!-- values-translation/strings.xml -->
-<string name="send_donuts">%1$s to donuts %2$d send</string>
+<string name="send_donuts">%2$s to donuts %1$d send</string>
 ```
 
 Locheck will make sure you get it right.
