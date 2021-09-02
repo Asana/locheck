@@ -23,7 +23,7 @@ class LocalizedStringPairTests: XCTestCase {
             [
                 FormatArgument(specifier: "@", position: 1, isPositionExplicit: true),
                 FormatArgument(specifier: "d", position: 2, isPositionExplicit: true),
-                FormatArgument(specifier: "@", position: 3, isPositionExplicit: false),
+                FormatArgument(specifier: "@", position: 1, isPositionExplicit: false),
             ])
         XCTAssertTrue(problemReporter.problems.isEmpty)
     }

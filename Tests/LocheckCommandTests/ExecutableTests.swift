@@ -112,14 +112,10 @@ class ExecutableTests: XCTestCase {
           missing from translation:
             WARNING: 'missing from translation' is missing from Demo_Translation
         Examples/Demo_Translation.stringsdict
-          Every %d week(s) on %lu days:
-            ERROR: Two permutations of 'Every %d week(s) on %lu days' contain different format specifiers at position 2. '%2$lu jours toutes les %d semaines' uses 'lu', and '%2$lu jours toutes les %d semaines' uses 'd'.
-            WARNING: No permutation of 'Every %d week(s) on %lu days' use argument(s) at position 1
-            WARNING: 'Every %d week(s) on %lu days' does not use argument 1
           missing from base:
             WARNING: 'missing from base' is missing from the base translation
-        5 warnings, 1 error
-        Errors found
+        3 warnings, 0 errors
+        Finished validating
 
         """)
 
@@ -127,9 +123,6 @@ class ExecutableTests: XCTestCase {
         Examples/Demo_Base.stringsdict:22: warning: '%d/%d Completed' is missing from Demo_Translation (key_missing_from_translation)
         Examples/Demo_Base.stringsdict:63: warning: 'missing from translation' is missing from Demo_Translation (key_missing_from_translation)
         Examples/Demo_Translation.stringsdict:22: warning: 'missing from base' is missing from the base translation (key_missing_from_base)
-        Examples/Demo_Translation.stringsdict:6: error: Two permutations of 'Every %d week(s) on %lu days' contain different format specifiers at position 2. '%2$lu jours toutes les %d semaines' uses 'lu', and '%2$lu jours toutes les %d semaines' uses 'd'. (stringsdict_entry_permutations_have_conflicting_specifiers)
-        Examples/Demo_Translation.stringsdict:6: warning: No permutation of 'Every %d week(s) on %lu days' use argument(s) at position 1 (stringsdict_entry_has_unused_arguments)
-        Examples/Demo_Translation.stringsdict:6: warning: 'Every %d week(s) on %lu days' does not use argument 1 (stringsdict_entry_missing_argument)
 
         """)
     }

@@ -2,7 +2,7 @@
 
 "missing" = "missing";
 
-"bad pos %ld %@" = "%1$ld %@";
+"bad pos %ld %@" = "%1$ld %2$@";
 
 "mismatch %@ types %d" = "mismatch %@ types %d";
 
