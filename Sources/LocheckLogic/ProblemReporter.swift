@@ -40,11 +40,11 @@ public protocol SummarizableProblem: Problem {
 public class ProblemReporter {
     public struct LocalProblem: Error, Equatable {
         public let path: String
-        public let lineNumber: Int?
+        public let lineNumber: Int
         public let problem: Problem
 
         var messageForXcode: String {
-            "\(path):\(lineNumber ?? 0): \(problem.severity.rawValue): \(problem.message) (\(problem.kindIdentifier))"
+            "\(path):\(lineNumber): \(problem.severity.rawValue): \(problem.message) (\(problem.kindIdentifier))"
         }
 
         public static func == (a: LocalProblem, b: LocalProblem) -> Bool {
@@ -56,12 +56,15 @@ public class ProblemReporter {
     public private(set) var problems = [LocalProblem]()
 
     public var log: Bool
+    public let ignoredProblemIdentifiers: Set<String>
 
-    public init(log: Bool = true) {
+    public init(log: Bool = true, ignoredProblemIdentifiers: [String] = []) {
         self.log = log
+        self.ignoredProblemIdentifiers = Set(ignoredProblemIdentifiers)
     }
 
-    public func report(_ problem: Problem, path: String, lineNumber: Int?) {
+    public func report(_ problem: Problem, path: String, lineNumber: Int) {
+        guard !ignoredProblemIdentifiers.contains(problem.kindIdentifier) else { return }
         let localProblem = LocalProblem(path: path, lineNumber: lineNumber, problem: problem)
         problems.append(localProblem)
 
@@ -81,7 +84,7 @@ public class ProblemReporter {
             problemsByFile[localProblem.path]!.append(localProblem)
         }
 
-        print("\nSUMMARY:")
+        print("\nSummary:")
 
         for path in problemsByFile.keys.sorted() {
             print(path)
@@ -89,10 +92,22 @@ public class ProblemReporter {
             let keys = Set(problems.map(\.key))
             for key in keys.sorted() {
                 print("  \(key):")
-                for problem in problems.filter({ $0.key == key }).map(\.message).sorted() {
-                    print("    \(problem)")
+                for problem in problems.filter({ $0.key == key }) {
+                    print("    \(problem.severity.rawValue.uppercased()): \(problem.message)")
                 }
             }
+        }
+
+        let warningCount = problems.filter { $0.problem.severity == .warning }.count
+        let errorCount = problems.filter { $0.problem.severity == .error }.count
+        let aggregates: [String] = [
+            warningCount == 1 ? "1 warning" : "\(warningCount) warnings",
+            errorCount == 1 ? "1 error" : "\(errorCount) errors",
+        ]
+        print(aggregates.joined(separator: ", "))
+
+        if !ignoredProblemIdentifiers.isEmpty {
+            print("Ignored", ignoredProblemIdentifiers.joined(separator: ", "))
         }
     }
 

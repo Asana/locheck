@@ -12,20 +12,20 @@ import SwiftyXMLParser
 /// for a system of rules defining a set of strings.
 struct StringsdictEntry: Equatable {
     let key: String
+    let line: Int
     let formatKey: LexedStringsdictString
     let rules: [String: StringsdictRule] // derived from XML
 
     func validateRuleVariables(path: String, problemReporter: ProblemReporter) {
         let checkRule = { (ruleKey: String, variables: [String]) -> Void in
             for variable in variables where rules[variable] == nil {
-                // lineNumber is nil because we don't have it from SwiftyXMLParser.
                 problemReporter.report(
                     StringsdictEntryHasMissingVariable(
                         key: key,
                         variable: variable,
                         ruleKey: ruleKey),
                     path: path,
-                    lineNumber: nil)
+                    lineNumber: line)
             }
         }
 
@@ -56,12 +56,11 @@ struct StringsdictEntry: Equatable {
         // but that would require us to remember which span of each string maps back to which variable,
         // which is a lot of extra bookkeeping to do at this stage of the project.
 
-        let report = { (problem: Problem) -> Void in
-            // lineNumber is nil because we don't have it from SwiftyXMLParser.
-            problemReporter.report(problem, path: path, lineNumber: nil)
+        let report = { (problem: Problem, line: Int) -> Void in
+            problemReporter.report(problem, path: path, lineNumber: line)
         }
 
-        let permutations = allPermutations.map { FormatString(string: $0, path: path, line: nil) }
+        let permutations = allPermutations.map { FormatString(string: $0, path: path, line: line) }
         let numArgs = permutations.flatMap(\.arguments).reduce(0) { max($0, $1.position) }
         var arguments = [FormatArgument?]((0 ..< numArgs).map { _ in nil })
         var originalStringForArgument = [String]((0 ..< numArgs).map { _ in "" })
@@ -73,7 +72,8 @@ struct StringsdictEntry: Equatable {
                         StringsdictEntryHasImplicitPosition(
                             key: key,
                             position: arg.position,
-                            permutation: string.string))
+                            permutation: string.string),
+                        line)
                 }
 
                 // Remember arg positions are 1-indexed!
@@ -87,7 +87,8 @@ struct StringsdictEntry: Equatable {
                                 permutation1: originalString,
                                 permutation2: string.string,
                                 specifier1: oldArg.specifier,
-                                specifier2: arg.specifier))
+                                specifier2: arg.specifier),
+                            line)
                     }
                 } else {
                     originalStringForArgument[arg.position - 1] = string.string
@@ -101,7 +102,8 @@ struct StringsdictEntry: Equatable {
             report(
                 StringsdictEntryHasUnusedArguments(
                     key: key,
-                    positions: unusedArguments))
+                    positions: unusedArguments),
+                line)
         }
 
         return arguments
@@ -232,9 +234,10 @@ struct StringsdictEntry: Equatable {
 
 extension StringsdictEntry {
     init?(key: String, node: XML.Element, path: String, problemReporter: ProblemReporter) {
-        let report = { (problem: Problem) -> Void in
-            // lineNumber is nil because we don't have it from SwiftyXMLParser.
-            problemReporter.report(problem, path: path, lineNumber: nil)
+        line = node.lineNumberStart
+
+        let report = { (problem: Problem, line: Int) -> Void in
+            problemReporter.report(problem, path: path, lineNumber: line)
         }
 
         var maybeFormatKey: String?
@@ -246,13 +249,15 @@ extension StringsdictEntry {
             path: path,
             problemReporter: problemReporter) {
             guard let valueText = valueNode.text else {
-                report(XMLSchemaProblem(message: "No value for key \(key).\(valueKey)"))
+                report(XMLSchemaProblem(message: "No value for key \(key).\(valueKey)"), valueNode.lineNumberStart)
                 return nil
             }
             switch valueKey {
             case "NSStringLocalizedFormatKey":
                 guard valueNode.name == "string" else {
-                    report(XMLSchemaProblem(message: "Unexpected value for key \(valueKey): \(valueNode.name)"))
+                    report(
+                        XMLSchemaProblem(message: "Unexpected value for key \(valueKey): \(valueNode.name)"),
+                        valueNode.lineNumberStart)
                     return nil
                 }
                 maybeFormatKey = valueText
@@ -272,14 +277,15 @@ extension StringsdictEntry {
         }
 
         guard let formatKey = maybeFormatKey else {
-            report(XMLSchemaProblem(message: "\(key) contains no value for NSStringLocalizedFormatKey"))
+            report(XMLSchemaProblem(message: "\(key) contains no value for NSStringLocalizedFormatKey"), line)
             return nil
         }
         if maybeOrderedRuleKeys == nil {
             report(
                 StringsdictEntryHasNoVariables(
                     key: key,
-                    formatKey: formatKey))
+                    formatKey: formatKey),
+                line)
         }
         var hasAllVariables = true
         for variableKey in maybeOrderedRuleKeys ?? [] where rules[variableKey] == nil {
@@ -287,7 +293,8 @@ extension StringsdictEntry {
                 StringsdictEntryHasMissingVariable(
                     key: key,
                     variable: variableKey,
-                    ruleKey: "format key"))
+                    ruleKey: "format key"),
+                line)
             hasAllVariables = false
         }
 

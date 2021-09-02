@@ -15,4 +15,13 @@ extension Sequence {
         }
         return dict
     }
+
+    func lo_makeDictionary<Key, Value>(makeKey: (Element) -> Key, makeValue: (Element) -> Value) -> [Key: Value]
+        where Key: Hashable {
+        var dict = [Key: Value]()
+        for item in self {
+            dict[makeKey(item)] = makeValue(item)
+        }
+        return dict
+    }
 }

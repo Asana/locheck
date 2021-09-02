@@ -14,9 +14,12 @@
 
     <!-- Phrase templates -->
     <string name="could_not_add_collaborator_to_object">Could not add {user_name} to \"{object_name}\"</string>
+    <string name="translation_has_missing_phrase">Could not add {user_name} to \"{object_name}\"</string>
 
     <!-- Native templates -->
     <string name="group_members_with_count">%1$s (%2$d)</string>
+    <string name="translation_has_invalid_specifier">%s %d</string>
+    <string name="translation_has_missing_arg">%s %d</string>
 
     <!-- Non-translatable (missing from translation, will not show warning) -->
     <string name="photos_icon_content_description" translatable="false">Photos</string>

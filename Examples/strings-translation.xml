@@ -9,14 +9,17 @@
     <!-- Native plurals -->
     <plurals name="number_of_errors">
         <item quantity="one">Ein Fehler ist aufgetreten.</item>
-        <item quantity="other"> %d Fehler sind aufgetreten.</item>
+        <item quantity="other">%d Fehler sind aufgetreten.</item>
     </plurals>
 
     <!-- Phrase templates -->
     <string name="could_not_add_collaborator_to_object">{user_name} konnte nicht zu „{object_name}“ hinzugefügt werden</string>
+    <string name="translation_has_missing_phrase">Could not add {user_name}</string>
 
     <!-- Native templates -->
     <string name="group_members_with_count">%1$s (%2$d)</string>
+    <string name="translation_has_invalid_specifier">%s %lu</string>
+    <string name="translation_has_missing_arg">%s</string>
 
     <!-- Missing from base -->
     <string name="missing_from_base">Missing from base</string>

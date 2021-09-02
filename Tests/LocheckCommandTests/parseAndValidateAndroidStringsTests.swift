@@ -1,6 +1,6 @@
 //
 //  parseAndValidateAndroidStringsTests.swift
-//  
+//
 //
 //  Created by Steve Landey on 9/1/21.
 //
@@ -25,8 +25,9 @@ class ParseAndValidateAndroidStringsTests: XCTestCase {
             translationLanguageName: "demo",
             problemReporter: problemReporter)
 
-        XCTAssertEqual(problemReporter.problems.count, 2)
-        XCTAssertEqual(problemReporter.problems[0].problem as? KeyMissingFromTranslation, KeyMissingFromTranslation(key: "missing_from_translation", language: "demo"))
-        XCTAssertEqual(problemReporter.problems[1].problem as? KeyMissingFromBase, KeyMissingFromBase(key: "missing_from_base"))
+        XCTAssertEqual(problemReporter.problems.count, 5)
+        let problems = problemReporter.problems.map(\.problem)
+        CastAndAssertEqual(problems[0], KeyMissingFromTranslation(key: "missing_from_translation", language: "demo"))
+        CastAndAssertEqual(problems[1], KeyMissingFromBase(key: "missing_from_base"))
     }
 }

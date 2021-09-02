@@ -8,34 +8,6 @@
 import Files
 import Foundation
 
-func validateKeyPresence(
-    basePath: String,
-    baseKeys: Set<String>,
-    baseLineNumberMap: [String: Int],
-    translationPath: String,
-    translationKeys: Set<String>,
-    translationLineNumberMap: [String: Int],
-    translationLanguageName: String,
-    problemReporter: ProblemReporter) {
-    for key in baseKeys.sorted() {
-        if !translationKeys.contains(key) {
-            problemReporter.report(
-                KeyMissingFromTranslation(key: key, language: translationLanguageName),
-                path: basePath,
-                lineNumber: baseLineNumberMap[key])
-        }
-    }
-
-    for key in translationKeys.sorted() {
-        if !baseKeys.contains(key) {
-            problemReporter.report(
-                KeyMissingFromBase(key: key),
-                path: translationPath,
-                lineNumber: translationLineNumberMap[key])
-        }
-    }
-}
-
 public func parseAndValidateStringsdict(
     base baseFile: File,
     translation translationFile: File,
@@ -59,18 +31,13 @@ func validateStringsdict(
     translation translationStringsdict: Stringsdict,
     translationLanguageName: String,
     problemReporter: ProblemReporter) {
-    let report = { (path: String, problem: Problem) -> Void in
-        // lineNumber is nil because we don't have it from SwiftyXMLParser.
-        problemReporter.report(problem, path: path, lineNumber: nil)
-    }
-
     validateKeyPresence(
         basePath: baseStringsdict.path,
         baseKeys: Set(baseStringsdict.entries.map(\.key)),
-        baseLineNumberMap: [:], // don't have line numbers
+        baseLineNumberMap: baseStringsdict.entries.lo_makeDictionary(makeKey: \.key, makeValue: \.line),
         translationPath: translationStringsdict.path,
         translationKeys: Set(translationStringsdict.entries.map(\.key)),
-        translationLineNumberMap: [:], // don't have line numbers
+        translationLineNumberMap: translationStringsdict.entries.lo_makeDictionary(makeKey: \.key, makeValue: \.line),
         translationLanguageName: translationLanguageName,
         problemReporter: problemReporter)
 
@@ -86,34 +53,38 @@ func validateStringsdict(
 
         if translationArgs.count > baseArgs.count {
             let extraArgs = translationArgs.dropFirst(baseArgs.count).map { $0?.specifier ?? "<missing>" }
-            report(
-                translationStringsdict.path,
-                StringsdictEntryHasTooManyArguments(key: translation.key, extraArgs: extraArgs))
+            problemReporter.report(
+                StringsdictEntryHasTooManyArguments(key: translation.key, extraArgs: extraArgs),
+                path: translationStringsdict.path,
+                lineNumber: translation.line)
         }
 
         for (i, maybeBaseArg) in baseArgs.enumerated() {
             guard i < translationArgs.count, let translationArg = translationArgs[i] else {
-                report(
-                    translationStringsdict.path,
-                    StringsdictEntryMissingArgument(key: translation.key, position: i + 1))
+                problemReporter.report(
+                    StringsdictEntryMissingArgument(key: translation.key, position: i + 1),
+                    path: translationStringsdict.path,
+                    lineNumber: translation.line)
                 continue
             }
             guard let baseArg = maybeBaseArg else {
-                report(
-                    translationStringsdict.path,
+                problemReporter.report(
                     StringsdictEntryHasUnverifiableArgument(
                         key: translation.key,
-                        position: translationArg.position))
+                        position: translationArg.position),
+                    path: translationStringsdict.path,
+                    lineNumber: translation.line)
                 continue
             }
             if translationArg.specifier != baseArg.specifier {
-                report(
-                    translationStringsdict.path,
+                problemReporter.report(
                     StringsdictEntryHasInvalidArgument(
                         key: translation.key,
                         position: translationArg.position,
                         baseSpecifier: baseArg.specifier,
-                        translationSpecifier: translationArg.specifier))
+                        translationSpecifier: translationArg.specifier),
+                    path: translationStringsdict.path,
+                    lineNumber: translation.line)
             }
         }
     }
