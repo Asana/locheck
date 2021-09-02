@@ -279,6 +279,16 @@ struct StringsdictEntryMissingArgument: Problem, StringsdictProblem, Equatable {
     var message: String { "'\(key)' does not use argument \(position)" }
 }
 
+struct StringsdictEntryMissingVariable: Problem, StringsdictProblem, Equatable {
+    var kindIdentifier: String { "stringsdict_entry_missing_variable" }
+    var uniquifyingInformation: String { "\(key)-\(variable)" }
+    var severity: Severity { .warning }
+    let key: String
+    let variable: String
+
+    var message: String { "'\(key)' has a rule that uses nonexistent variable '\(variable)'" }
+}
+
 struct StringsdictEntryMissingFormatSpecTypeProblem: Problem, StringsdictProblem, Equatable {
     var kindIdentifier: String { "stringsdict_entry_missing_format_spec_type" }
     var uniquifyingInformation: String { "\(key)" }
