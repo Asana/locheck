@@ -77,5 +77,32 @@
 			<string>%1$@ showed their appreciation.</string>
 		</dict>
 	</dict>
+	<key>%s added %d task(s) to &apos;s&apos;</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%s added %#@tasks@ to %3$s</string>
+		<key>milestones</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string> and a milestone</string>
+			<key>other</key>
+			<string> and %d milestones</string>
+		</dict>
+		<key>tasks</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>a task%#@milestones@</string>
+			<key>other</key>
+			<string>%d tasks%#@milestones@</string>
+		</dict>
+	</dict>
 </dict>
 </plist>
