@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bad-order</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@var1@ %#@var2@</string>
+		<key>var1</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>one apple</string>
+			<key>other</key>
+			<string>%d apples</string>
+		</dict>
+		<key>var2</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>one orange</string>
+			<key>other</key>
+			<string>%d oranges</string>
+		</dict>
+	</dict>
+	<key>bad-order-causes-bad-type</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@var1@ for %@</string>
+		<key>var1</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>one apple</string>
+			<key>other</key>
+			<string>%d apples</string>
+		</dict>
+	</dict>
+</dict>
+</plist>

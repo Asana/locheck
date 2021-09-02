@@ -1,0 +1,8 @@
+/* 
+  Localizable.strings
+  BadlyLocalizedApp
+
+  Created by Steve Landey on 9/1/21.
+  
+*/
+"bad-specifier" = "Should be a number but is a string: %d";
