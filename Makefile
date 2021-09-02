@@ -1,6 +1,6 @@
-EXECUTABLE_NAME = mint
+EXECUTABLE_NAME = locheck
 REPO = https://github.com/Asana/locheck
-VERSION = 0.9.1
+VERSION = 0.9.2
 
 PREFIX = /usr/local
 INSTALL_PATH = $(PREFIX)/bin/$(EXECUTABLE_NAME)
