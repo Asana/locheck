@@ -57,16 +57,18 @@ class StringsdictEntryTests: XCTestCase {
     }
 
     func testRuleExpansion_baseCase() {
+        let problemReporter = ProblemReporter(log: false)
         let entry = StringsdictEntry(
             key: "abc",
             line: 10,
             formatKey: LexedStringsdictString(string: "abc"),
             rules: [:])
 
-        XCTAssertEqual(entry.allPermutations, ["abc"])
+        XCTAssertEqual(entry.getAllPermutations(path: "", problemReporter: problemReporter), ["abc"])
     }
 
     func testRuleExpansion_oneLevel_oneAlternative() {
+        let problemReporter = ProblemReporter(log: false)
         let entry = StringsdictEntry(
             key: "abc",
             line: 10,
@@ -82,10 +84,11 @@ class StringsdictEntryTests: XCTestCase {
                     ]),
             ])
 
-        XCTAssertEqual(entry.allPermutations, ["abc xyz"])
+        XCTAssertEqual(entry.getAllPermutations(path: "", problemReporter: problemReporter), ["abc xyz"])
     }
 
     func testRuleExpansion_oneLevel_twoAlternatives() {
+        let problemReporter = ProblemReporter(log: false)
         let entry = StringsdictEntry(
             key: "abc",
             line: 10,
@@ -102,10 +105,11 @@ class StringsdictEntryTests: XCTestCase {
                     ]),
             ])
 
-        XCTAssertEqual(entry.allPermutations, ["abc x", "abc xyz"])
+        XCTAssertEqual(entry.getAllPermutations(path: "", problemReporter: problemReporter), ["abc x", "abc xyz"])
     }
 
     func testRuleExpansion_twoLevels_fourAlternatives() {
+        let problemReporter = ProblemReporter(log: false)
         let entry = StringsdictEntry(
             key: "abc",
             line: 10,
@@ -131,7 +135,7 @@ class StringsdictEntryTests: XCTestCase {
                     ]),
             ])
 
-        XCTAssertEqual(entry.allPermutations, ["b o", "b p", "c o", "c p"])
+        XCTAssertEqual(entry.getAllPermutations(path: "", problemReporter: problemReporter), ["b o", "b p", "c o", "c p"])
     }
 
     func testGetCanonicalArgumentList_logsNoErrorsForValidEntry() {
