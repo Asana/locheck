@@ -23,12 +23,14 @@ uninstall:
 format_code:
 	swiftformat Sources Tests
 
-publish: zip_binary bump_brew
-	echo "published $(VERSION)"
+# Homebrew discourages self-submission unless the project is popular, so this is commented out for now.
+# publish: zip_binary bump_brew
+# 	echo "published $(VERSION)"
 
-bump_brew:
-	brew update
-	brew bump-formula-pr --url=$(RELEASE_TAR) locheck
+# Homebrew discourages self-submission unless the project is popular, so this is commented out for now.
+# bump_brew:
+# 	brew update
+# 	brew bump-formula-pr --url=$(RELEASE_TAR) locheck
 
 zip_binary: build
 	zip -jr $(EXECUTABLE_NAME).zip $(BUILD_PATH)
