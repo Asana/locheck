@@ -60,7 +60,6 @@ struct StringsdictEntry: Equatable {
             problemReporter.report(problem, path: path, lineNumber: line)
         }
 
-//        print("CHECK", key)
         let permutations = getAllPermutations(path: path, problemReporter: problemReporter)
             .map { FormatString(string: $0, path: path, line: line) }
         let numArgs = permutations.flatMap(\.arguments).reduce(0) { max($0, $1.position) }
@@ -68,8 +67,6 @@ struct StringsdictEntry: Equatable {
         var originalStringForArgument = [String]((0 ..< numArgs).map { _ in "" })
 
         for string in permutations {
-//            print(" ", string)
-//            print("   ", string.arguments)
             for arg in string.arguments {
                 if !arg.isPositionExplicit {
                     report(
