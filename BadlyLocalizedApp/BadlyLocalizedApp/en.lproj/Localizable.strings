@@ -6,3 +6,4 @@
   
 */
 "bad-specifier" = "Should be a number but is a string: %d";
+"arg-order-test" = "%1$@ %@";

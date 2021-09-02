@@ -44,7 +44,9 @@ struct FormatString: Equatable {
 
 /// Transform a single string into parsed `FormatSpecifier` objects
 private func parseNativeArguments(string: String) -> [FormatArgument] {
-    Expressions.nativeArgumentRegex
+    var nextImplicitPosition = 1
+
+    return Expressions.nativeArgumentRegex
         .lo_matches(in: string)
         .enumerated()
         .compactMap { (i: Int, match: NSTextCheckingResult) -> FormatArgument? in
@@ -59,9 +61,12 @@ private func parseNativeArguments(string: String) -> [FormatArgument] {
                     positionString: positionString,
                     isPositionExplicit: true)
             } else {
+                let implicitPosition = nextImplicitPosition
+                // Increment local variable from outside the closure. Impure but convenient.
+                nextImplicitPosition += 1
                 return FormatArgument(
                     specifier: specifier,
-                    position: i + 1,
+                    position: implicitPosition,
                     isPositionExplicit: false)
             }
         }
