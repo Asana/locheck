@@ -135,7 +135,9 @@ class StringsdictEntryTests: XCTestCase {
                     ]),
             ])
 
-        XCTAssertEqual(entry.getAllPermutations(path: "", problemReporter: problemReporter), ["b o", "b p", "c o", "c p"])
+        XCTAssertEqual(
+            entry.getAllPermutations(path: "", problemReporter: problemReporter),
+            ["b o", "b p", "c o", "c p"])
     }
 
     func testGetCanonicalArgumentList_logsNoErrorsForValidEntry() {
