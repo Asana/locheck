@@ -17,7 +17,7 @@ class LocalizedStringPairTests: XCTestCase {
             "%1$@ %2$d %@" = "%1$@ %2$d %@";
             """,
             path: "abc",
-            line: nil)!
+            line: 0)!
         XCTAssertEqual(
             string.base.arguments,
             [
@@ -35,7 +35,7 @@ class LocalizedStringPairTests: XCTestCase {
             "A sync error occurred while creating column “%@” in project “%@”." = "Er is een synchronisatiefout opgetreden tijdens het maken van kolom “%@” in een project.";
             """,
             path: "abc",
-            line: nil)!
+            line: 0)!
         XCTAssertEqual(
             string.base.arguments,
             [
@@ -55,7 +55,7 @@ class LocalizedStringPairTests: XCTestCase {
             "A sync error occurred while processing %@'s request to join “%@”." = "“%@” 님의 “%2$@” 참가 요청을 처리하는 중 동기화 오류가 발생했습니다.";
             """,
             path: "abc",
-            line: nil)!
+            line: 0)!
         XCTAssertEqual(
             string.base.arguments,
             [

@@ -15,6 +15,15 @@ protocol StringsProblem: SummarizableProblem {
     var key: String { get }
 }
 
+struct CDATACannotBeDecoded: Problem, Equatable {
+    var kindIdentifier: String { "cdata_cannot_be_decoded" }
+    var uniquifyingInformation: String { "\(key)" }
+    var severity: Severity { .error }
+    let key: String
+
+    var message: String { "'\(key)' has CDATA that cannot be decoded as UTF-8" }
+}
+
 struct DuplicateEntries: Problem, Equatable {
     var kindIdentifier: String { "duplicate_entries" }
     var uniquifyingInformation: String { "\(context ?? "<root>")-\(name)" }
@@ -60,6 +69,39 @@ struct LprojFileMissingFromTranslation: Problem, Equatable {
     var message: String { "\(key) missing from \(language)" }
 }
 
+struct PhraseAndNativeArgumentsAreBothPresent: Problem, StringsProblem, Equatable {
+    var kindIdentifier: String { "phrase_and_native_arguments_are_both_present" }
+    var uniquifyingInformation: String { key }
+    var severity: Severity { .warning }
+    let key: String
+
+    var message: String { "'\(key)' contains both native (%d) and phrase-style ({arg}) arguments" }
+}
+
+struct PhraseHasMissingArguments: Problem, StringsProblem, Equatable {
+    var kindIdentifier: String { "phrase_has_missing_arguments" }
+    var uniquifyingInformation: String { "\(language)-\(key)" }
+    var severity: Severity { .warning }
+    let key: String
+    let language: String
+    let args: [String]
+
+    var message: String { "'\(key)' does not include argument(s): \(args.joined(separator: ", "))" }
+}
+
+struct PhraseHasExtraArguments: Problem, StringsProblem, Equatable {
+    var kindIdentifier: String { "string_has_extra_arguments" }
+    var uniquifyingInformation: String { "\(language)-\(key)" }
+    var severity: Severity { .error }
+    let key: String
+    let language: String
+    let args: [String]
+
+    var message: String {
+        "Translation of '\(key)' includes arguments that don't exist in the source: \(args.joined(separator: ", "))"
+    }
+}
+
 struct StringHasDuplicateArguments: Problem, StringsProblem, Equatable {
     var kindIdentifier: String { "string_has_duplicate_arguments" }
     var uniquifyingInformation: String { "\(language)-\(key)" }
@@ -81,7 +123,7 @@ struct StringHasExtraArguments: Problem, StringsProblem, Equatable {
     let args: [String]
 
     var message: String {
-        "Translation includes arguments that don't exist in the source: \(args.joined(separator: ", "))"
+        "Translation of '\(key)' includes arguments that don't exist in the source: \(args.joined(separator: ", "))"
     }
 }
 
@@ -108,7 +150,7 @@ struct StringHasMissingArguments: Problem, StringsProblem, Equatable {
     let language: String
     let args: [String]
 
-    var message: String { "Does not include argument(s) at \(args.joined(separator: ", "))" }
+    var message: String { "'\(key)' does not include argument(s) at \(args.joined(separator: ", "))" }
 }
 
 struct StringsdictEntryContainsNoVariablesProblem: Problem, StringsdictProblem, Equatable {

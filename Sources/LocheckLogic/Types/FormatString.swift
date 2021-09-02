@@ -21,10 +21,10 @@ struct FormatString: Equatable {
     let arguments: [FormatArgument]
     let phraseArguments: [String]
     let path: String
-    let line: Int?
+    let line: Int
     let kind: Kind
 
-    init(string: String, path: String, line: Int?) {
+    init(string: String, path: String, line: Int) {
         self.string = string
         self.path = path
         self.line = line

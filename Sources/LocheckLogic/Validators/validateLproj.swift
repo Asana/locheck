@@ -19,7 +19,7 @@ public func validateLproj(base: LprojFiles, translation: LprojFiles, problemRepo
                     key: stringsFile.name,
                     language: translation.name),
                 path: stringsFile.path,
-                lineNumber: nil)
+                lineNumber: 0)
             continue
         }
         parseAndValidateXCStrings(
@@ -38,7 +38,7 @@ public func validateLproj(base: LprojFiles, translation: LprojFiles, problemRepo
                     key: baseStringsdictFile.name,
                     language: translation.name),
                 path: baseStringsdictFile.path,
-                lineNumber: nil)
+                lineNumber: 0)
             continue
         }
         parseAndValidateStringsdict(

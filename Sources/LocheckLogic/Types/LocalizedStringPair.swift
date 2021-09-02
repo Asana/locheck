@@ -21,14 +21,14 @@ struct LocalizedStringPair: Equatable {
     let base: FormatString
     let translation: FormatString
     let path: String
-    let line: Int?
+    let line: Int
 }
 
 extension LocalizedStringPair {
     init?(
         string: String,
         path: String,
-        line: Int?,
+        line: Int,
         baseStringMap: [String: FormatString]? = nil) { // only pass for translation strings
         guard
             let match = Expressions.stringPairRegex.lo_matches(in: string).first,

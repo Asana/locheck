@@ -45,7 +45,7 @@ struct Stringsdict: Equatable {
             problemReporter.report(
                 XMLSchemaProblem(message: "XML schema error: no dict at top level"),
                 path: path,
-                lineNumber: nil)
+                lineNumber: 0)
             return nil
         }
 
