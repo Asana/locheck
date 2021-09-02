@@ -50,6 +50,14 @@ In these cases, Locheck will use the base translation's _value_ (not its key) as
 
 ## Installation
 
+### Manual
+
+```sh
+git clone git@github.com:Asana/locheck.git
+cd locheck
+make install
+```
+
 ### Using [Mint](https://github.com/yonaskolb/Mint)
 
 ```sh
@@ -62,6 +70,8 @@ locheck [...]
 ```
 
 Other install methods may be added upon request as we discover people's needs. This project is very new and setting up new installation methods takes time.
+
+Locheck is not yet popular enough to be in `homebrew/core` and we haven't created a tap yet.
 
 ## Usage
 
