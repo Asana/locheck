@@ -66,7 +66,8 @@ public class ProblemReporter {
     }
 
     public func report(_ problem: Problem, path: String, lineNumber: Int) {
-        guard !ignoredProblemIdentifiers.contains(problem.kindIdentifier) && (!ignoreWarnings || problem.severity == .error) else { return }
+        guard !ignoredProblemIdentifiers
+            .contains(problem.kindIdentifier) && (!ignoreWarnings || problem.severity == .error) else { return }
         let localProblem = LocalProblem(path: path, lineNumber: lineNumber, problem: problem)
         problems.append(localProblem)
 
@@ -91,7 +92,8 @@ public class ProblemReporter {
             print(path)
 
             for problem in problemsByFile[path]!.filter({ $0.problem as? SummarizableProblem == nil }) {
-                print("  \(problem.problem.severity.rawValue.uppercased()): \(problem.problem.message) (\(problem.problem.kindIdentifier))")
+                print(
+                    "  \(problem.problem.severity.rawValue.uppercased()): \(problem.problem.message) (\(problem.problem.kindIdentifier))")
             }
 
             let summarizableProblems = problemsByFile[path]!.compactMap { $0.problem as? SummarizableProblem }
@@ -99,7 +101,8 @@ public class ProblemReporter {
             for key in keys.sorted() {
                 print("  \(key):")
                 for problem in summarizableProblems.filter({ $0.key == key }) {
-                    print("    \(problem.severity.rawValue.uppercased()): \(problem.message) (\(problem.kindIdentifier))")
+                    print(
+                        "    \(problem.severity.rawValue.uppercased()): \(problem.message) (\(problem.kindIdentifier))")
                 }
             }
         }

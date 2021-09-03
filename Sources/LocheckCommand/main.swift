@@ -44,7 +44,8 @@ private func withProblemReporter(ignore: [String], ignoreWarnings: Bool, _ block
 
 private let ignoreHelpText: ArgumentHelp = "Ignore a rule completely."
 
-private let ignoreMissingHelpText: ArgumentHelp = "Ignore 'missing string' errors. Shorthand for '--ignore key_missing_from_base --ignore key_missing_from_translation'."
+private let ignoreMissingHelpText: ArgumentHelp =
+    "Ignore 'missing string' errors. Shorthand for '--ignore key_missing_from_base --ignore key_missing_from_translation'."
 
 private let ignoreWarningsHelpText: ArgumentHelp = "Ignore all warning-level issues."
 
@@ -52,8 +53,9 @@ private protocol HasIgnoreWithShorthand {
     var ignore: [String] { get }
     var ignoreMissing: Bool { get }
 }
-extension HasIgnoreWithShorthand {
-    fileprivate var ignoreWithShorthand: [String] {
+
+private extension HasIgnoreWithShorthand {
+    var ignoreWithShorthand: [String] {
         ignore + (ignoreMissing ? ["key_missing_from_base", "key_missing_from_translation"] : [])
     }
 }
