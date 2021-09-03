@@ -32,8 +32,12 @@ struct Locheck: ParsableCommand {
         ])
 }
 
-private func withProblemReporter(ignore: [String], ignoreWarnings: Bool, _ block: (ProblemReporter) -> Void) {
-    let problemReporter = ProblemReporter(ignoredProblemIdentifiers: ignore, ignoreWarnings: ignoreWarnings)
+private func withProblemReporter(
+    root: String,
+    ignore: [String],
+    ignoreWarnings: Bool,
+    _ block: (ProblemReporter) -> Void) {
+    let problemReporter = ProblemReporter(root: root, ignoredProblemIdentifiers: ignore, ignoreWarnings: ignoreWarnings)
     block(problemReporter)
     if problemReporter.hasError {
         print("Errors found")
@@ -82,7 +86,7 @@ struct XCStrings: HasIgnoreWithShorthand, ParsableCommand {
     }
 
     func run() {
-        withProblemReporter(ignore: ignoreWithShorthand, ignoreWarnings: ignoreWarnings) { problemReporter in
+        withProblemReporter(root: "", ignore: ignoreWithShorthand, ignoreWarnings: ignoreWarnings) { problemReporter in
             let base = stringsFiles[0]
             let translationFiles = stringsFiles.dropFirst()
             for file in translationFiles {
@@ -120,7 +124,7 @@ struct AndroidStrings: HasIgnoreWithShorthand, ParsableCommand {
     }
 
     func run() {
-        withProblemReporter(ignore: ignoreWithShorthand, ignoreWarnings: ignoreWarnings) { problemReporter in
+        withProblemReporter(root: "", ignore: ignoreWithShorthand, ignoreWarnings: ignoreWarnings) { problemReporter in
             let baseFile = stringsFiles[0]
             let translationFiles = stringsFiles.dropFirst()
             if translationFiles.isEmpty {
@@ -165,7 +169,7 @@ struct Stringsdict: HasIgnoreWithShorthand, ParsableCommand {
     }
 
     func run() {
-        withProblemReporter(ignore: ignoreWithShorthand, ignoreWarnings: ignoreWarnings) { problemReporter in
+        withProblemReporter(root: "", ignore: ignoreWithShorthand, ignoreWarnings: ignoreWarnings) { problemReporter in
             let baseFile = stringsdictFiles[0]
             let translationFiles = stringsdictFiles.dropFirst()
             // Just do what we can with the base language, i.e. validate plurals
@@ -215,7 +219,7 @@ struct Lproj: HasIgnoreWithShorthand, ParsableCommand {
                 "Validating \(translationFiles.count) lproj files against \(try! Folder(path: baseFile.argument).name)")
         }
 
-        withProblemReporter(ignore: ignoreWithShorthand, ignoreWarnings: ignoreWarnings) { problemReporter in
+        withProblemReporter(root: "", ignore: ignoreWithShorthand, ignoreWarnings: ignoreWarnings) { problemReporter in
             // Same as in DiscoverLproj command below
             if translationFiles.isEmpty {
                 // Just do what we can with the base language, i.e. validate plurals
@@ -289,17 +293,20 @@ struct DiscoverLproj: HasIgnoreWithShorthand, ParsableCommand {
             print("Source of truth: \(baseLproj.path)")
             print("Translations to check: \(translationLproj.count)")
 
-            withProblemReporter(ignore: ignoreWithShorthand, ignoreWarnings: ignoreWarnings) { problemReporter in
-                // Same as in Lproj command above
-                if translationLproj.isEmpty {
-                    // Just do what we can with the base language, i.e. validate plurals
-                    baseLproj.validateInternally(problemReporter: problemReporter)
-                }
+            withProblemReporter(
+                root: directory.argument,
+                ignore: ignoreWithShorthand,
+                ignoreWarnings: ignoreWarnings) { problemReporter in
+                    // Same as in Lproj command above
+                    if translationLproj.isEmpty {
+                        // Just do what we can with the base language, i.e. validate plurals
+                        baseLproj.validateInternally(problemReporter: problemReporter)
+                    }
 
-                for translation in translationLproj {
-                    validateLproj(base: baseLproj, translation: translation, problemReporter: problemReporter)
-                }
-                problemReporter.printSummary()
+                    for translation in translationLproj {
+                        validateLproj(base: baseLproj, translation: translation, problemReporter: problemReporter)
+                    }
+                    problemReporter.printSummary()
             }
         }
     }
@@ -368,15 +375,18 @@ struct DiscoverValues: HasIgnoreWithShorthand, ParsableCommand {
             print("Source of truth: \(primaryValues.path)")
             print("Translations to check: \(translationValues.count)")
 
-            withProblemReporter(ignore: ignoreWithShorthand, ignoreWarnings: ignoreWarnings) { problemReporter in
-                for translation in translationValues {
-                    parseAndValidateAndroidStrings(
-                        base: primaryValues,
-                        translation: translation,
-                        translationLanguageName: String(translation.parent!.name.dropFirst("values-".count)),
-                        problemReporter: problemReporter)
-                }
-                problemReporter.printSummary()
+            withProblemReporter(
+                root: directory.argument,
+                ignore: ignoreWithShorthand,
+                ignoreWarnings: ignoreWarnings) { problemReporter in
+                    for translation in translationValues {
+                        parseAndValidateAndroidStrings(
+                            base: primaryValues,
+                            translation: translation,
+                            translationLanguageName: String(translation.parent!.name.dropFirst("values-".count)),
+                            problemReporter: problemReporter)
+                    }
+                    problemReporter.printSummary()
             }
         }
     }

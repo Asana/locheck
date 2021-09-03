@@ -55,11 +55,18 @@ public class ProblemReporter {
     private var standardError = StderrOutputStream()
     public private(set) var problems = [LocalProblem]()
 
+    /// Path prefix for all problems. Used to remove the prefix from the summary for readability.
+    public let root: String
     public var log: Bool
     public let ignoredProblemIdentifiers: Set<String>
     public let ignoreWarnings: Bool
 
-    public init(log: Bool = true, ignoredProblemIdentifiers: [String] = [], ignoreWarnings: Bool = false) {
+    public init(
+        root: String = "",
+        log: Bool = true,
+        ignoredProblemIdentifiers: [String] = [],
+        ignoreWarnings: Bool = false) {
+        self.root = root
         self.log = log
         self.ignoredProblemIdentifiers = Set(ignoredProblemIdentifiers)
         self.ignoreWarnings = ignoreWarnings
@@ -89,7 +96,14 @@ public class ProblemReporter {
         print("\nSummary:")
 
         for path in problemsByFile.keys.sorted() {
-            print(path)
+            var pathToPrint = path
+            if path.hasPrefix(root) {
+                pathToPrint = String(pathToPrint.dropFirst(root.count))
+            }
+            if path.hasPrefix("/") {
+                pathToPrint = String(pathToPrint.dropFirst())
+            }
+            print(pathToPrint)
 
             for problem in problemsByFile[path]!.filter({ $0.problem as? SummarizableProblem == nil }) {
                 print(
