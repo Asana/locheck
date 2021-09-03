@@ -9,7 +9,17 @@ import Files
 import Foundation
 
 extension File {
-    var lo_lines: [String] {
-        try! readAsString().split(omittingEmptySubsequences: false, whereSeparator: \.isNewline).map { String($0) }
+    func lo_getLines(problemReporter: ProblemReporter) -> [String]? {
+        do {
+            return try readAsString()
+                .split(omittingEmptySubsequences: false, whereSeparator: \.isNewline)
+                .map { String($0) }
+        } catch {
+            problemReporter.report(
+                SwiftError(error: error),
+                path: path,
+                lineNumber: 0)
+            return nil
+        }
     }
 }

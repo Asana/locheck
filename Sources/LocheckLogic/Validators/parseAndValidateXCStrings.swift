@@ -18,7 +18,8 @@ public func parseAndValidateXCStrings(
     problemReporter: ProblemReporter) {
     problemReporter.logInfo("Validating \(translation.path) against \(base.path)")
 
-    let baseStrings = base.lo_lines.enumerated()
+    guard let baseLines = base.lo_getLines(problemReporter: problemReporter) else { return }
+    let baseStrings = baseLines.enumerated()
         .compactMap {
             LocalizedStringPair(
                 string: $0.1,
@@ -27,7 +28,7 @@ public func parseAndValidateXCStrings(
         }
 
     var baseStringMap = [String: FormatString]()
-    for (i, line) in base.lo_lines.enumerated() {
+    for (i, line) in baseLines.enumerated() {
         guard let basePair = LocalizedStringPair(
             string: line,
             path: base.path,
@@ -38,9 +39,10 @@ public func parseAndValidateXCStrings(
         baseStringMap[basePair.base.string] = basePair.translation
     }
 
+    guard let translationLines = translation.lo_getLines(problemReporter: problemReporter) else { return }
     validateStrings(
         baseStrings: baseStrings,
-        translationStrings: translation.lo_lines.enumerated().compactMap {
+        translationStrings: translationLines.enumerated().compactMap {
             let p = LocalizedStringPair(
                 string: $0.1,
                 path: translation.path,

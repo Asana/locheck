@@ -76,8 +76,7 @@ public class ProblemReporter {
     public func printSummary() {
         guard problems.contains(where: { $0.problem.severity != .ignored }) else { return }
         var problemsByFile = [String: [LocalProblem]]()
-        for localProblem in problems
-            where localProblem.problem as? SummarizableProblem != nil && localProblem.problem.severity != .ignored {
+        for localProblem in problems where localProblem.problem.severity != .ignored {
             if problemsByFile[localProblem.path] == nil {
                 problemsByFile[localProblem.path] = []
             }
@@ -88,12 +87,17 @@ public class ProblemReporter {
 
         for path in problemsByFile.keys.sorted() {
             print(path)
-            let problems = problemsByFile[path]!.map { $0.problem as! SummarizableProblem }
-            let keys = Set(problems.map(\.key))
+
+            for problem in problemsByFile[path]!.filter({ $0.problem as? SummarizableProblem == nil }) {
+                print("  \(problem.problem.severity.rawValue.uppercased()): \(problem.problem.message) (\(problem.problem.kindIdentifier))")
+            }
+
+            let summarizableProblems = problemsByFile[path]!.compactMap { $0.problem as? SummarizableProblem }
+            let keys = Set(summarizableProblems.map(\.key))
             for key in keys.sorted() {
                 print("  \(key):")
-                for problem in problems.filter({ $0.key == key }) {
-                    print("    \(problem.severity.rawValue.uppercased()): \(problem.message)")
+                for problem in summarizableProblems.filter({ $0.key == key }) {
+                    print("    \(problem.severity.rawValue.uppercased()): \(problem.message) (\(problem.kindIdentifier))")
                 }
             }
         }

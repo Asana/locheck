@@ -15,13 +15,22 @@ protocol StringsProblem: SummarizableProblem {
     var key: String { get }
 }
 
-struct CDATACannotBeDecoded: Problem, Equatable {
+struct CDATACannotBeDecoded: Problem, Equatable, SummarizableProblem {
     var kindIdentifier: String { "cdata_cannot_be_decoded" }
     var uniquifyingInformation: String { "\(key)" }
     var severity: Severity { .error }
     let key: String
 
     var message: String { "'\(key)' has CDATA that cannot be decoded as UTF-8" }
+}
+
+struct SwiftError: Problem {
+    var kindIdentifier: String { "swift_error" }
+    var uniquifyingInformation: String { error.localizedDescription }
+    var severity: Severity { .error }
+    let error: Error
+
+    var message: String { error.localizedDescription }
 }
 
 struct DuplicateEntries: Problem, Equatable {
