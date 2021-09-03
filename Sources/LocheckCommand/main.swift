@@ -11,6 +11,8 @@ import Files
 import Foundation
 import LocheckLogic
 
+let version = "0.9.1"
+
 struct Locheck: ParsableCommand {
     static let configuration = CommandConfiguration(
         abstract: """
@@ -26,6 +28,7 @@ struct Locheck: ParsableCommand {
             XCStrings.self,
             Stringsdict.self,
             AndroidStrings.self,
+            Version.self,
         ])
 }
 
@@ -370,6 +373,16 @@ struct DiscoverValues: ParsableCommand {
                 problemReporter.printSummary()
             }
         }
+    }
+}
+
+struct Version: ParsableCommand {
+    static let configuration = CommandConfiguration(
+        commandName: "version",
+        abstract: "Print the installed version of locheck to stdout")
+
+    func run() {
+        print(version)
     }
 }
 
