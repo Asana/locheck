@@ -77,8 +77,8 @@ struct XCStrings: ParsableCommand {
             for file in translationFiles {
                 let translationFile = try! File(path: file.argument)
                 parseAndValidateXCStrings(
-                    base: try! File(path: base.argument),
-                    translation: translationFile,
+                    base: [try! File(path: base.argument)],
+                    translation: [translationFile],
                     translationLanguageName: translationFile.nameExcludingExtension,
                     problemReporter: problemReporter)
             }
@@ -262,7 +262,7 @@ struct DiscoverLproj: ParsableCommand {
 
     func run() {
         for directory in directories {
-            print("Discovering .lproj files in \(directory.argument)")
+            print("Discovering .lproj files in \(directory.argument) with \(base) as the base")
 
             var maybePrimaryLproj: LprojFiles!
             var translationLproj = [LprojFiles]()

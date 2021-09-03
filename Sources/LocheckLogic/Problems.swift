@@ -26,11 +26,11 @@ struct CDATACannotBeDecoded: Problem, Equatable, SummarizableProblem {
 
 struct SwiftError: Problem {
     var kindIdentifier: String { "swift_error" }
-    var uniquifyingInformation: String { error.localizedDescription }
+    var uniquifyingInformation: String { description }
     var severity: Severity { .error }
-    let error: Error
+    let description: String
 
-    var message: String { error.localizedDescription }
+    var message: String { description }
 }
 
 struct DuplicateEntries: Problem, Equatable {
