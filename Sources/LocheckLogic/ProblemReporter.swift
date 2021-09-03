@@ -57,14 +57,16 @@ public class ProblemReporter {
 
     public var log: Bool
     public let ignoredProblemIdentifiers: Set<String>
+    public let ignoreWarnings: Bool
 
-    public init(log: Bool = true, ignoredProblemIdentifiers: [String] = []) {
+    public init(log: Bool = true, ignoredProblemIdentifiers: [String] = [], ignoreWarnings: Bool = false) {
         self.log = log
         self.ignoredProblemIdentifiers = Set(ignoredProblemIdentifiers)
+        self.ignoreWarnings = ignoreWarnings
     }
 
     public func report(_ problem: Problem, path: String, lineNumber: Int) {
-        guard !ignoredProblemIdentifiers.contains(problem.kindIdentifier) else { return }
+        guard !ignoredProblemIdentifiers.contains(problem.kindIdentifier) && (!ignoreWarnings || problem.severity == .error) else { return }
         let localProblem = LocalProblem(path: path, lineNumber: lineNumber, problem: problem)
         problems.append(localProblem)
 
