@@ -39,7 +39,7 @@ zip_binary: build
 release:
 	git checkout main
 ifeq ($(GIT_STATUS),"")
-	sed -i '' 's|\(let version = "\)\(.*\)\("\)|\1$(VERSION)\3|' Sources/LocheckCommand/main.swift
+	sed -E -i '' 's/let version = ".*"/let version = "$(VERSION)"/' Sources/LocheckCommand/main.swift
 
 	git add .
 	git commit -m "Update to $(VERSION)"
