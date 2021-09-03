@@ -7,8 +7,9 @@ INSTALL_PATH = $(PREFIX)/bin/$(EXECUTABLE_NAME)
 BUILD_PATH = .build/apple/Products/Release/$(EXECUTABLE_NAME)
 CURRENT_PATH = $(PWD)
 RELEASE_TAR = $(REPO)/archive/$(VERSION).tar.gz
+GIT_STATUS := $(shell git status -s)
 
-.PHONY: install build uninstall format_code publish release
+.PHONY: install build uninstall format_code release # publish
 
 install: build
 	mkdir -p $(PREFIX)/bin
@@ -36,8 +37,13 @@ zip_binary: build
 	zip -jr $(EXECUTABLE_NAME).zip $(BUILD_PATH)
 
 release:
+	git checkout main
+ifeq ($(GIT_STATUS),"")
 	sed -i '' 's|\(let version = "\)\(.*\)\("\)|\1$(VERSION)\3|' Sources/LocheckCommand/main.swift
 
 	git add .
 	git commit -m "Update to $(VERSION)"
 	git tag $(VERSION)
+else
+	echo "Working directory is not clean"
+endif
