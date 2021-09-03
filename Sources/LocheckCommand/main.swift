@@ -157,7 +157,7 @@ struct Stringsdict: ParsableCommand {
             let baseFile = stringsdictFiles[0]
             let translationFiles = stringsdictFiles.dropFirst()
             // Just do what we can with the base language, i.e. validate plurals
-            if translationFiles.isEmpty, let stringsdictFile = LocheckLogic.Stringsdict(
+            if translationFiles.isEmpty, let stringsdictFile = StringsdictFile(
                 path: baseFile.argument,
                 problemReporter: problemReporter) {
                 stringsdictFile.entries.forEach { _ = $0.getCanonicalArgumentList(problemReporter: problemReporter) }

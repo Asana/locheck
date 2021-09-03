@@ -27,7 +27,7 @@ import SwiftyXMLParser
         other: "%d cool motorcycles"                        // another 'alternative'
  ```
  */
-public struct Stringsdict: Equatable {
+public struct StringsdictFile: Equatable {
     public let path: String
     public let entries: [StringsdictEntry]
 
