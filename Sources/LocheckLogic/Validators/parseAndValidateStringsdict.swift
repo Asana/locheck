@@ -43,10 +43,9 @@ func validateStringsdict(
 
     let baseArgLists = baseStringsdict.entries.lo_makeDictionary(
         makeKey: \.key,
-        makeValue: { $0.getCanonicalArgumentList(path: baseStringsdict.path, problemReporter: problemReporter) })
+        makeValue: { $0.getCanonicalArgumentList(problemReporter: problemReporter) })
     for translation in translationStringsdict.entries {
         let translationArgs = translation.getCanonicalArgumentList(
-            path: translationStringsdict.path,
             problemReporter: problemReporter)
         guard let baseArgs = baseArgLists[translation.key] else {
             continue // error already logged above

@@ -50,11 +50,8 @@ struct XCStrings: ParsableCommand {
         commandName: "xcstrings",
         abstract: "Directly compare .strings files")
 
-    @Argument(help: "An authoritative .strings file")
-    private var base: FileArg
-
-    @Argument(help: "Non-authoritative .strings files that need to be validated")
-    private var translation: [FileArg]
+    @Argument(help: "A list of .strings files, starting with the primary language")
+    private var stringsFiles: [FileArg]
 
     @Option(help: ignoreHelpText)
     private var ignore = [String]()
@@ -67,13 +64,14 @@ struct XCStrings: ParsableCommand {
     }
 
     func validate() throws {
-        try base.validate(ext: "strings")
-        try translation.forEach { try $0.validate(ext: "strings") }
+        try stringsFiles.forEach { try $0.validate(ext: "strings") }
     }
 
     func run() {
         withProblemReporter(ignore: ignoreWithShorthand) { problemReporter in
-            for file in translation {
+            let base = stringsFiles[0]
+            let translationFiles = stringsFiles.dropFirst()
+            for file in translationFiles {
                 let translationFile = try! File(path: file.argument)
                 parseAndValidateXCStrings(
                     base: try! File(path: base.argument),
@@ -91,11 +89,8 @@ struct AndroidStrings: ParsableCommand {
         commandName: "androidstrings",
         abstract: "Directly compare strings.xml files")
 
-    @Argument(help: "An authoritative strings.xml file")
-    private var base: FileArg
-
-    @Argument(help: "Non-authoritative strings.xml files that need to be validated")
-    private var translation: [FileArg]
+    @Argument(help: "A list of strings.xml files, starting with the primary language")
+    private var stringsFiles: [FileArg]
 
     @Option(help: ignoreHelpText)
     private var ignore = [String]()
@@ -108,20 +103,25 @@ struct AndroidStrings: ParsableCommand {
     }
 
     func validate() throws {
-        try base.validate(ext: "xml")
-        try translation.forEach { try $0.validate(ext: "xml") }
+        try stringsFiles.forEach { try $0.validate(ext: "xml") }
     }
 
     func run() {
         withProblemReporter(ignore: ignoreWithShorthand) { problemReporter in
-            for file in translation {
+            let baseFile = stringsFiles[0]
+            let translationFiles = stringsFiles.dropFirst()
+            if translationFiles.isEmpty {
+                // Just do what we can with the base language, i.e. validate plurals
+                _ = AndroidStringsFile(path: baseFile.argument, problemReporter: problemReporter)
+            }
+            for file in translationFiles {
                 let translationFile = try! File(path: file.argument)
                 var translationLanguageName = translationFile.parent!.nameExcludingExtension
                 if translationLanguageName.hasPrefix("values-") {
                     translationLanguageName = String(translationLanguageName.dropFirst("values-".count))
                 }
                 parseAndValidateAndroidStrings(
-                    base: try! File(path: base.argument),
+                    base: try! File(path: baseFile.argument),
                     translation: translationFile,
                     translationLanguageName: translationLanguageName,
                     problemReporter: problemReporter)
@@ -135,11 +135,8 @@ struct Stringsdict: ParsableCommand {
     static let configuration = CommandConfiguration(
         abstract: "Directly compare .stringsdict files")
 
-    @Argument(help: "An authoritative .stringsdict file")
-    private var base: FileArg
-
-    @Argument(help: "Non-authoritative .stringsdict files that need to be validated")
-    private var translation: [FileArg]
+    @Argument(help: "A list of .stringsdict files, starting with the primary language")
+    private var stringsdictFiles: [FileArg]
 
     @Option(help: ignoreHelpText)
     private var ignore = [String]()
@@ -152,16 +149,23 @@ struct Stringsdict: ParsableCommand {
     }
 
     func validate() throws {
-        try base.validate(ext: "stringsdict")
-        try translation.forEach { try $0.validate(ext: "stringsdict") }
+        try stringsdictFiles.forEach { try $0.validate(ext: "stringsdict") }
     }
 
     func run() {
         withProblemReporter(ignore: ignoreWithShorthand) { problemReporter in
-            for file in translation {
+            let baseFile = stringsdictFiles[0]
+            let translationFiles = stringsdictFiles.dropFirst()
+            // Just do what we can with the base language, i.e. validate plurals
+            if translationFiles.isEmpty, let stringsdictFile = LocheckLogic.Stringsdict(
+                path: baseFile.argument,
+                problemReporter: problemReporter) {
+                stringsdictFile.entries.forEach { _ = $0.getCanonicalArgumentList(problemReporter: problemReporter) }
+            }
+            for file in translationFiles {
                 let translationFile = try! File(path: file.argument)
                 parseAndValidateStringsdict(
-                    base: try! File(path: base.argument),
+                    base: try! File(path: baseFile.argument),
                     translation: translationFile,
                     translationLanguageName: translationFile.nameExcludingExtension,
                     problemReporter: problemReporter)
@@ -175,11 +179,8 @@ struct Lproj: ParsableCommand {
     static let configuration = CommandConfiguration(
         abstract: "Compare the contents of multiple .lproj files")
 
-    @Argument(help: "An authoritative .lproj directory")
-    private var base: DirectoryArg
-
-    @Argument(help: "Non-authoritative .lproj directories that need to be validated")
-    private var translation: [DirectoryArg]
+    @Argument(help: "A list of .lproj files, starting with the primary language")
+    private var lprojFiles: [DirectoryArg]
 
     @Option(help: ignoreHelpText)
     private var ignore = [String]()
@@ -192,17 +193,24 @@ struct Lproj: ParsableCommand {
     }
 
     func validate() throws {
-        try base.validate(ext: "lproj")
-        try translation.forEach { try $0.validate(ext: "lproj") }
+        try lprojFiles.forEach { try $0.validate(ext: "lproj") }
     }
 
     func run() {
-        print("Validating \(translation.count) lproj files against \(try! Folder(path: base.argument).name)")
+        let baseFile = lprojFiles[0]
+        let translationFiles = lprojFiles.dropFirst()
+        print("Validating \(translationFiles.count) lproj files against \(try! Folder(path: baseFile.argument).name)")
 
         withProblemReporter(ignore: ignoreWithShorthand) { problemReporter in
-            for translation in translation {
+            // Same as in DiscoverLproj command below
+            if translationFiles.isEmpty {
+                // Just do what we can with the base language, i.e. validate plurals
+                let lprojFiles = LprojFiles(folder: try! Folder(path: baseFile.argument))
+                lprojFiles.validateInternally(problemReporter: problemReporter)
+            }
+            for translation in translationFiles {
                 validateLproj(
-                    base: LprojFiles(folder: try! Folder(path: base.argument)),
+                    base: LprojFiles(folder: try! Folder(path: baseFile.argument)),
                     translation: LprojFiles(folder: try! Folder(path: translation.argument)),
                     problemReporter: problemReporter)
             }
@@ -238,21 +246,16 @@ struct DiscoverLproj: ParsableCommand {
             try directory.validate()
 
             var hasBase = false
-            var hasTranslation = false
+            // It's OK if there are no translations, we can still do stuff
 
             for folder in try! Folder(path: directory.argument).subfolders where folder.extension == "lproj" {
                 if folder.name == "\(base).lproj" {
                     hasBase = true
-                } else {
-                    hasTranslation = true
                 }
             }
 
             if !hasBase {
                 throw ValidationError("Can't find \(base).lproj or values/ directory in \(directory.argument)")
-            }
-            if !hasTranslation {
-                throw ValidationError("Can't find any translation .lproj or values/ folders in \(directory.argument)")
             }
         }
     }
@@ -280,6 +283,12 @@ struct DiscoverLproj: ParsableCommand {
             print("Translations to check: \(translationLproj.count)")
 
             withProblemReporter(ignore: ignoreWithShorthand) { problemReporter in
+                // Same as in Lproj command above
+                if translationLproj.isEmpty {
+                    // Just do what we can with the base language, i.e. validate plurals
+                    baseLproj.validateInternally(problemReporter: problemReporter)
+                }
+
                 for translation in translationLproj {
                     validateLproj(base: baseLproj, translation: translation, problemReporter: problemReporter)
                 }
@@ -312,23 +321,21 @@ struct DiscoverValues: ParsableCommand {
             try directory.validate()
 
             var hasBase = false
-            var hasTranslation = false
+            // It's OK if there are no translations, we can validate just one file for consistency
 
             for folder in try Folder(path: directory.argument).subfolders where folder.name.hasPrefix("values") {
                 if folder.name == "values" {
                     hasBase = true
-                } else {
-                    hasTranslation = true
                 }
 
-                _ = try folder.file(named: "strings.xml") // make sure it exists
+                if folder.name == "values" {
+                    // base localization must have strings.xml, otherwise it's fine
+                    _ = try folder.file(named: "strings.xml")
+                }
             }
 
             if !hasBase {
                 throw ValidationError("Can't find values/ directory in \(directory.argument)")
-            }
-            if !hasTranslation {
-                throw ValidationError("Can't find any values-*/ directories in \(directory.argument)")
             }
         }
     }
@@ -343,8 +350,8 @@ struct DiscoverValues: ParsableCommand {
             for folder in try! Folder(path: directory.argument).subfolders where folder.name.hasPrefix("values") {
                 if folder.name == "values" {
                     maybePrimaryValues = try! folder.file(named: "strings.xml")
-                } else if folder.name.hasPrefix("values-") {
-                    translationValues.append(try! folder.file(named: "strings.xml")) // validated earlier
+                } else if folder.name.hasPrefix("values-"), let stringsFile = try? folder.file(named: "strings.xml") {
+                    translationValues.append(stringsFile)
                 }
             }
 

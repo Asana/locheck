@@ -34,4 +34,11 @@ public struct LprojFiles {
         self.strings = strings
         self.stringsdict = stringsdict
     }
+
+    public func validateInternally(problemReporter: ProblemReporter) {
+        stringsdict
+            .compactMap { LocheckLogic.Stringsdict(path: $0.path, problemReporter: problemReporter) }
+            .flatMap { $0.entries }
+            .forEach { _ = $0.getCanonicalArgumentList(problemReporter: problemReporter) }
+    }
 }
