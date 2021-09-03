@@ -10,13 +10,14 @@ import SwiftyXMLParser
 
 /// These structs may also be referred to as "grammars" because that is the formal name
 /// for a system of rules defining a set of strings.
-struct StringsdictEntry: Equatable {
+public struct StringsdictEntry: Equatable {
     let key: String
+    let path: String
     let line: Int
     let formatKey: LexedStringsdictString
     let rules: [String: StringsdictRule] // derived from XML
 
-    func validateRuleVariables(path: String, problemReporter: ProblemReporter) {
+    func validateRuleVariables(problemReporter: ProblemReporter) {
         let checkRule = { (ruleKey: String, variables: [String]) -> Void in
             for variable in variables where rules[variable] == nil {
                 problemReporter.report(
@@ -51,7 +52,7 @@ struct StringsdictEntry: Equatable {
      specifier for each argument position, and logs problems if there are any mismatches or
      missing values.
      */
-    func getCanonicalArgumentList(path: String, problemReporter: ProblemReporter) -> [FormatArgument?] {
+    public func getCanonicalArgumentList(problemReporter: ProblemReporter) -> [FormatArgument?] {
         // One nice improvement here would be to ensure that each argument is only used in one variable,
         // but that would require us to remember which span of each string maps back to which variable,
         // which is a lot of extra bookkeeping to do at this stage of the project.
@@ -60,7 +61,7 @@ struct StringsdictEntry: Equatable {
             problemReporter.report(problem, path: path, lineNumber: line)
         }
 
-        let permutations = getAllPermutations(path: path, problemReporter: problemReporter)
+        let permutations = getAllPermutations(problemReporter: problemReporter)
             .map { FormatString(string: $0, path: path, line: line) }
         let numArgs = permutations.flatMap(\.arguments).reduce(0) { max($0, $1.position) }
         var arguments = [FormatArgument?]((0 ..< numArgs).map { _ in nil })
@@ -152,8 +153,8 @@ struct StringsdictEntry: Equatable {
      ]
      ```
      */
-    func getAllPermutations(path: String, problemReporter: ProblemReporter) -> [String] {
-        getAllPermutations(of: formatKey, path: path, problemReporter: problemReporter)
+    func getAllPermutations(problemReporter: ProblemReporter) -> [String] {
+        getAllPermutations(of: formatKey, problemReporter: problemReporter)
     }
 
     /**
@@ -179,7 +180,6 @@ struct StringsdictEntry: Equatable {
 
     func getAllPermutations(
         of string: LexedStringsdictString,
-        path: String,
         problemReporter: ProblemReporter) -> [String] {
         // Maintain a list of partial permutations. We will append to this list from
         // the return value of `expand()`. The base case is the string passed as an
@@ -189,7 +189,7 @@ struct StringsdictEntry: Equatable {
 
         while !toExpand.isEmpty {
             let p = toExpand.removeFirst()
-            let (newPartialPermutations, newResults) = expand(p, path: path, problemReporter: problemReporter)
+            let (newPartialPermutations, newResults) = expand(p, problemReporter: problemReporter)
             toExpand.append(contentsOf: newPartialPermutations)
             results.append(contentsOf: newResults)
         }
@@ -207,7 +207,6 @@ struct StringsdictEntry: Equatable {
      */
     private func expand(
         _ p: PartialPermutation,
-        path: String,
         problemReporter: ProblemReporter) -> ([PartialPermutation], [String]) {
         switch p.nextPart {
         case .none:
@@ -232,7 +231,7 @@ struct StringsdictEntry: Equatable {
             //
             // Don't bother caching because deep hierarchies are very rare and this is fast.
             for alternative in rule.alternatives.values.sorted(by: { $0.string < $1.string }) {
-                for substring in getAllPermutations(of: alternative, path: path, problemReporter: problemReporter) {
+                for substring in getAllPermutations(of: alternative, problemReporter: problemReporter) {
                     nextPermutations.append(
                         PartialPermutation(
                             string: p.string,
@@ -247,6 +246,7 @@ struct StringsdictEntry: Equatable {
 extension StringsdictEntry {
     init?(key: String, node: XML.Element, path: String, problemReporter: ProblemReporter) {
         line = node.lineNumberStart
+        self.path = path
 
         let report = { (problem: Problem, line: Int) -> Void in
             problemReporter.report(problem, path: path, lineNumber: line)
@@ -318,6 +318,6 @@ extension StringsdictEntry {
         self.formatKey = LexedStringsdictString(string: formatKey)
         self.rules = rules
 
-        validateRuleVariables(path: path, problemReporter: problemReporter)
+        validateRuleVariables(problemReporter: problemReporter)
     }
 }

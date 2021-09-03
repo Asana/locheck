@@ -13,10 +13,10 @@ public func parseAndValidateStringsdict(
     translation translationFile: File,
     translationLanguageName: String,
     problemReporter: ProblemReporter) {
-    guard let base = Stringsdict(path: baseFile.path, problemReporter: problemReporter) else {
+    guard let base = StringsdictFile(path: baseFile.path, problemReporter: problemReporter) else {
         return
     }
-    guard let translation = Stringsdict(path: translationFile.path, problemReporter: problemReporter) else {
+    guard let translation = StringsdictFile(path: translationFile.path, problemReporter: problemReporter) else {
         return
     }
     validateStringsdict(
@@ -27,8 +27,8 @@ public func parseAndValidateStringsdict(
 }
 
 func validateStringsdict(
-    base baseStringsdict: Stringsdict,
-    translation translationStringsdict: Stringsdict,
+    base baseStringsdict: StringsdictFile,
+    translation translationStringsdict: StringsdictFile,
     translationLanguageName: String,
     problemReporter: ProblemReporter) {
     validateKeyPresence(
@@ -43,10 +43,9 @@ func validateStringsdict(
 
     let baseArgLists = baseStringsdict.entries.lo_makeDictionary(
         makeKey: \.key,
-        makeValue: { $0.getCanonicalArgumentList(path: baseStringsdict.path, problemReporter: problemReporter) })
+        makeValue: { $0.getCanonicalArgumentList(problemReporter: problemReporter) })
     for translation in translationStringsdict.entries {
         let translationArgs = translation.getCanonicalArgumentList(
-            path: translationStringsdict.path,
             problemReporter: problemReporter)
         guard let baseArgs = baseArgLists[translation.key] else {
             continue // error already logged above

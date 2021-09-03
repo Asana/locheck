@@ -27,16 +27,16 @@ import SwiftyXMLParser
         other: "%d cool motorcycles"                        // another 'alternative'
  ```
  */
-struct Stringsdict: Equatable {
-    let path: String
-    let entries: [StringsdictEntry]
+public struct StringsdictFile: Equatable {
+    public let path: String
+    public let entries: [StringsdictEntry]
 
     init(path: String, entries: [StringsdictEntry]) {
         self.path = path
         self.entries = entries
     }
 
-    init?(path: String, problemReporter: ProblemReporter) {
+    public init?(path: String, problemReporter: ProblemReporter) {
         self.path = path
         guard let xml = parseXML(file: try! File(path: path), problemReporter: problemReporter) else {
             return nil

@@ -13,6 +13,7 @@ class StringsdictEntryTests: XCTestCase {
     func testMissingVariableInRoot() {
         let entry = StringsdictEntry(
             key: "abc",
+            path: "en.stringsdict",
             line: 10,
             formatKey: LexedStringsdictString(string: "%#@def@ %#@xyz@"), // def exists, xyz doesn't
             rules: [
@@ -27,7 +28,7 @@ class StringsdictEntryTests: XCTestCase {
             ])
 
         let problemReporter = ProblemReporter(log: false)
-        entry.validateRuleVariables(path: "en.stringsdict", problemReporter: problemReporter)
+        entry.validateRuleVariables(problemReporter: problemReporter)
         XCTAssertEqual(problemReporter.problems.map(\.messageForXcode), [
             "en.stringsdict:10: error: Variable xyz does not exist in 'abc' but is used in the format key (stringsdict_entry_has_missing_variable)",
         ])
@@ -36,6 +37,7 @@ class StringsdictEntryTests: XCTestCase {
     func testMissingVariableInRule() {
         let entry = StringsdictEntry(
             key: "abc",
+            path: "en.stringsdict",
             line: 10,
             formatKey: LexedStringsdictString(string: "%#@def@"),
             rules: [
@@ -50,7 +52,7 @@ class StringsdictEntryTests: XCTestCase {
             ])
 
         let problemReporter = ProblemReporter(log: false)
-        entry.validateRuleVariables(path: "en.stringsdict", problemReporter: problemReporter)
+        entry.validateRuleVariables(problemReporter: problemReporter)
         XCTAssertEqual(problemReporter.problems.map(\.messageForXcode), [
             "en.stringsdict:10: error: Variable xyz does not exist in 'abc' but is used in 'def'.other (stringsdict_entry_has_missing_variable)",
         ])
@@ -60,17 +62,19 @@ class StringsdictEntryTests: XCTestCase {
         let problemReporter = ProblemReporter(log: false)
         let entry = StringsdictEntry(
             key: "abc",
+            path: "",
             line: 10,
             formatKey: LexedStringsdictString(string: "abc"),
             rules: [:])
 
-        XCTAssertEqual(entry.getAllPermutations(path: "", problemReporter: problemReporter), ["abc"])
+        XCTAssertEqual(entry.getAllPermutations(problemReporter: problemReporter), ["abc"])
     }
 
     func testRuleExpansion_oneLevel_oneAlternative() {
         let problemReporter = ProblemReporter(log: false)
         let entry = StringsdictEntry(
             key: "abc",
+            path: "",
             line: 10,
             formatKey: LexedStringsdictString(string: "abc %#@def@"),
             rules: [
@@ -84,13 +88,14 @@ class StringsdictEntryTests: XCTestCase {
                     ]),
             ])
 
-        XCTAssertEqual(entry.getAllPermutations(path: "", problemReporter: problemReporter), ["abc xyz"])
+        XCTAssertEqual(entry.getAllPermutations(problemReporter: problemReporter), ["abc xyz"])
     }
 
     func testRuleExpansion_oneLevel_twoAlternatives() {
         let problemReporter = ProblemReporter(log: false)
         let entry = StringsdictEntry(
             key: "abc",
+            path: "",
             line: 10,
             formatKey: LexedStringsdictString(string: "abc %#@def@"),
             rules: [
@@ -105,13 +110,14 @@ class StringsdictEntryTests: XCTestCase {
                     ]),
             ])
 
-        XCTAssertEqual(entry.getAllPermutations(path: "", problemReporter: problemReporter), ["abc x", "abc xyz"])
+        XCTAssertEqual(entry.getAllPermutations(problemReporter: problemReporter), ["abc x", "abc xyz"])
     }
 
     func testRuleExpansion_twoLevels_fourAlternatives() {
         let problemReporter = ProblemReporter(log: false)
         let entry = StringsdictEntry(
             key: "abc",
+            path: "",
             line: 10,
             formatKey: LexedStringsdictString(string: "%#@a@ %#@n@"),
             rules: [
@@ -136,13 +142,14 @@ class StringsdictEntryTests: XCTestCase {
             ])
 
         XCTAssertEqual(
-            entry.getAllPermutations(path: "", problemReporter: problemReporter),
+            entry.getAllPermutations(problemReporter: problemReporter),
             ["b o", "b p", "c o", "c p"])
     }
 
     func testGetCanonicalArgumentList_logsNoErrorsForValidEntry() {
         let entry = StringsdictEntry(
             key: "abc",
+            path: "abc",
             line: 10,
             formatKey: LexedStringsdictString(string: "%1$d %#@level1@"),
             rules: [
@@ -166,7 +173,7 @@ class StringsdictEntryTests: XCTestCase {
                     ]),
             ])
         let problemReporter = ProblemReporter(log: false)
-        let argList = entry.getCanonicalArgumentList(path: "abc", problemReporter: problemReporter)
+        let argList = entry.getCanonicalArgumentList(problemReporter: problemReporter)
         XCTAssertEqual(problemReporter.problems, [])
         XCTAssertEqual(
             argList,
@@ -180,6 +187,7 @@ class StringsdictEntryTests: XCTestCase {
     func testGetCanonicalArgumentList_logsErrorForSpecifierMismatch() {
         let entry = StringsdictEntry(
             key: "abc",
+            path: "abc",
             line: 10,
             formatKey: LexedStringsdictString(string: "%1$d %#@level1@"),
             rules: [
@@ -203,7 +211,7 @@ class StringsdictEntryTests: XCTestCase {
                     ]),
             ])
         let problemReporter = ProblemReporter(log: false)
-        let argList = entry.getCanonicalArgumentList(path: "abc", problemReporter: problemReporter)
+        let argList = entry.getCanonicalArgumentList(problemReporter: problemReporter)
         XCTAssertEqual(problemReporter.problems.map(\.messageForXcode), [
             "abc:10: error: Two permutations of 'abc' contain different format specifiers at position 2. '%1$d %2$@ other %3$d' uses '@', and '%1$d %2$d %3$d' uses 'd'. (stringsdict_entry_permutations_have_conflicting_specifiers)",
             "abc:10: error: Two permutations of 'abc' contain different format specifiers at position 2. '%1$d %2$@ other %3$d' uses '@', and '%1$d %2$d %3$d other' uses 'd'. (stringsdict_entry_permutations_have_conflicting_specifiers)",
@@ -221,6 +229,7 @@ class StringsdictEntryTests: XCTestCase {
     func testGetCanonicalArgumentList_logsErrorForUnusedArgument() {
         let entry = StringsdictEntry(
             key: "abc",
+            path: "abc",
             line: 10,
             formatKey: LexedStringsdictString(string: "%1$d %#@level1@"),
             rules: [
@@ -244,7 +253,7 @@ class StringsdictEntryTests: XCTestCase {
                     ]),
             ])
         let problemReporter = ProblemReporter(log: false)
-        let argList = entry.getCanonicalArgumentList(path: "abc", problemReporter: problemReporter)
+        let argList = entry.getCanonicalArgumentList(problemReporter: problemReporter)
         XCTAssertEqual(problemReporter.problems.map(\.messageForXcode), [
             "abc:10: warning: No permutation of 'abc' use argument(s) at position 2 (stringsdict_entry_has_unused_arguments)",
         ])
