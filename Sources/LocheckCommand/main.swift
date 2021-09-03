@@ -200,7 +200,8 @@ struct Lproj: ParsableCommand {
         let baseFile = lprojFiles[0]
         let translationFiles = lprojFiles.dropFirst()
         if !translationFiles.isEmpty {
-            print("Validating \(translationFiles.count) lproj files against \(try! Folder(path: baseFile.argument).name)")
+            print(
+                "Validating \(translationFiles.count) lproj files against \(try! Folder(path: baseFile.argument).name)")
         }
 
         withProblemReporter(ignore: ignoreWithShorthand) { problemReporter in
@@ -250,7 +251,8 @@ struct DiscoverLproj: ParsableCommand {
             let hasBase = try! Folder(path: directory.argument).subfolders.contains { $0.name == "\(base).lproj" }
 
             if !hasBase {
-                throw ValidationError("Can't find \(base).lproj in \(directory.argument). Do you need to specify --base?")
+                throw ValidationError(
+                    "Can't find \(base).lproj in \(directory.argument). Do you need to specify --base?")
             }
         }
     }
