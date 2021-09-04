@@ -100,7 +100,7 @@ public class ProblemReporter {
             if path.hasPrefix(root) {
                 pathToPrint = String(pathToPrint.dropFirst(root.count))
             }
-            if path.hasPrefix("/") {
+            if pathToPrint.hasPrefix("/") {
                 pathToPrint = String(pathToPrint.dropFirst())
             }
             print(pathToPrint)

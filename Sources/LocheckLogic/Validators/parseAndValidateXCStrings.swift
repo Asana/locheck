@@ -24,7 +24,8 @@ public func parseAndValidateXCStrings(
                     LocalizedStringPair(
                         string: $0.1,
                         path: file.path,
-                        line: $0.0 + 1)
+                        line: $0.0 + 1,
+                        baseStringMap: baseStringMap)
                 } ?? []
         }
     }
