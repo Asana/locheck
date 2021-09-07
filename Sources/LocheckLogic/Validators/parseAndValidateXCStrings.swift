@@ -12,42 +12,33 @@ import Foundation
  Directly compare two `.strings` files
  */
 public func parseAndValidateXCStrings(
-    base: File,
-    translation: File,
+    base: [File],
+    translation: [File],
     translationLanguageName: String,
     problemReporter: ProblemReporter) {
-    problemReporter.logInfo("Validating \(translation.path) against \(base.path)")
-
-    let baseStrings = base.lo_lines.enumerated()
-        .compactMap {
-            LocalizedStringPair(
-                string: $0.1,
-                path: base.path,
-                line: $0.0 + 1)
+    let collectLines = { (files: [File], baseStringMap: [String: FormatString]) -> [LocalizedStringPair] in
+        files.flatMap { file in
+            file.lo_getLines(problemReporter: problemReporter)?
+                .enumerated()
+                .compactMap {
+                    LocalizedStringPair(
+                        string: $0.1,
+                        path: file.path,
+                        line: $0.0 + 1,
+                        baseStringMap: baseStringMap)
+                } ?? []
         }
-
-    var baseStringMap = [String: FormatString]()
-    for (i, line) in base.lo_lines.enumerated() {
-        guard let basePair = LocalizedStringPair(
-            string: line,
-            path: base.path,
-            line: i + 1,
-            baseStringMap: [:]) else {
-            continue
-        }
-        baseStringMap[basePair.base.string] = basePair.translation
     }
 
+    let baseStrings: [LocalizedStringPair] = collectLines(base, [:])
+    guard !baseStrings.isEmpty else { return }
+
+    let baseStringMap = baseStrings.lo_makeDictionary(makeKey: { $0.base.string }, makeValue: \.translation)
+
+    let translationStrings = collectLines(translation, baseStringMap)
     validateStrings(
         baseStrings: baseStrings,
-        translationStrings: translation.lo_lines.enumerated().compactMap {
-            let p = LocalizedStringPair(
-                string: $0.1,
-                path: translation.path,
-                line: $0.0 + 1,
-                baseStringMap: baseStringMap)
-            return p
-        },
+        translationStrings: translationStrings,
         translationLanguageName: translationLanguageName,
         problemReporter: problemReporter)
 }

@@ -55,16 +55,26 @@ public class ProblemReporter {
     private var standardError = StderrOutputStream()
     public private(set) var problems = [LocalProblem]()
 
+    /// Path prefix for all problems. Used to remove the prefix from the summary for readability.
+    public let root: String
     public var log: Bool
     public let ignoredProblemIdentifiers: Set<String>
+    public let ignoreWarnings: Bool
 
-    public init(log: Bool = true, ignoredProblemIdentifiers: [String] = []) {
+    public init(
+        root: String = "",
+        log: Bool = true,
+        ignoredProblemIdentifiers: [String] = [],
+        ignoreWarnings: Bool = false) {
+        self.root = root
         self.log = log
         self.ignoredProblemIdentifiers = Set(ignoredProblemIdentifiers)
+        self.ignoreWarnings = ignoreWarnings
     }
 
     public func report(_ problem: Problem, path: String, lineNumber: Int) {
-        guard !ignoredProblemIdentifiers.contains(problem.kindIdentifier) else { return }
+        guard !ignoredProblemIdentifiers
+            .contains(problem.kindIdentifier) && (!ignoreWarnings || problem.severity == .error) else { return }
         let localProblem = LocalProblem(path: path, lineNumber: lineNumber, problem: problem)
         problems.append(localProblem)
 
@@ -76,8 +86,7 @@ public class ProblemReporter {
     public func printSummary() {
         guard problems.contains(where: { $0.problem.severity != .ignored }) else { return }
         var problemsByFile = [String: [LocalProblem]]()
-        for localProblem in problems
-            where localProblem.problem as? SummarizableProblem != nil && localProblem.problem.severity != .ignored {
+        for localProblem in problems where localProblem.problem.severity != .ignored {
             if problemsByFile[localProblem.path] == nil {
                 problemsByFile[localProblem.path] = []
             }
@@ -87,13 +96,27 @@ public class ProblemReporter {
         print("\nSummary:")
 
         for path in problemsByFile.keys.sorted() {
-            print(path)
-            let problems = problemsByFile[path]!.map { $0.problem as! SummarizableProblem }
-            let keys = Set(problems.map(\.key))
+            var pathToPrint = path
+            if path.hasPrefix(root) {
+                pathToPrint = String(pathToPrint.dropFirst(root.count))
+            }
+            if pathToPrint.hasPrefix("/") {
+                pathToPrint = String(pathToPrint.dropFirst())
+            }
+            print(pathToPrint)
+
+            for problem in problemsByFile[path]!.filter({ $0.problem as? SummarizableProblem == nil }) {
+                print(
+                    "  \(problem.problem.severity.rawValue.uppercased()): \(problem.problem.message) (\(problem.problem.kindIdentifier))")
+            }
+
+            let summarizableProblems = problemsByFile[path]!.compactMap { $0.problem as? SummarizableProblem }
+            let keys = Set(summarizableProblems.map(\.key))
             for key in keys.sorted() {
                 print("  \(key):")
-                for problem in problems.filter({ $0.key == key }) {
-                    print("    \(problem.severity.rawValue.uppercased()): \(problem.message)")
+                for problem in summarizableProblems.filter({ $0.key == key }) {
+                    print(
+                        "    \(problem.severity.rawValue.uppercased()): \(problem.message) (\(problem.kindIdentifier))")
                 }
             }
         }

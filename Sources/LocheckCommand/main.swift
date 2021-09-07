@@ -32,8 +32,12 @@ struct Locheck: ParsableCommand {
         ])
 }
 
-private func withProblemReporter(ignore: [String], _ block: (ProblemReporter) -> Void) {
-    let problemReporter = ProblemReporter(ignoredProblemIdentifiers: ignore)
+private func withProblemReporter(
+    root: String,
+    ignore: [String],
+    ignoreWarnings: Bool,
+    _ block: (ProblemReporter) -> Void) {
+    let problemReporter = ProblemReporter(root: root, ignoredProblemIdentifiers: ignore, ignoreWarnings: ignoreWarnings)
     block(problemReporter)
     if problemReporter.hasError {
         print("Errors found")
@@ -42,43 +46,54 @@ private func withProblemReporter(ignore: [String], _ block: (ProblemReporter) ->
     print("Finished validating")
 }
 
-private let ignoreHelpText: ArgumentHelp =
-    "Ignore a rule completely."
+private let ignoreHelpText: ArgumentHelp = "Ignore a rule completely."
 
 private let ignoreMissingHelpText: ArgumentHelp =
     "Ignore 'missing string' errors. Shorthand for '--ignore key_missing_from_base --ignore key_missing_from_translation'."
 
-struct XCStrings: ParsableCommand {
+private let ignoreWarningsHelpText: ArgumentHelp = "Ignore all warning-level issues."
+
+private protocol HasIgnoreWithShorthand {
+    var ignore: [String] { get }
+    var ignoreMissing: Bool { get }
+}
+
+private extension HasIgnoreWithShorthand {
+    var ignoreWithShorthand: [String] {
+        ignore + (ignoreMissing ? ["key_missing_from_base", "key_missing_from_translation"] : [])
+    }
+}
+
+struct XCStrings: HasIgnoreWithShorthand, ParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "xcstrings",
         abstract: "Directly compare .strings files")
 
     @Argument(help: "A list of .strings files, starting with the primary language")
-    private var stringsFiles: [FileArg]
+    private var stringsFiles: [FileArg] = []
 
     @Option(help: ignoreHelpText)
-    private var ignore = [String]()
+    fileprivate var ignore = [String]()
 
     @Flag(help: ignoreMissingHelpText)
-    private var ignoreMissing = false
+    fileprivate var ignoreMissing = false
 
-    private var ignoreWithShorthand: [String] {
-        ignore + (ignoreMissing ? ["key_missing_from_base", "key_missing_from_translation"] : [])
-    }
+    @Flag(help: ignoreWarningsHelpText)
+    fileprivate var ignoreWarnings = false
 
     func validate() throws {
         try stringsFiles.forEach { try $0.validate(ext: "strings") }
     }
 
     func run() {
-        withProblemReporter(ignore: ignoreWithShorthand) { problemReporter in
+        withProblemReporter(root: "", ignore: ignoreWithShorthand, ignoreWarnings: ignoreWarnings) { problemReporter in
             let base = stringsFiles[0]
             let translationFiles = stringsFiles.dropFirst()
             for file in translationFiles {
                 let translationFile = try! File(path: file.argument)
                 parseAndValidateXCStrings(
-                    base: try! File(path: base.argument),
-                    translation: translationFile,
+                    base: [try! File(path: base.argument)],
+                    translation: [translationFile],
                     translationLanguageName: translationFile.nameExcludingExtension,
                     problemReporter: problemReporter)
             }
@@ -87,7 +102,7 @@ struct XCStrings: ParsableCommand {
     }
 }
 
-struct AndroidStrings: ParsableCommand {
+struct AndroidStrings: HasIgnoreWithShorthand, ParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "androidstrings",
         abstract: "Directly compare strings.xml files")
@@ -96,21 +111,20 @@ struct AndroidStrings: ParsableCommand {
     private var stringsFiles: [FileArg]
 
     @Option(help: ignoreHelpText)
-    private var ignore = [String]()
+    fileprivate var ignore = [String]()
 
     @Flag(help: ignoreMissingHelpText)
-    private var ignoreMissing = false
+    fileprivate var ignoreMissing = false
 
-    private var ignoreWithShorthand: [String] {
-        ignore + (ignoreMissing ? ["key_missing_from_base", "key_missing_from_translation"] : [])
-    }
+    @Flag(help: ignoreWarningsHelpText)
+    fileprivate var ignoreWarnings = false
 
     func validate() throws {
         try stringsFiles.forEach { try $0.validate(ext: "xml") }
     }
 
     func run() {
-        withProblemReporter(ignore: ignoreWithShorthand) { problemReporter in
+        withProblemReporter(root: "", ignore: ignoreWithShorthand, ignoreWarnings: ignoreWarnings) { problemReporter in
             let baseFile = stringsFiles[0]
             let translationFiles = stringsFiles.dropFirst()
             if translationFiles.isEmpty {
@@ -134,7 +148,7 @@ struct AndroidStrings: ParsableCommand {
     }
 }
 
-struct Stringsdict: ParsableCommand {
+struct Stringsdict: HasIgnoreWithShorthand, ParsableCommand {
     static let configuration = CommandConfiguration(
         abstract: "Directly compare .stringsdict files")
 
@@ -142,21 +156,20 @@ struct Stringsdict: ParsableCommand {
     private var stringsdictFiles: [FileArg]
 
     @Option(help: ignoreHelpText)
-    private var ignore = [String]()
+    fileprivate var ignore = [String]()
 
     @Flag(help: ignoreMissingHelpText)
-    private var ignoreMissing = false
+    fileprivate var ignoreMissing = false
 
-    private var ignoreWithShorthand: [String] {
-        ignore + (ignoreMissing ? ["key_missing_from_base", "key_missing_from_translation"] : [])
-    }
+    @Flag(help: ignoreWarningsHelpText)
+    fileprivate var ignoreWarnings = false
 
     func validate() throws {
         try stringsdictFiles.forEach { try $0.validate(ext: "stringsdict") }
     }
 
     func run() {
-        withProblemReporter(ignore: ignoreWithShorthand) { problemReporter in
+        withProblemReporter(root: "", ignore: ignoreWithShorthand, ignoreWarnings: ignoreWarnings) { problemReporter in
             let baseFile = stringsdictFiles[0]
             let translationFiles = stringsdictFiles.dropFirst()
             // Just do what we can with the base language, i.e. validate plurals
@@ -178,7 +191,7 @@ struct Stringsdict: ParsableCommand {
     }
 }
 
-struct Lproj: ParsableCommand {
+struct Lproj: HasIgnoreWithShorthand, ParsableCommand {
     static let configuration = CommandConfiguration(
         abstract: "Compare the contents of multiple .lproj files")
 
@@ -186,14 +199,13 @@ struct Lproj: ParsableCommand {
     private var lprojFiles: [DirectoryArg]
 
     @Option(help: ignoreHelpText)
-    private var ignore = [String]()
+    fileprivate var ignore = [String]()
 
     @Flag(help: ignoreMissingHelpText)
-    private var ignoreMissing = false
+    fileprivate var ignoreMissing = false
 
-    private var ignoreWithShorthand: [String] {
-        ignore + (ignoreMissing ? ["key_missing_from_base", "key_missing_from_translation"] : [])
-    }
+    @Flag(help: ignoreWarningsHelpText)
+    fileprivate var ignoreWarnings = false
 
     func validate() throws {
         try lprojFiles.forEach { try $0.validate(ext: "lproj") }
@@ -207,7 +219,7 @@ struct Lproj: ParsableCommand {
                 "Validating \(translationFiles.count) lproj files against \(try! Folder(path: baseFile.argument).name)")
         }
 
-        withProblemReporter(ignore: ignoreWithShorthand) { problemReporter in
+        withProblemReporter(root: "", ignore: ignoreWithShorthand, ignoreWarnings: ignoreWarnings) { problemReporter in
             // Same as in DiscoverLproj command below
             if translationFiles.isEmpty {
                 // Just do what we can with the base language, i.e. validate plurals
@@ -225,7 +237,7 @@ struct Lproj: ParsableCommand {
     }
 }
 
-struct DiscoverLproj: ParsableCommand {
+struct DiscoverLproj: HasIgnoreWithShorthand, ParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "discoverlproj",
         abstract: "Automatically find .lproj files within a directory and compare them")
@@ -238,14 +250,13 @@ struct DiscoverLproj: ParsableCommand {
     private var directories: [DirectoryArg]
 
     @Option(help: ignoreHelpText)
-    private var ignore = [String]()
+    fileprivate var ignore = [String]()
 
     @Flag(help: ignoreMissingHelpText)
-    private var ignoreMissing = false
+    fileprivate var ignoreMissing = false
 
-    private var ignoreWithShorthand: [String] {
-        ignore + (ignoreMissing ? ["key_missing_from_base", "key_missing_from_translation"] : [])
-    }
+    @Flag(help: ignoreWarningsHelpText)
+    fileprivate var ignoreWarnings = false
 
     func validate() throws {
         for directory in directories {
@@ -262,7 +273,7 @@ struct DiscoverLproj: ParsableCommand {
 
     func run() {
         for directory in directories {
-            print("Discovering .lproj files in \(directory.argument)")
+            print("Discovering .lproj files in \(directory.argument) with \(base) as the base")
 
             var maybePrimaryLproj: LprojFiles!
             var translationLproj = [LprojFiles]()
@@ -282,23 +293,26 @@ struct DiscoverLproj: ParsableCommand {
             print("Source of truth: \(baseLproj.path)")
             print("Translations to check: \(translationLproj.count)")
 
-            withProblemReporter(ignore: ignoreWithShorthand) { problemReporter in
-                // Same as in Lproj command above
-                if translationLproj.isEmpty {
-                    // Just do what we can with the base language, i.e. validate plurals
-                    baseLproj.validateInternally(problemReporter: problemReporter)
-                }
+            withProblemReporter(
+                root: directory.argument,
+                ignore: ignoreWithShorthand,
+                ignoreWarnings: ignoreWarnings) { problemReporter in
+                    // Same as in Lproj command above
+                    if translationLproj.isEmpty {
+                        // Just do what we can with the base language, i.e. validate plurals
+                        baseLproj.validateInternally(problemReporter: problemReporter)
+                    }
 
-                for translation in translationLproj {
-                    validateLproj(base: baseLproj, translation: translation, problemReporter: problemReporter)
-                }
-                problemReporter.printSummary()
+                    for translation in translationLproj {
+                        validateLproj(base: baseLproj, translation: translation, problemReporter: problemReporter)
+                    }
+                    problemReporter.printSummary()
             }
         }
     }
 }
 
-struct DiscoverValues: ParsableCommand {
+struct DiscoverValues: HasIgnoreWithShorthand, ParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "discovervalues",
         abstract: "Automatically find values/ directories files within a directory and compare their strings.xml files")
@@ -307,14 +321,13 @@ struct DiscoverValues: ParsableCommand {
     private var directories: [DirectoryArg]
 
     @Option(help: ignoreHelpText)
-    private var ignore = [String]()
+    fileprivate var ignore = [String]()
 
     @Flag(help: ignoreMissingHelpText)
-    private var ignoreMissing = false
+    fileprivate var ignoreMissing = false
 
-    private var ignoreWithShorthand: [String] {
-        ignore + (ignoreMissing ? ["key_missing_from_base", "key_missing_from_translation"] : [])
-    }
+    @Flag(help: ignoreWarningsHelpText)
+    fileprivate var ignoreWarnings = false
 
     func validate() throws {
         for directory in directories {
@@ -362,15 +375,18 @@ struct DiscoverValues: ParsableCommand {
             print("Source of truth: \(primaryValues.path)")
             print("Translations to check: \(translationValues.count)")
 
-            withProblemReporter(ignore: ignoreWithShorthand) { problemReporter in
-                for translation in translationValues {
-                    parseAndValidateAndroidStrings(
-                        base: primaryValues,
-                        translation: translation,
-                        translationLanguageName: String(translation.parent!.name.dropFirst("values-".count)),
-                        problemReporter: problemReporter)
-                }
-                problemReporter.printSummary()
+            withProblemReporter(
+                root: directory.argument,
+                ignore: ignoreWithShorthand,
+                ignoreWarnings: ignoreWarnings) { problemReporter in
+                    for translation in translationValues {
+                        parseAndValidateAndroidStrings(
+                            base: primaryValues,
+                            translation: translation,
+                            translationLanguageName: String(translation.parent!.name.dropFirst("values-".count)),
+                            problemReporter: problemReporter)
+                    }
+                    problemReporter.printSummary()
             }
         }
     }

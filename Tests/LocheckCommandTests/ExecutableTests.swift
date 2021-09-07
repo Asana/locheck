@@ -52,22 +52,21 @@ class ExecutableTests: XCTestCase {
 
         print(stdout!)
         XCTAssertEqual(stdout!, """
-        Validating Examples/Demo_Translation.strings against Examples/Demo_Base.strings
 
         Summary:
         Examples/Demo_Base.strings
           missing:
-            WARNING: 'missing' is missing from Demo_Translation
+            WARNING: 'missing' is missing from Demo_Translation (key_missing_from_translation)
         Examples/Demo_Translation.strings
           bad pos %ld %@:
-            WARNING: 'bad pos %ld %@' does not include argument(s) at 1
-            WARNING: Some arguments appear more than once in this translation
-            ERROR: Specifier for argument 2 does not match (should be @, is ld)
+            WARNING: 'bad pos %ld %@' does not include argument(s) at 1 (string_has_missing_arguments)
+            WARNING: Some arguments appear more than once in this translation (string_has_duplicate_arguments)
+            ERROR: Specifier for argument 2 does not match (should be @, is ld) (string_has_invalid_argument)
           bad position %d:
-            WARNING: 'bad position %d' does not include argument(s) at 1
+            WARNING: 'bad position %d' does not include argument(s) at 1 (string_has_missing_arguments)
           mismatch %@ types %d:
-            ERROR: Specifier for argument 2 does not match (should be d, is @)
-            ERROR: Specifier for argument 1 does not match (should be @, is d)
+            ERROR: Specifier for argument 2 does not match (should be d, is @) (string_has_invalid_argument)
+            ERROR: Specifier for argument 1 does not match (should be @, is d) (string_has_invalid_argument)
         4 warnings, 3 errors
         Errors found
 
@@ -108,18 +107,18 @@ class ExecutableTests: XCTestCase {
         Summary:
         Examples/Demo_Base.stringsdict
           %d/%d Completed:
-            WARNING: '%d/%d Completed' is missing from Demo_Translation
+            WARNING: '%d/%d Completed' is missing from Demo_Translation (key_missing_from_translation)
           %s added %d task(s) to 's':
-            WARNING: '%s added %d task(s) to 's'' is missing from Demo_Translation
-            ERROR: Two permutations of '%s added %d task(s) to 's'' contain different format specifiers at position 3. '%s added %d tasks and %d milestones to %3$s' uses 'd', and '%s added %d tasks and %d milestones to %3$s' uses 's'.
-            ERROR: Two permutations of '%s added %d task(s) to 's'' contain different format specifiers at position 3. '%s added %d tasks and %d milestones to %3$s' uses 'd', and '%s added %d tasks and a milestone to %3$s' uses 's'.
-            ERROR: Two permutations of '%s added %d task(s) to 's'' contain different format specifiers at position 3. '%s added %d tasks and %d milestones to %3$s' uses 'd', and '%s added a task and %d milestones to %3$s' uses 's'.
-            ERROR: Two permutations of '%s added %d task(s) to 's'' contain different format specifiers at position 3. '%s added %d tasks and %d milestones to %3$s' uses 'd', and '%s added a task and a milestone to %3$s' uses 's'.
+            WARNING: '%s added %d task(s) to 's'' is missing from Demo_Translation (key_missing_from_translation)
+            ERROR: Two permutations of '%s added %d task(s) to 's'' contain different format specifiers at position 3. '%s added %d tasks and %d milestones to %3$s' uses 'd', and '%s added %d tasks and %d milestones to %3$s' uses 's'. (stringsdict_entry_permutations_have_conflicting_specifiers)
+            ERROR: Two permutations of '%s added %d task(s) to 's'' contain different format specifiers at position 3. '%s added %d tasks and %d milestones to %3$s' uses 'd', and '%s added %d tasks and a milestone to %3$s' uses 's'. (stringsdict_entry_permutations_have_conflicting_specifiers)
+            ERROR: Two permutations of '%s added %d task(s) to 's'' contain different format specifiers at position 3. '%s added %d tasks and %d milestones to %3$s' uses 'd', and '%s added a task and %d milestones to %3$s' uses 's'. (stringsdict_entry_permutations_have_conflicting_specifiers)
+            ERROR: Two permutations of '%s added %d task(s) to 's'' contain different format specifiers at position 3. '%s added %d tasks and %d milestones to %3$s' uses 'd', and '%s added a task and a milestone to %3$s' uses 's'. (stringsdict_entry_permutations_have_conflicting_specifiers)
           missing from translation:
-            WARNING: 'missing from translation' is missing from Demo_Translation
+            WARNING: 'missing from translation' is missing from Demo_Translation (key_missing_from_translation)
         Examples/Demo_Translation.stringsdict
           missing from base:
-            WARNING: 'missing from base' is missing from the base translation
+            WARNING: 'missing from base' is missing from the base translation (key_missing_from_base)
         4 warnings, 4 errors
         Errors found
 
