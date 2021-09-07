@@ -217,7 +217,7 @@ struct StringsdictEntryPermutationsHaveConflictingSpecifiers: Problem, Stringsdi
 
 struct StringsdictEntryHasMissingVariable: Problem, StringsdictProblem, Equatable {
     var kindIdentifier: String { "stringsdict_entry_has_missing_variable" }
-    var uniquifyingInformation: String { "\(variable)-\(key)" }
+    var uniquifyingInformation: String { "\(variable)-\(key)-\(ruleKey)" }
     var severity: Severity { .error }
     let key: String
     let variable: String
