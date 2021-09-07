@@ -90,7 +90,7 @@ If you use a language besides English as your base, you'll need to pass it as an
 The simplest way to use Locheck on Android is to use `discovervalues` and point to a directory containing all your `values[-*]` directories, i.e. your `res/` directory.
 
 ```sh
-locheck discovervalues ./commons/src/main/res
+locheck discovervalues ./app/src/main/res
 ```
 
 ### Other ways
@@ -100,18 +100,18 @@ Run `locheck --help` to see a list of all commands. The rest of the commands jus
 ## Example output
 
 ```
-> locheck discovervalues $ANDROID/commons/src/main/res --ignore key_missing_from_translation --ignore key_missing_from_base
-Discovering values[-*]/strings.xml files in /.../android/commons/src/main/res
-Source of truth: /.../android/commons/src/main/res/values/strings.xml
+> locheck discovervalues $ANDROID/app/src/main/res --ignore key_missing_from_translation --ignore key_missing_from_base
+Discovering values[-*]/strings.xml files in /.../app/src/main/res
+Source of truth: /.../app/src/main/res/values/strings.xml
 Translations to check: 12
-/.../android/commons/src/main/res/values-de/strings.xml:242: error: Translation of 'could_not_mark_as_milestone' includes arguments that don't exist in the source: task_name (string_has_extra_arguments)
-/.../android/commons/src/main/res/values-de/strings.xml:899: warning: 'organization_required_mfa_help_text' does not include argument(s): authy_url, duo_mobile_url, microsoft_authenticator_url (phrase_has_missing_arguments)
-/.../android/commons/src/main/res/values-ko/strings.xml:1403: error: Translation of 'what_are_a_few_tasks_you_have_to_do_for_project_name' includes arguments that don't exist in the source: projectName (string_has_extra_arguments)
-/.../android/commons/src/main/res/values-ko/strings.xml:1426: warning: 'created_video_phrase_template' does not include argument(s): author_name (phrase_has_missing_arguments)
+/.../app/src/main/res/values-de/strings.xml:242: error: Translation of 'could_not_mark_as_milestone' includes arguments that don't exist in the source: task_name (string_has_extra_arguments)
+/.../app/src/main/res/values-de/strings.xml:899: warning: 'organization_required_mfa_help_text' does not include argument(s): authy_url, duo_mobile_url, microsoft_authenticator_url (phrase_has_missing_arguments)
+/.../app/src/main/res/values-ko/strings.xml:1403: error: Translation of 'what_are_a_few_tasks_you_have_to_do_for_project_name' includes arguments that don't exist in the source: projectName (string_has_extra_arguments)
+/.../app/src/main/res/values-ko/strings.xml:1426: warning: 'created_video_phrase_template' does not include argument(s): author_name (phrase_has_missing_arguments)
 [...]
 
 Summary:
-/.../android/commons/src/main/res/values-ko/strings.xml
+/.../app/src/main/res/values-ko/strings.xml
     could_not_mark_as_milestone:
         ERROR: Translation of 'could_not_mark_as_milestone' includes arguments that don't exist in the source: task_name
     created_video_phrase_template:
