@@ -21,10 +21,10 @@
       },
       {
         "package": "SwiftyXMLParser",
-        "repositoryURL": "https://github.com/stevelandeyasana/SwiftyXMLParser",
+        "repositoryURL": "https://github.com/yahoojapan/SwiftyXMLParser",
         "state": {
-          "branch": "locheck",
-          "revision": "f1317db8b4ca1a9e2ea5766419c47293ddabd4d5",
+          "branch": "5.4.0",
+          "revision": "eec238eeb861382a8f0b864544b77de1f3243946",
           "version": null
         }
       }

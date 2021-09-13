@@ -14,8 +14,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser", .upToNextMinor(from: "0.4.0")),
         .package(url: "https://github.com/johnsundell/Files.git", .upToNextMinor(from: "4.2.0")),
-        // Use Steve's fork of SwiftyXMLParser until changes are upstreamed
-        .package(url: "https://github.com/stevelandeyasana/SwiftyXMLParser", .branch("locheck")),
+        .package(url: "https://github.com/yahoojapan/SwiftyXMLParser", .branch("5.4.0")),
     ],
     targets: [
         .target(
