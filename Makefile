@@ -1,6 +1,6 @@
 EXECUTABLE_NAME = locheck
 REPO = https://github.com/Asana/locheck
-VERSION = 0.9.2
+VERSION = 0.9.3
 
 PREFIX = /usr/local
 INSTALL_PATH = $(PREFIX)/bin/$(EXECUTABLE_NAME)
