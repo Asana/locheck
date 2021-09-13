@@ -57,7 +57,7 @@ public struct StringsdictFile: Equatable {
                 node: valueNode,
                 path: path,
                 problemReporter: problemReporter) else {
-                return nil
+                continue
             }
             entries.append(entry)
         }
