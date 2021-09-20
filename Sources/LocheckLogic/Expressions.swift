@@ -21,7 +21,7 @@ struct Expressions {
     private static let blockCommentExpression = #"/\\*.*?\\*/"#
     private static let commentExpression = #"//.*"#
     private static let stringPairExpression =
-        "^(?:\\s*\(blockCommentExpression)\\s*)*(?<key>\(stringLiteralExpression)) = (?<value>\(stringLiteralExpression));(?:\\s*\(greedyBlockCommentExpression)\\s*|\\s*\(commentExpression))?$"
+        "^(?:\\s*\(blockCommentExpression)\\s*)*(?<key>\(stringLiteralExpression)) *= *(?<value>\(stringLiteralExpression));(?:\\s*\(greedyBlockCommentExpression)\\s*|\\s*\(commentExpression))?$"
     static let stringPairRegex = try! NSRegularExpression(
         pattern: Expressions.stringPairExpression,
         options: .anchorsMatchLines)
