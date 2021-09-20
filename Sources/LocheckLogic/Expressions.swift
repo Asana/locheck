@@ -17,10 +17,11 @@ struct Expressions {
 
     // https://stackoverflow.com/a/37032779
     private static let stringLiteralExpression = #""[^"\\]*(\\.[^"\\]*)*""#
-    private static let greedyCommentExpression = #"/\\*.*\\*/"#
-    private static let commentExpression = #"/\\*.*?\\*/"#
+    private static let greedyBlockCommentExpression = #"/\\*.*\\*/"#
+    private static let blockCommentExpression = #"/\\*.*?\\*/"#
+    private static let commentExpression = #"//.*"#
     private static let stringPairExpression =
-        "^(?:\\s*\(commentExpression)\\s*)*(?<key>\(stringLiteralExpression)) = (?<value>\(stringLiteralExpression));(?:\\s*\(greedyCommentExpression)\\s*)?$"
+        "^(?:\\s*\(blockCommentExpression)\\s*)*(?<key>\(stringLiteralExpression)) = (?<value>\(stringLiteralExpression));(?:\\s*\(greedyBlockCommentExpression)\\s*|\\s*\(commentExpression))?$"
     static let stringPairRegex = try! NSRegularExpression(
         pattern: Expressions.stringPairExpression,
         options: .anchorsMatchLines)
