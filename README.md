@@ -26,7 +26,7 @@ Consider this string:
 The translation reads naturally on its own, but this would crash your app when iOS or Android tries to format a number as a string and a string as a number. Instead, the translation should look like this:
 
 ```swift
-"Send %d donuts to %@" = "%1$@ to donuts %2$d send";
+"Send %d donuts to %@" = "%2$@ to donuts %1$d send";
 ```
 
 ```xml
