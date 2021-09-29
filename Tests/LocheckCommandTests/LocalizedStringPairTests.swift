@@ -70,4 +70,51 @@ class LocalizedStringPairTests: XCTestCase {
             ])
         XCTAssertTrue(problemReporter.problems.isEmpty)
     }
+
+    func testVariableSpacing() {
+        let problemReporter = ProblemReporter(log: false)
+        // one space
+        XCTAssertNotNil(LocalizedStringPair(string: #""Test key" = "Test value";"#, path: "abc", line: 0))
+        // no spaces
+        XCTAssertNotNil(LocalizedStringPair(string: #""Test key"="Test value";"#, path: "abc", line: 0))
+        // mixed spaces
+        XCTAssertNotNil(LocalizedStringPair(string: #""Test key"= "Test value";"#, path: "abc", line: 0))
+        XCTAssertNotNil(LocalizedStringPair(string: #""Test key" ="Test value";"#, path: "abc", line: 0))
+        // multiple spaces
+        XCTAssertNotNil(LocalizedStringPair(string: #""Test key"  =  "Test value";"#, path: "abc", line: 0))
+        XCTAssertTrue(problemReporter.problems.isEmpty)
+    }
+
+    func testComments() {
+        let problemReporter = ProblemReporter(log: false)
+        // no comment
+        XCTAssertNotNil(LocalizedStringPair(string: #""Test key" = "Test value";"#, path: "abc", line: 0))
+        // block comment after
+        XCTAssertNotNil(LocalizedStringPair(
+            string: #""Test key" = "Test value"; /* this is a comment */"#,
+            path: "abc",
+            line: 0))
+        // multiple block comments after
+        XCTAssertNotNil(LocalizedStringPair(
+            string: #""Test key" = "Test value"; /* this is a comment */ /* this is another comment */"#,
+            path: "abc",
+            line: 0))
+        // block comment before
+        XCTAssertNotNil(LocalizedStringPair(
+            string: #"/* this is a comment */ "Test key" = "Test value";"#,
+            path: "abc",
+            line: 0))
+        // multiple block comment before
+        XCTAssertNotNil(LocalizedStringPair(
+            string: #"/* this is a comment */ /* this is also a comment */ "Test key" = "Test value";"#,
+            path: "abc",
+            line: 0))
+        // single-line comment after
+        XCTAssertNotNil(LocalizedStringPair(
+            string: #""Test key" = "Test value"; // this is a comment"#,
+            path: "abc",
+            line: 0))
+
+        XCTAssertTrue(problemReporter.problems.isEmpty)
+    }
 }
