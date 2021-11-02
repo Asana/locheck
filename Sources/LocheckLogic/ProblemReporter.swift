@@ -135,6 +135,14 @@ public class ProblemReporter {
     }
 
     /**
+     Returns true iff a `.warning`-severity problem has been reported. Returns `false` if no problems
+     or only errors were reported.
+     */
+    public var hasWarning: Bool {
+        problems.contains(where: { $0.problem.severity == .warning })
+    }
+
+    /**
      Returns true iff an `.error`-severity problem has been reported. Returns `false` if no problems
      or only warnings were reported.
      */
