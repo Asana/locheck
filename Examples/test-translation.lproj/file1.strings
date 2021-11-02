@@ -1,0 +1,3 @@
+// missing just_in_file1
+// This will only cover file1, not file2
+"in_both_files" = "This string is in both files";

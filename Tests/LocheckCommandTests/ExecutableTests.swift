@@ -50,7 +50,6 @@ class ExecutableTests: XCTestCase {
         let stdout = String(data: stdoutPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
         let stderr = String(data: stderrPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
 
-        print(stdout!)
         XCTAssertEqual(stdout!, """
 
         Summary:
@@ -133,6 +132,46 @@ class ExecutableTests: XCTestCase {
         Examples/Demo_Base.stringsdict:81: error: Two permutations of '%s added %d task(s) to 's'' contain different format specifiers at position 3. '%s added %d tasks and %d milestones to %3$s' uses 'd', and '%s added %d tasks and a milestone to %3$s' uses 's'. (stringsdict_entry_permutations_have_conflicting_specifiers)
         Examples/Demo_Base.stringsdict:81: error: Two permutations of '%s added %d task(s) to 's'' contain different format specifiers at position 3. '%s added %d tasks and %d milestones to %3$s' uses 'd', and '%s added a task and %d milestones to %3$s' uses 's'. (stringsdict_entry_permutations_have_conflicting_specifiers)
         Examples/Demo_Base.stringsdict:81: error: Two permutations of '%s added %d task(s) to 's'' contain different format specifiers at position 3. '%s added %d tasks and %d milestones to %3$s' uses 'd', and '%s added a task and a milestone to %3$s' uses 's'. (stringsdict_entry_permutations_have_conflicting_specifiers)
+
+        """)
+    }
+
+    func testExampleOutput_lproj() throws {
+        let binary = productsDirectory.appendingPathComponent("locheck")
+
+        let process = Process()
+        process.executableURL = binary
+        process.arguments = ["lproj", "Examples/test-base.lproj", "Examples/test-translation.lproj"]
+
+        let stdoutPipe = Pipe()
+        let stderrPipe = Pipe()
+        process.standardOutput = stdoutPipe
+        process.standardError = stderrPipe
+
+        try process.run()
+        process.waitUntilExit()
+
+        let stdout = String(data: stdoutPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
+        let stderr = String(data: stderrPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
+
+        XCTAssertEqual(stdout!, """
+        Validating 1 lproj files against test-base.lproj
+
+        Summary:
+        Examples/test-base.lproj/file1.strings
+          just_in_file1:
+            WARNING: 'just_in_file1' is missing from test-translation (key_missing_from_translation)
+        Examples/test-base.lproj/file2.strings
+          in_both_files:
+            WARNING: 'in_both_files' is missing from test-translation (key_missing_from_translation)
+        2 warnings, 0 errors
+        Finished validating
+
+        """)
+
+        XCTAssertEqual(stderr!, """
+        Examples/test-base.lproj/file1.strings:2: warning: 'just_in_file1' is missing from test-translation (key_missing_from_translation)
+        Examples/test-base.lproj/file2.strings:1: warning: 'in_both_files' is missing from test-translation (key_missing_from_translation)
 
         """)
     }
