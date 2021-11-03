@@ -1,0 +1,2 @@
+// missing in_both_files
+"just_in_file1" "This string is just in file1, but this is file2 so it will have an error";

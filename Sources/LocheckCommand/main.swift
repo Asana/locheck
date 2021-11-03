@@ -103,8 +103,8 @@ struct XCStrings: HasIgnoreWithShorthand, ParsableCommand {
                 for file in translationFiles {
                     let translationFile = try! File(path: file.argument)
                     parseAndValidateXCStrings(
-                        base: [try! File(path: base.argument)],
-                        translation: [translationFile],
+                        base: try! File(path: base.argument),
+                        translation: translationFile,
                         translationLanguageName: translationFile.nameExcludingExtension,
                         problemReporter: problemReporter)
                 }

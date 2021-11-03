@@ -12,24 +12,23 @@ import Foundation
  Directly compare two `.strings` files
  */
 public func parseAndValidateXCStrings(
-    base: [File],
-    translation: [File],
+    base: File,
+    translation: File,
     translationLanguageName: String,
     problemReporter: ProblemReporter) {
-    let collectLines = { (files: [File], baseStringMap: [String: FormatString]) -> [LocalizedStringPair] in
-        files.flatMap { file in
-            file.lo_getLines(problemReporter: problemReporter)?
-                .enumerated()
-                .compactMap {
-                    LocalizedStringPair(
-                        string: $0.1,
-                        path: file.path,
-                        line: $0.0 + 1,
-                        baseStringMap: baseStringMap)
-                } ?? []
-        }
+    let collectLines = { (file: File, baseStringMap: [String: FormatString]) -> [LocalizedStringPair] in
+        file.lo_getLines(problemReporter: problemReporter)?
+            .enumerated()
+            .compactMap {
+                LocalizedStringPair(
+                    string: $0.1,
+                    path: file.path,
+                    line: $0.0 + 1,
+                    baseStringMap: baseStringMap)
+            } ?? []
     }
 
+    // Compare similarly-named files 1-to-1
     let baseStrings: [LocalizedStringPair] = collectLines(base, [:])
     guard !baseStrings.isEmpty else { return }
 
