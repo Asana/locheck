@@ -4,7 +4,6 @@ only_rules:
   - balanced_xctest_lifecycle
   - class_delegate_protocol
   - closing_brace
-  - closure_end_indentation
   - closure_parameter_position
   - closure_spacing
   - collection_alignment

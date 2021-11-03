@@ -19,6 +19,6 @@ func printLocalizationExamples() {
     print(NSLocalizedString("bad-order-causes-bad-type", comment: ""))
 //    print(String.localizedStringWithFormat(NSLocalizedString("bad-order-causes-bad-type", comment: ""), 2, "Steve"))
 
-        print(String.localizedStringWithFormat(NSLocalizedString("arg-order-test", comment: ""), "one", "two"))
+    print(String.localizedStringWithFormat(NSLocalizedString("arg-order-test", comment: ""), "one", "two"))
     print("Done")
 }
