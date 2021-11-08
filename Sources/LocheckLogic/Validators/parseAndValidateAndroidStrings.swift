@@ -69,7 +69,10 @@ func validateAndroidStrings(
 
         if !translationPhraseArgs.isEmpty && !translationArgs.isEmpty {
             problemReporter.report(
-                PhraseAndNativeArgumentsAreBothPresent(key: translationString.key),
+                PhraseAndNativeArgumentsAreBothPresent(
+                    key: translationString.key,
+                    base: baseString.value.string,
+                    translation: translationString.value.string),
                 path: translation.path,
                 lineNumber: translationString.line)
         }
@@ -84,7 +87,9 @@ func validateAndroidStrings(
                 StringHasMissingArguments(
                     key: translationString.key,
                     language: translationLanguageName,
-                    args: Array(argsMissingFromTranslation.sorted().map { String($0) })),
+                    args: Array(argsMissingFromTranslation.sorted().map { String($0) }),
+                    base: baseString.value.string,
+                    translation: translationString.value.string),
                 path: translation.path,
                 lineNumber: translationString.line)
         }
@@ -93,7 +98,9 @@ func validateAndroidStrings(
                 StringHasExtraArguments(
                     key: translationString.key,
                     language: translationLanguageName,
-                    args: Array(argsMissingFromTranslation.sorted().map { String($0) })),
+                    args: Array(argsMissingFromTranslation.sorted().map { String($0) }),
+                    base: baseString.value.string,
+                    translation: translationString.value.string),
                 path: translation.path,
                 lineNumber: baseString.line)
         }
@@ -102,7 +109,9 @@ func validateAndroidStrings(
                 PhraseHasMissingArguments(
                     key: translationString.key,
                     language: translationLanguageName,
-                    args: Array(phraseMissingFromTranslation).sorted()),
+                    args: Array(phraseMissingFromTranslation).sorted(),
+                    base: baseString.value.string,
+                    translation: translationString.value.string),
                 path: translation.path,
                 lineNumber: translationString.line)
         }
@@ -111,7 +120,9 @@ func validateAndroidStrings(
                 PhraseHasExtraArguments(
                     key: translationString.key,
                     language: translationLanguageName,
-                    args: Array(phraseMissingFromBase).sorted()),
+                    args: Array(phraseMissingFromBase).sorted(),
+                    base: baseString.value.string,
+                    translation: translationString.value.string),
                 path: translation.path,
                 lineNumber: baseString.line)
         }
@@ -127,7 +138,9 @@ func validateAndroidStrings(
                         language: translationLanguageName,
                         argPosition: arg.position,
                         baseArgSpecifier: baseArg.specifier,
-                        argSpecifier: arg.specifier),
+                        argSpecifier: arg.specifier,
+                        base: baseString.value.string,
+                        translation: translationString.value.string),
                     path: translation.path,
                     lineNumber: translationString.line)
             }

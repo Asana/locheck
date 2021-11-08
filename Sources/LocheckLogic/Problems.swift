@@ -11,6 +11,11 @@ protocol StringsdictProblem: SummarizableProblem {
     var key: String { get }
 }
 
+extension StringsdictProblem {
+    var base: String? { nil } // Never report translations for Stringsdict problems; they all require inspection
+    var translation: String? { nil } // Never report translations for Stringsdict problems; they all require inspection
+}
+
 protocol StringsProblem: SummarizableProblem {
     var key: String { get }
 }
@@ -19,6 +24,8 @@ struct CDATACannotBeDecoded: Problem, Equatable, SummarizableProblem {
     var kindIdentifier: String { "cdata_cannot_be_decoded" }
     var uniquifyingInformation: String { "\(key)" }
     var severity: Severity { .error }
+    var base: String? { nil }
+    var translation: String? { nil }
     let key: String
 
     var message: String { "'\(key)' has CDATA that cannot be decoded as UTF-8" }
@@ -28,6 +35,8 @@ struct SwiftError: Problem {
     var kindIdentifier: String { "swift_error" }
     var uniquifyingInformation: String { description }
     var severity: Severity { .error }
+    var base: String? { nil }
+    var translation: String? { nil }
     let description: String
 
     var message: String { description }
@@ -37,6 +46,8 @@ struct DuplicateEntries: Problem, Equatable {
     var kindIdentifier: String { "duplicate_entries" }
     var uniquifyingInformation: String { "\(context ?? "<root>")-\(name)" }
     var severity: Severity { .error }
+    var base: String? { nil }
+    var translation: String? { nil }
     let context: String?
     let name: String
 
@@ -53,6 +64,7 @@ struct KeyMissingFromBase: Problem, StringsdictProblem, Equatable {
     var kindIdentifier: String { "key_missing_from_base" }
     var uniquifyingInformation: String { "\(key)" }
     var severity: Severity { .warning }
+    var translation: String? { nil }
     let key: String
 
     var message: String { "'\(key)' is missing from the base translation" }
@@ -62,6 +74,8 @@ struct KeyMissingFromTranslation: Problem, StringsProblem, Equatable {
     var kindIdentifier: String { "key_missing_from_translation" }
     var uniquifyingInformation: String { "\(language)-\(key)" }
     var severity: Severity { .warning }
+    var base: String? { nil }
+    var translation: String? { nil }
     let key: String
     let language: String
 
@@ -72,6 +86,8 @@ struct LprojFileMissingFromTranslation: Problem, Equatable {
     var kindIdentifier: String { "lproj_file_missing_from_translation" }
     var uniquifyingInformation: String { "\(language)-\(key)" }
     var severity: Severity { .warning }
+    var base: String? { nil }
+    var translation: String? { nil }
     let key: String
     let language: String
 
@@ -83,6 +99,8 @@ struct PhraseAndNativeArgumentsAreBothPresent: Problem, StringsProblem, Equatabl
     var uniquifyingInformation: String { key }
     var severity: Severity { .warning }
     let key: String
+    let base: String?
+    let translation: String?
 
     var message: String { "'\(key)' contains both native (%d) and phrase-style ({arg}) arguments" }
 }
@@ -90,21 +108,25 @@ struct PhraseAndNativeArgumentsAreBothPresent: Problem, StringsProblem, Equatabl
 struct PhraseHasMissingArguments: Problem, StringsProblem, Equatable {
     var kindIdentifier: String { "phrase_has_missing_arguments" }
     var uniquifyingInformation: String { "\(language)-\(key)" }
-    var severity: Severity { .warning }
+    var severity: Severity { .error }
     let key: String
     let language: String
     let args: [String]
+    let base: String?
+    let translation: String?
 
     var message: String { "'\(key)' does not include argument(s): \(args.joined(separator: ", "))" }
 }
 
 struct PhraseHasExtraArguments: Problem, StringsProblem, Equatable {
-    var kindIdentifier: String { "string_has_extra_arguments" }
+    var kindIdentifier: String { "phrase_has_extra_arguments" }
     var uniquifyingInformation: String { "\(language)-\(key)" }
     var severity: Severity { .error }
     let key: String
     let language: String
     let args: [String]
+    let base: String?
+    let translation: String?
 
     var message: String {
         "Translation of '\(key)' includes arguments that don't exist in the source: \(args.joined(separator: ", "))"
@@ -117,6 +139,8 @@ struct StringHasDuplicateArguments: Problem, StringsProblem, Equatable {
     var severity: Severity { .warning }
     let key: String
     let language: String
+    let base: String?
+    let translation: String?
 
     var message: String {
         "Some arguments appear more than once in this translation"
@@ -130,6 +154,8 @@ struct StringHasExtraArguments: Problem, StringsProblem, Equatable {
     let key: String
     let language: String
     let args: [String]
+    let base: String?
+    let translation: String?
 
     var message: String {
         "Translation of '\(key)' includes arguments that don't exist in the source: \(args.joined(separator: ", "))"
@@ -145,6 +171,8 @@ struct StringHasInvalidArgument: Problem, StringsProblem, Equatable {
     let argPosition: Int
     let baseArgSpecifier: String
     let argSpecifier: String
+    let base: String?
+    let translation: String?
 
     var message: String {
         "Specifier for argument \(argPosition) does not match (should be \(baseArgSpecifier), is \(argSpecifier))"
@@ -158,6 +186,8 @@ struct StringHasMissingArguments: Problem, StringsProblem, Equatable {
     let key: String
     let language: String
     let args: [String]
+    let base: String?
+    let translation: String?
 
     var message: String { "'\(key)' does not include argument(s) at \(args.joined(separator: ", "))" }
 }
@@ -320,6 +350,8 @@ struct XMLErrorProblem: Problem, Equatable {
     var kindIdentifier: String { "xml_error" }
     var uniquifyingInformation: String { message }
     var severity: Severity { .error }
+    var base: String? { nil }
+    var translation: String? { nil }
     let message: String
 }
 
@@ -327,5 +359,7 @@ struct XMLSchemaProblem: Problem, Equatable {
     var kindIdentifier: String { "xml_schema_error" }
     var uniquifyingInformation: String { message }
     var severity: Severity { .error }
+    var base: String? { nil }
+    var translation: String? { nil }
     let message: String
 }
