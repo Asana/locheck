@@ -59,13 +59,25 @@ class ExecutableTests: XCTestCase {
         Examples/Demo_Translation.strings
           bad pos %ld %@:
             WARNING: 'bad pos %ld %@' does not include argument(s) at 1 (string_has_missing_arguments)
+              Base: %1$ld %2$@
+              Translation: %2$ld %2$@
             WARNING: Some arguments appear more than once in this translation (string_has_duplicate_arguments)
+              Base: %1$ld %2$@
+              Translation: %2$ld %2$@
             ERROR: Specifier for argument 2 does not match (should be @, is ld) (string_has_invalid_argument)
+              Base: %1$ld %2$@
+              Translation: %2$ld %2$@
           bad position %d:
             WARNING: 'bad position %d' does not include argument(s) at 1 (string_has_missing_arguments)
+              Base: bad position %d
+              Translation: bad position %$d
           mismatch %@ types %d:
             ERROR: Specifier for argument 2 does not match (should be d, is @) (string_has_invalid_argument)
+              Base: mismatch %@ types %d
+              Translation: mismatch %2$@ types %1$d
             ERROR: Specifier for argument 1 does not match (should be @, is d) (string_has_invalid_argument)
+              Base: mismatch %@ types %d
+              Translation: mismatch %2$@ types %1$d
         4 warnings, 3 errors
         Errors found
 
