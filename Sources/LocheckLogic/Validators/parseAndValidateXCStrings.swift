@@ -80,7 +80,9 @@ func validateStrings(
                 StringHasMissingArguments(
                     key: translationString.key,
                     language: translationLanguageName,
-                    args: args),
+                    args: args,
+                    base: translationString.base.string,
+                    translation: translationString.translation.string),
                 path: translationString.path,
                 lineNumber: translationString.line)
         }
@@ -91,7 +93,9 @@ func validateStrings(
                 StringHasExtraArguments(
                     key: translationString.key,
                     language: translationLanguageName,
-                    args: args),
+                    args: args,
+                    base: translationString.base.string,
+                    translation: translationString.translation.string),
                 path: translationString.path,
                 lineNumber: translationString.line)
         }
@@ -100,7 +104,9 @@ func validateStrings(
             problemReporter.report(
                 StringHasDuplicateArguments(
                     key: translationString.key,
-                    language: translationLanguageName),
+                    language: translationLanguageName,
+                    base: translationString.base.string,
+                    translation: translationString.translation.string),
                 path: translationString.path,
                 lineNumber: translationString.line)
         }
@@ -118,7 +124,9 @@ func validateStrings(
                         language: translationLanguageName,
                         argPosition: arg.position,
                         baseArgSpecifier: baseArg.specifier,
-                        argSpecifier: arg.specifier),
+                        argSpecifier: arg.specifier,
+                        base: translationString.base.string,
+                        translation: translationString.translation.string),
                     path: translationString.path,
                     lineNumber: translationString.line)
             }

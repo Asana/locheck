@@ -26,6 +26,8 @@ public protocol Problem {
     var uniquifyingInformation: String { get }
     var severity: Severity { get }
     var message: String { get }
+    var base: String? { get }
+    var translation: String? { get }
 }
 
 public protocol SummarizableProblem: Problem {
@@ -117,6 +119,10 @@ public class ProblemReporter {
                 for problem in summarizableProblems.filter({ $0.key == key }) {
                     print(
                         "    \(problem.severity.rawValue.uppercased()): \(problem.message) (\(problem.kindIdentifier))")
+                    if let translation = problem.translation, let base = problem.base {
+                        print("      Base: \(base)")
+                        print("      Translation: \(translation)")
+                    }
                 }
             }
         }
