@@ -64,6 +64,15 @@ func validateStrings(
             lineNumber: baseString.line)
     }
 
+    for baseString in baseStrings where translationStringMap[baseString.key]?.translation.string == baseString.translation.string {
+        problemReporter.report(
+            TranslationSameAsBase(
+                key: baseString.key,
+                language: translationLanguageName),
+            path: baseString.path,
+            lineNumber: baseString.line)
+    }
+
     // MARK: Validate arguments
 
     for translationString in translationStrings {
