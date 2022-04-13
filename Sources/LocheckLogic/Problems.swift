@@ -162,6 +162,18 @@ struct StringHasMissingArguments: Problem, StringsProblem, Equatable {
     var message: String { "'\(key)' does not include argument(s) at \(args.joined(separator: ", "))" }
 }
 
+struct StringArrayItemCountMismatch: Problem, StringsProblem, Equatable {
+  var kindIdentifier: String { "string_array_item_count_mismatch" }
+  var uniquifyingInformation: String { "\(language)-\(key)" }
+  var severity: Severity { .warning }
+  let key: String
+  let language: String
+  let countBase: Int
+  let countTranslation: Int
+
+  var message: String { "'\(key)' item count mismatch in \(language): \(countTranslation) (should be \(countBase))" }
+}
+
 struct StringsdictEntryContainsNoVariablesProblem: Problem, StringsdictProblem, Equatable {
     var kindIdentifier: String { "stringsdict_entry_contains_no_variables" }
     var uniquifyingInformation: String { "\(key)" }

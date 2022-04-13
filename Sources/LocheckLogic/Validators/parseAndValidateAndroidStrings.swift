@@ -51,7 +51,18 @@ func validateAndroidStrings(
         translationLanguageName: translationLanguageName,
         problemReporter: problemReporter)
 
+    validateKeyPresence(
+        basePath: base.path,
+        baseKeys: Set(base.stringArrays.map(\.key)),
+        baseLineNumberMap: base.stringArrays.lo_makeDictionary(makeKey: \.key, makeValue: \.line),
+        translationPath: translation.path,
+        translationKeys: Set(translation.stringArrays.map(\.key)),
+        translationLineNumberMap: translation.stringArrays.lo_makeDictionary(makeKey: \.key, makeValue: \.line),
+        translationLanguageName: translationLanguageName,
+        problemReporter: problemReporter)
+
     let baseStringMap = base.strings.lo_makeDictionary(makeKey: \.key)
+    let baseStringArrayMap = base.stringArrays.lo_makeDictionary(makeKey: \.key)
 
     for translationString in translation.strings {
         guard let baseString = baseStringMap[translationString.key] else {
@@ -131,6 +142,23 @@ func validateAndroidStrings(
                     path: translation.path,
                     lineNumber: translationString.line)
             }
+        }
+    }
+
+    for translationStringArray in translation.stringArrays {
+        guard let baseStringArray = baseStringArrayMap[translationStringArray.key] else {
+            continue // We already threw an error for this in validateKeyPresence()
+        }
+
+        if translationStringArray.values.count != baseStringArray.values.count {
+            problemReporter.report(
+                StringArrayItemCountMismatch(
+                    key: translationStringArray.key,
+                    language: translationLanguageName,
+                    countBase: baseStringArray.values.count,
+                    countTranslation: translationStringArray.values.count),
+                path: translation.path,
+                lineNumber: translationStringArray.line)
         }
     }
 }

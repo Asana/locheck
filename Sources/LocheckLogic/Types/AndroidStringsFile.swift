@@ -21,10 +21,17 @@ struct AndroidString: Equatable {
     var line: Int { value.line }
 }
 
+struct AndroidStringArray: Equatable {
+    let key: String
+    let values: [String]
+    let line: Int
+}
+
 public struct AndroidStringsFile: Equatable {
     let path: String
     let strings: [AndroidString]
     let plurals: [AndroidPlural]
+    let stringArrays: [AndroidStringArray]
 }
 
 public extension AndroidStringsFile {
@@ -42,6 +49,7 @@ public extension AndroidStringsFile {
         }
 
         var strings = [AndroidString]()
+        var stringArrays = [AndroidStringArray]()
         var plurals = [AndroidPlural]()
 
         var seenKeys = Set<String>()
@@ -87,6 +95,30 @@ public extension AndroidStringsFile {
                             key: key,
                             value: FormatString(string: element.text ?? "", path: path, line: element.lineNumberStart)))
                 }
+            case "string-array":
+                var values = [String]()
+                for child in element.childElements {
+                    guard child.name == "item" else {
+                        problemReporter.report(
+                            XMLSchemaProblem(message: "Item \(i + 1) has a malformed child (not an 'item')"),
+                            path: path,
+                            lineNumber: child.lineNumberStart)
+                        continue
+                    }
+                    if let cdata = child.CDATA {
+                        guard let string = String(data: cdata, encoding: .utf8) else {
+                            problemReporter.report(
+                                CDATACannotBeDecoded(key: key),
+                                path: path,
+                                lineNumber: child.lineNumberStart)
+                            continue
+                        }
+                        values.append(string)
+                    } else {
+                        values.append(child.text ?? "")
+                    }
+                }
+                stringArrays.append(AndroidStringArray(key: key, values: values, line: element.lineNumberStart))
             case "plurals":
                 var values = [String: FormatString]()
                 for child in element.childElements {
@@ -124,5 +156,6 @@ public extension AndroidStringsFile {
 
         self.strings = strings
         self.plurals = plurals
+        self.stringArrays = stringArrays
     }
 }
