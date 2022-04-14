@@ -38,7 +38,7 @@ zip_binary: build
 
 release:
 	git checkout main
-ifeq ($(GIT_STATUS),"")
+ifeq ($(GIT_STATUS),"\n")
 	sed -E -i '' 's/let version = ".*"/let version = "$(VERSION)"/' Sources/LocheckCommand/main.swift
 
 	git add .
