@@ -223,11 +223,17 @@ class ExecutableTests: XCTestCase {
             WARNING: 'string_array_wrong_item_count' item count mismatch in Examples: 2 (should be 1) (string_array_item_count_mismatch)
           translation_has_invalid_specifier:
             ERROR: Specifier for argument 2 does not match (should be d, is lu) (string_has_invalid_argument)
+              Base: %s %d
+              Translation: %s %lu
           translation_has_missing_arg:
             WARNING: 'translation_has_missing_arg' does not include argument(s) at 2 (string_has_missing_arguments)
+              Base: %s %d
+              Translation: %s
           translation_has_missing_phrase:
-            WARNING: 'translation_has_missing_phrase' does not include argument(s): object_name (phrase_has_missing_arguments)
-        7 warnings, 1 error
+            ERROR: 'translation_has_missing_phrase' does not include argument(s): object_name (phrase_has_missing_arguments)
+              Base: Could not add {user_name} to \\"{object_name}\\"
+              Translation: Could not add {user_name}
+        6 warnings, 2 errors
         Errors found
 
         """)
@@ -237,7 +243,7 @@ class ExecutableTests: XCTestCase {
         Examples/strings-translation.xml:25: warning: 'missing_from_base' is missing from the base translation (key_missing_from_base)
         Examples/strings-base.xml:36: warning: 'translation_missing_string_array' is missing from Examples (key_missing_from_translation)
         Examples/strings-translation.xml:33: warning: 'base_missing_string_array' is missing from the base translation (key_missing_from_base)
-        Examples/strings-translation.xml:17: warning: 'translation_has_missing_phrase' does not include argument(s): object_name (phrase_has_missing_arguments)
+        Examples/strings-translation.xml:17: error: 'translation_has_missing_phrase' does not include argument(s): object_name (phrase_has_missing_arguments)
         Examples/strings-translation.xml:21: error: Specifier for argument 2 does not match (should be d, is lu) (string_has_invalid_argument)
         Examples/strings-translation.xml:22: warning: 'translation_has_missing_arg' does not include argument(s) at 2 (string_has_missing_arguments)
         Examples/strings-translation.xml:38: warning: 'string_array_wrong_item_count' item count mismatch in Examples: 2 (should be 1) (string_array_item_count_mismatch)
