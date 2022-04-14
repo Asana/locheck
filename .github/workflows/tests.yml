@@ -12,9 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       # uncomment to pin swift version, but it takes several minutes.
-      # - uses: fwal/setup-swift@v1
-      #   with:
-      #     swift-version: "5.4"
+      #- uses: fwal/setup-swift@v1
+      #  with:
+      #    swift-version: "5.6"
 
       - name: Cache SwiftPM
         uses: actions/cache@v1
@@ -24,6 +24,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-swiftpm-deps-${{ github.workspace }}
 
+      - name: Swift Version
+        run: swift --version
       - name: Build
         run: swift build
       - name: Run tests

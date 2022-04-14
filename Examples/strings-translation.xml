@@ -23,4 +23,20 @@
 
     <!-- Missing from base -->
     <string name="missing_from_base">Missing from base</string>
+
+    <!-- Good string array -->
+    <string-array name="good_string_array">
+      <item>Item 1</item>
+    </string-array>
+
+    <!-- String array missing from base -->
+    <string-array name="base_missing_string_array">
+      <item>Item 1</item>
+    </string-array>
+
+    <!-- String array with wrong item count -->
+    <string-array name="string_array_wrong_item_count">
+      <item>Item 1</item>
+      <item>Item 2</item>
+    </string-array>
 </resources>

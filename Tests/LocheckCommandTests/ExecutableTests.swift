@@ -187,4 +187,67 @@ class ExecutableTests: XCTestCase {
 
         """)
     }
+
+  func testExampleOutput_android() throws {
+    let binary = productsDirectory.appendingPathComponent("locheck")
+
+    let process = Process()
+    process.executableURL = binary
+    process.arguments = ["androidstrings", "Examples/strings-base.xml", "Examples/strings-translation.xml"]
+
+    let stdoutPipe = Pipe()
+    let stderrPipe = Pipe()
+    process.standardOutput = stdoutPipe
+    process.standardError = stderrPipe
+
+    try process.run()
+    process.waitUntilExit()
+
+    let stdout = String(data: stdoutPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
+    let stderr = String(data: stderrPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
+
+    XCTAssertEqual(stdout!, """
+
+        Summary:
+        Examples/strings-base.xml
+          missing_from_translation:
+            WARNING: 'missing_from_translation' is missing from Examples (key_missing_from_translation)
+          translation_missing_string_array:
+            WARNING: 'translation_missing_string_array' is missing from Examples (key_missing_from_translation)
+        Examples/strings-translation.xml
+          base_missing_string_array:
+            WARNING: 'base_missing_string_array' is missing from the base translation (key_missing_from_base)
+          missing_from_base:
+            WARNING: 'missing_from_base' is missing from the base translation (key_missing_from_base)
+          string_array_wrong_item_count:
+            WARNING: 'string_array_wrong_item_count' item count mismatch in Examples: 2 (should be 1) (string_array_item_count_mismatch)
+          translation_has_invalid_specifier:
+            ERROR: Specifier for argument 2 does not match (should be d, is lu) (string_has_invalid_argument)
+              Base: %s %d
+              Translation: %s %lu
+          translation_has_missing_arg:
+            WARNING: 'translation_has_missing_arg' does not include argument(s) at 2 (string_has_missing_arguments)
+              Base: %s %d
+              Translation: %s
+          translation_has_missing_phrase:
+            ERROR: 'translation_has_missing_phrase' does not include argument(s): object_name (phrase_has_missing_arguments)
+              Base: Could not add {user_name} to \\"{object_name}\\"
+              Translation: Could not add {user_name}
+        6 warnings, 2 errors
+        Errors found
+
+        """)
+
+    XCTAssertEqual(stderr!, """
+        Examples/strings-base.xml:28: warning: 'missing_from_translation' is missing from Examples (key_missing_from_translation)
+        Examples/strings-translation.xml:25: warning: 'missing_from_base' is missing from the base translation (key_missing_from_base)
+        Examples/strings-base.xml:36: warning: 'translation_missing_string_array' is missing from Examples (key_missing_from_translation)
+        Examples/strings-translation.xml:33: warning: 'base_missing_string_array' is missing from the base translation (key_missing_from_base)
+        Examples/strings-translation.xml:17: error: 'translation_has_missing_phrase' does not include argument(s): object_name (phrase_has_missing_arguments)
+        Examples/strings-translation.xml:21: error: Specifier for argument 2 does not match (should be d, is lu) (string_has_invalid_argument)
+        Examples/strings-translation.xml:22: warning: 'translation_has_missing_arg' does not include argument(s) at 2 (string_has_missing_arguments)
+        Examples/strings-translation.xml:38: warning: 'string_array_wrong_item_count' item count mismatch in Examples: 2 (should be 1) (string_array_item_count_mismatch)
+
+        """)
+  }
 }
