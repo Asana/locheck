@@ -18,7 +18,7 @@ public func validateLproj(base: LprojFiles, translation: LprojFiles, problemRepo
                 LprojFileMissingFromTranslation(key: file.name, language: translation.name),
                 path: file.path,
                 lineNumber: 0)
-            return
+            continue
         }
         parseAndValidateXCStrings(
             base: file,
