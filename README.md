@@ -80,7 +80,7 @@ There are a few ways to invoke `locheck` depending on how much magic you want. I
 The simplest way to use Locheck with Xcode is to use `discoverlproj` and point to a directory containing all your `.lproj` files:
 
 ```sh
-locheck discoverlproj "MyApp/Supporting Files" --default en # use English as the base language
+locheck discoverlproj "MyApp/Supporting Files" --base en # use English as the base language
 ```
 
 If you use a language besides English as your base, you'll need to pass it as an argument as shown in the example. Locheck does not try to read your xcodeproj file to figure it out.
