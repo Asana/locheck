@@ -34,6 +34,6 @@ let package = Package(
             name: "LocheckCommandTests",
             dependencies: ["LocheckCommand"]),
         .testTarget(
-          name: "LocheckLogicTests",
-          dependencies: ["LocheckLogic"]),
+            name: "LocheckLogicTests",
+            dependencies: ["LocheckLogic"]),
     ])

@@ -61,13 +61,29 @@ func validateAndroidStrings(
         translationLanguageName: translationLanguageName,
         problemReporter: problemReporter)
 
-    let baseStringMap = base.strings.lo_makeDictionary(makeKey: \.key)
+    let baseStringMap = base.strings.lo_makeDictionary(
+        makeKey: \.key,
+        onDuplicate: { key, value in
+            problemReporter.report(
+                DuplicateEntries(context: nil, name: key),
+                path: base.path,
+                lineNumber: value.line)
+        })
     let baseStringArrayMap = base.stringArrays.lo_makeDictionary(makeKey: \.key)
+    var seenTranslationKeys = Set<String>()
 
     for translationString in translation.strings {
         guard let baseString = baseStringMap[translationString.key] else {
             continue // We already threw an error for this in validateKeyPresence()
         }
+
+        if seenTranslationKeys.contains(translationString.key) {
+            problemReporter.report(
+                DuplicateEntries(context: nil, name: translationString.key),
+                path: translation.path,
+                lineNumber: translationString.line)
+        }
+        seenTranslationKeys.insert(translationString.key)
 
         let baseArgs = baseString.value.arguments.sorted(by: { $0.position < $1.position })
         let basePhraseArgs = baseString.value.phraseArguments

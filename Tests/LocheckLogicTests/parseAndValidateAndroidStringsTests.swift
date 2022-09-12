@@ -25,10 +25,12 @@ class ParseAndValidateAndroidStringsTests: XCTestCase {
             translationLanguageName: "demo",
             problemReporter: problemReporter)
 
-        XCTAssertEqual(problemReporter.problems.count, 8)
+        XCTAssertEqual(problemReporter.problems.count, 10)
         let problems = problemReporter.problems.map(\.problem)
 
         XCTAssertEqual(problems.map(\.kindIdentifier), [
+            "duplicate_entries",
+            "duplicate_entries",
             "key_missing_from_translation",
             "key_missing_from_base",
             "key_missing_from_translation",
@@ -36,10 +38,12 @@ class ParseAndValidateAndroidStringsTests: XCTestCase {
             "phrase_has_missing_arguments",
             "string_has_invalid_argument",
             "string_has_missing_arguments",
-            "string_array_item_count_mismatch"
+            "string_array_item_count_mismatch",
         ])
 
-        CastAndAssertEqual(problems[0], KeyMissingFromTranslation(key: "missing_from_translation", language: "demo"))
-        CastAndAssertEqual(problems[1], KeyMissingFromBase(key: "missing_from_base"))
+        CastAndAssertEqual(problems[0], DuplicateEntries(context: nil, name: "duplicate_entry"))
+        CastAndAssertEqual(problems[1], DuplicateEntries(context: nil, name: "duplicate_entry"))
+        CastAndAssertEqual(problems[2], KeyMissingFromTranslation(key: "missing_from_translation", language: "demo"))
+        CastAndAssertEqual(problems[3], KeyMissingFromBase(key: "missing_from_base"))
     }
 }

@@ -5,3 +5,6 @@
 "mismatch %@ types %d" = "mismatch %2$@ types %1$d";
 
 "bad position %d" = "bad position %$d";
+
+"duplicate key" = "duplicate key";
+"duplicate key" = "duplicate key";
