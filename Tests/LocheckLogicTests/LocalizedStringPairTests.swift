@@ -10,8 +10,15 @@ import Files
 import XCTest
 
 class LocalizedStringPairTests: XCTestCase {
+    func testSlashParsing() {
+        let string = LocalizedStringPair(string: "//", path: "abc", line: 0)
+        XCTAssertNil(string)
+
+        let string2 = LocalizedStringPair(string: "////////////////////////", path: "abc", line: 0)
+        XCTAssertNil(string2)
+    }
+
     func testArgumentParsing() {
-        let problemReporter = ProblemReporter(log: false)
         let string = LocalizedStringPair(
             string: """
             "%1$@ %2$d %@" = "%1$@ %2$d %@";
@@ -25,11 +32,9 @@ class LocalizedStringPairTests: XCTestCase {
                 FormatArgument(specifier: "d", position: 2, isPositionExplicit: true),
                 FormatArgument(specifier: "@", position: 1, isPositionExplicit: false),
             ])
-        XCTAssertTrue(problemReporter.problems.isEmpty)
     }
 
     func testOmitArgument() {
-        let problemReporter = ProblemReporter(log: false)
         let string = LocalizedStringPair(
             string: """
             "A sync error occurred while creating column “%@” in project “%@”." = "Er is een synchronisatiefout opgetreden tijdens het maken van kolom “%@” in een project.";
@@ -45,11 +50,9 @@ class LocalizedStringPairTests: XCTestCase {
         XCTAssertEqual(
             string.translation.arguments,
             [FormatArgument(specifier: "@", position: 1, isPositionExplicit: false)])
-        XCTAssertTrue(problemReporter.problems.isEmpty)
     }
 
     func testMixedImplicitAndExplicitOrder() {
-        let problemReporter = ProblemReporter(log: false)
         let string = LocalizedStringPair(
             string: """
             "A sync error occurred while processing %@'s request to join “%@”." = "“%@” 님의 “%2$@” 참가 요청을 처리하는 중 동기화 오류가 발생했습니다.";
@@ -68,11 +71,9 @@ class LocalizedStringPairTests: XCTestCase {
                 FormatArgument(specifier: "@", position: 1, isPositionExplicit: false),
                 FormatArgument(specifier: "@", position: 2, isPositionExplicit: true),
             ])
-        XCTAssertTrue(problemReporter.problems.isEmpty)
     }
 
     func testVariableSpacing() {
-        let problemReporter = ProblemReporter(log: false)
         // one space
         XCTAssertNotNil(LocalizedStringPair(string: #""Test key" = "Test value";"#, path: "abc", line: 0))
         // no spaces
@@ -82,11 +83,9 @@ class LocalizedStringPairTests: XCTestCase {
         XCTAssertNotNil(LocalizedStringPair(string: #""Test key" ="Test value";"#, path: "abc", line: 0))
         // multiple spaces
         XCTAssertNotNil(LocalizedStringPair(string: #""Test key"  =  "Test value";"#, path: "abc", line: 0))
-        XCTAssertTrue(problemReporter.problems.isEmpty)
     }
 
     func testComments() {
-        let problemReporter = ProblemReporter(log: false)
         // no comment
         XCTAssertNotNil(LocalizedStringPair(string: #""Test key" = "Test value";"#, path: "abc", line: 0))
         // block comment after
@@ -114,7 +113,5 @@ class LocalizedStringPairTests: XCTestCase {
             string: #""Test key" = "Test value"; // this is a comment"#,
             path: "abc",
             line: 0))
-
-        XCTAssertTrue(problemReporter.problems.isEmpty)
     }
 }

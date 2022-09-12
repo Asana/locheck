@@ -24,6 +24,10 @@
     <!-- Missing from base -->
     <string name="missing_from_base">Missing from base</string>
 
+    <!-- Duplicate entries -->
+    <string name="duplicate_entry">Duplicate entry</string>
+    <string name="duplicate_entry">Duplicate entry</string>
+
     <!-- Good string array -->
     <string-array name="good_string_array">
       <item>Item 1</item>

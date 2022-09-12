@@ -7,3 +7,6 @@
 "mismatch %@ types %d" = "mismatch %@ types %d";
 
 "bad position %d" = "bad position %d";
+
+"duplicate key" = "duplicate key";
+"duplicate key" = "duplicate key";

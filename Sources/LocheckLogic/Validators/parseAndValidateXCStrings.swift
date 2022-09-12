@@ -32,7 +32,15 @@ public func parseAndValidateXCStrings(
     let baseStrings: [LocalizedStringPair] = collectLines(base, [:])
     guard !baseStrings.isEmpty else { return }
 
-    let baseStringMap = baseStrings.lo_makeDictionary(makeKey: { $0.base.string }, makeValue: \.translation)
+    let baseStringMap = baseStrings.lo_makeDictionary(
+        makeKey: \.base.string,
+        makeValue: \.translation,
+        onDuplicate: { key, value in
+            problemReporter.report(
+                DuplicateEntries(context: nil, name: key),
+                path: value.path,
+                lineNumber: value.line)
+        })
 
     let translationStrings = collectLines(translation, baseStringMap)
     validateStrings(
@@ -53,7 +61,14 @@ func validateStrings(
     problemReporter: ProblemReporter) {
     // MARK: Ensure all base strings appear in this translation
 
-    let translationStringMap = translationStrings.lo_makeDictionary { $0.key }
+    let translationStringMap = translationStrings.lo_makeDictionary(
+        makeKey: \.key,
+        onDuplicate: { key, value in
+            problemReporter.report(
+                DuplicateEntries(context: nil, name: key),
+                path: value.path,
+                lineNumber: value.line)
+        })
 
     for baseString in baseStrings where translationStringMap[baseString.key] == nil {
         problemReporter.report(

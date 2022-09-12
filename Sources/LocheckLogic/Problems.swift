@@ -193,18 +193,18 @@ struct StringHasMissingArguments: Problem, StringsProblem, Equatable {
 }
 
 struct StringArrayItemCountMismatch: Problem, StringsProblem, Equatable {
-  var base: String?
-  var translation: String?
+    var base: String?
+    var translation: String?
 
-  var kindIdentifier: String { "string_array_item_count_mismatch" }
-  var uniquifyingInformation: String { "\(language)-\(key)" }
-  var severity: Severity { .warning }
-  let key: String
-  let language: String
-  let countBase: Int
-  let countTranslation: Int
+    var kindIdentifier: String { "string_array_item_count_mismatch" }
+    var uniquifyingInformation: String { "\(language)-\(key)" }
+    var severity: Severity { .warning }
+    let key: String
+    let language: String
+    let countBase: Int
+    let countTranslation: Int
 
-  var message: String { "'\(key)' item count mismatch in \(language): \(countTranslation) (should be \(countBase))" }
+    var message: String { "'\(key)' item count mismatch in \(language): \(countTranslation) (should be \(countBase))" }
 }
 
 struct StringsdictEntryContainsNoVariablesProblem: Problem, StringsdictProblem, Equatable {
