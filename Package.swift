@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version:5.7
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "locheck",
     platforms: [
-        .macOS(.v10_13),
+        .macOS(.v12),
     ],
     products: [
         .executable(name: "locheck", targets: ["LocheckCommand"]),
@@ -14,10 +14,10 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser", .upToNextMinor(from: "0.4.0")),
         .package(url: "https://github.com/johnsundell/Files.git", .upToNextMinor(from: "4.2.0")),
-        .package(url: "https://github.com/yahoojapan/SwiftyXMLParser", .branch("5.4.0")),
+        .package(url: "https://github.com/yahoojapan/SwiftyXMLParser", branch: "5.4.0"),
     ],
     targets: [
-        .target(
+        .executableTarget(
             name: "LocheckCommand",
             dependencies: [
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
