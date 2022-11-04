@@ -11,7 +11,7 @@ import Files
 import Foundation
 import LocheckLogic
 
-let version = "0.9.7"
+let version = "0.9.8"
 
 struct Locheck: ParsableCommand {
     static let configuration = CommandConfiguration(
@@ -291,8 +291,15 @@ struct DiscoverLproj: HasIgnoreWithShorthand, ParsableCommand {
     @Flag(help: ignoreWarningsHelpText)
     fileprivate var ignoreWarnings = false
 
+    @Option(help: "Ignore one or more languages using the language code (like 'en')")
+    fileprivate var ignoreLanguage = [String]()
+
     @Flag(help: treatWarningsAsErrorsHelpText)
     fileprivate var treatWarningsAsErrors = false
+
+    private func isIgnored(language: String) -> Bool {
+        ignoreLanguage.contains(language)
+    }
 
     func validate() throws {
         for directory in directories {
@@ -341,6 +348,10 @@ struct DiscoverLproj: HasIgnoreWithShorthand, ParsableCommand {
                     }
 
                     for translation in translationLproj {
+                        if isIgnored(language: translation.name) {
+                            print("Ignoring", translation.name)
+                            continue
+                        }
                         validateLproj(base: baseLproj, translation: translation, problemReporter: problemReporter)
                     }
                     problemReporter.printSummary()
@@ -366,8 +377,15 @@ struct DiscoverValues: HasIgnoreWithShorthand, ParsableCommand {
     @Flag(help: ignoreWarningsHelpText)
     fileprivate var ignoreWarnings = false
 
+    @Option(help: "Ignore one or more languages using the language code (like 'en')")
+    fileprivate var ignoreLanguage = [String]()
+
     @Flag(help: treatWarningsAsErrorsHelpText)
     fileprivate var treatWarningsAsErrors = false
+
+    private func isIgnored(language: String) -> Bool {
+        ignoreLanguage.contains(language)
+    }
 
     func validate() throws {
         for directory in directories {
@@ -421,10 +439,15 @@ struct DiscoverValues: HasIgnoreWithShorthand, ParsableCommand {
                 ignoreWarnings: ignoreWarnings,
                 treatWarningsAsErrors: treatWarningsAsErrors) { problemReporter in
                     for translation in translationValues {
+                        let translationLanguageName = String(translation.parent!.name.dropFirst("values-".count))
+                        if isIgnored(language: translationLanguageName) {
+                            print("Ignoring", translationLanguageName)
+                            continue
+                        }
                         parseAndValidateAndroidStrings(
                             base: primaryValues,
                             translation: translation,
-                            translationLanguageName: String(translation.parent!.name.dropFirst("values-".count)),
+                            translationLanguageName: translationLanguageName,
                             problemReporter: problemReporter)
                     }
                     problemReporter.printSummary()
