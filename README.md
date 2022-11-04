@@ -1,6 +1,6 @@
 # Locheck
 
-[![Swift 5.4](https://img.shields.io/badge/swift-5.4-red.svg?style=flat)](https://developer.apple.com/swift)
+[![Swift 5.7](https://img.shields.io/badge/swift-5.4-red.svg?style=flat)](https://developer.apple.com/swift)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://opensource.org/licenses/MIT)
 [![Build](https://github.com/stevelandeyasana/locheck/actions/workflows/tests.yml/badge.svg)](https://github.com/stevelandeyasana/locheck/actions/workflows/tests.yml)
 
