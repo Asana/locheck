@@ -23,6 +23,7 @@ public func validateLproj(base: LprojFiles, translation: LprojFiles, problemRepo
         parseAndValidateXCStrings(
             base: file,
             translation: counterpart,
+            baseLanguageName: base.name,
             translationLanguageName: translation.name,
             problemReporter: problemReporter)
     }

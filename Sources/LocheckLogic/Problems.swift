@@ -192,6 +192,27 @@ struct StringHasMissingArguments: Problem, StringsProblem, Equatable {
     var message: String { "'\(key)' does not include argument(s) at \(args.joined(separator: ", "))" }
 }
 
+struct StringHasImplicitPosition: Problem, StringsProblem, Equatable {
+    var kindIdentifier: String { "string_has_implicit_position" }
+    var uniquifyingInformation: String { "\(language)-\(key)-\(position)" }
+    var severity: Severity { .warning }
+    let base: String?
+    let translation: String?
+    let key: String
+    let value: String
+    let position: Int
+    let language: String
+    let suggestion: String
+
+    var message: String {
+        if key == value {
+            return "Argument \(position) in '\(key)' has an implicit position. Use an explicit position for safety (\(suggestion))."
+        } else {
+            return "Argument \(position) in translation of '\(key)' ('\(value)') has an implicit position. Use an explicit position for safety (\(suggestion))."
+        }
+    }
+}
+
 struct StringArrayItemCountMismatch: Problem, StringsProblem, Equatable {
     var base: String?
     var translation: String?
@@ -219,14 +240,14 @@ struct StringsdictEntryContainsNoVariablesProblem: Problem, StringsdictProblem, 
 struct StringsdictEntryHasImplicitPosition: Problem, StringsdictProblem, Equatable {
     var kindIdentifier: String { "stringsdict_entry_has_implicit_position" }
     var uniquifyingInformation: String { "\(key)-\(position)-\(permutation)" }
-    // We have code to detect this, but without a way of disabling it per-project yet, it's not reported.
     var severity: Severity { .warning }
     let key: String
     let position: Int
     let permutation: String
+    let suggestion: String
 
     var message: String {
-        "Argument \(position) in permutation '\(permutation)' of '\(key)' has an implicit position. Use an explicit position for safety."
+        "Argument \(position) in permutation '\(permutation)' of '\(key)' has an implicit position. Use an explicit position for safety (\(suggestion))."
     }
 }
 

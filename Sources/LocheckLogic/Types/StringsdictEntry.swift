@@ -74,7 +74,8 @@ public struct StringsdictEntry: Equatable {
                         StringsdictEntryHasImplicitPosition(
                             key: key,
                             position: arg.position,
-                            permutation: string.string),
+                            permutation: string.string,
+                            suggestion: arg.asExplicit),
                         line)
                 }
 
