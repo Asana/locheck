@@ -91,7 +91,6 @@ class ExecutableTests: XCTestCase {
               Base: bad position %d
               Translation: bad position %$d
           mismatch %@ types %d:
-        () $R0 = {}
             ERROR: Specifier for argument 2 does not match (should be d, is @) (string_has_invalid_argument)
               Base: mismatch %@ types %d
               Translation: mismatch %2$@ types %1$d
