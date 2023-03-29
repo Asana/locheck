@@ -220,13 +220,13 @@ struct StringsdictEntryHasImplicitPosition: Problem, StringsdictProblem, Equatab
     var kindIdentifier: String { "stringsdict_entry_has_implicit_position" }
     var uniquifyingInformation: String { "\(key)-\(position)-\(permutation)" }
     // We have code to detect this, but without a way of disabling it per-project yet, it's not reported.
-    var severity: Severity { .ignored }
+    var severity: Severity { .warning }
     let key: String
     let position: Int
     let permutation: String
 
     var message: String {
-        "Argument \(position) in permutation '\(permutation) of '\(key)' has an implicit position. Use an explicit position for safety."
+        "Argument \(position) in permutation '\(permutation)' of '\(key)' has an implicit position. Use an explicit position for safety."
     }
 }
 
