@@ -105,6 +105,7 @@ struct XCStrings: HasIgnoreWithShorthand, ParsableCommand {
                     parseAndValidateXCStrings(
                         base: try! File(path: base.argument),
                         translation: translationFile,
+                        baseLanguageName: (try! File(path: base.argument)).nameExcludingExtension,
                         translationLanguageName: translationFile.nameExcludingExtension,
                         problemReporter: problemReporter)
                 }

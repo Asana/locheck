@@ -22,7 +22,7 @@ uninstall:
 	rm -f $(INSTALL_PATH)
 
 format_code:
-	swiftformat Sources Tests
+	mint run swiftformat Sources Tests
 
 # Homebrew discourages self-submission unless the project is popular, so this is commented out for now.
 # publish: zip_binary bump_brew

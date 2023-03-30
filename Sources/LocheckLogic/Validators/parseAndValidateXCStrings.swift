@@ -14,9 +14,10 @@ import Foundation
 public func parseAndValidateXCStrings(
     base: File,
     translation: File,
+    baseLanguageName: String,
     translationLanguageName: String,
     problemReporter: ProblemReporter) {
-    let collectLines = { (file: File, baseStringMap: [String: FormatString]) -> [LocalizedStringPair] in
+    let collectLines = { (file: File, isBase: Bool, baseStringMap: [String: FormatString]) -> [LocalizedStringPair] in
         file.lo_getLines(problemReporter: problemReporter)?
             .enumerated()
             .compactMap {
@@ -24,12 +25,14 @@ public func parseAndValidateXCStrings(
                     string: $0.1,
                     path: file.path,
                     line: $0.0 + 1,
+                    basePath: base.path,
+                    baseLineFallback: isBase ? $0.0 + 1 : 0,
                     baseStringMap: baseStringMap)
             } ?? []
     }
 
     // Compare similarly-named files 1-to-1
-    let baseStrings: [LocalizedStringPair] = collectLines(base, [:])
+    let baseStrings: [LocalizedStringPair] = collectLines(base, true, [:])
     guard !baseStrings.isEmpty else { return }
 
     let baseStringMap = baseStrings.lo_makeDictionary(
@@ -42,10 +45,11 @@ public func parseAndValidateXCStrings(
                 lineNumber: value.line)
         })
 
-    let translationStrings = collectLines(translation, baseStringMap)
+    let translationStrings = collectLines(translation, false, baseStringMap)
     validateStrings(
         baseStrings: baseStrings,
         translationStrings: translationStrings,
+        baseLanguageName: baseLanguageName,
         translationLanguageName: translationLanguageName,
         problemReporter: problemReporter)
 }
@@ -57,6 +61,7 @@ public func parseAndValidateXCStrings(
 func validateStrings(
     baseStrings: [LocalizedStringPair],
     translationStrings: [LocalizedStringPair],
+    baseLanguageName: String,
     translationLanguageName: String,
     problemReporter: ProblemReporter) {
     // MARK: Ensure all base strings appear in this translation
@@ -128,7 +133,38 @@ func validateStrings(
 
         let baseArgs = translationString.base.arguments.sorted(by: { $0.position < $1.position })
 
+        if baseArgs.count > 1 {
+            for arg in baseArgs where !arg.isPositionExplicit {
+                // This might be reported multiple times, but it's deduped
+                problemReporter.report(
+                    StringHasImplicitPosition(
+                        base: translationString.base.string,
+                        translation: translationString.base.string,
+                        key: translationString.key,
+                        value: translationString.base.string,
+                        position: arg.position,
+                        language: baseLanguageName,
+                        suggestion: arg.asExplicit),
+                    path: translationString.base.path,
+                    lineNumber: translationString.base.line)
+            }
+        }
+
         for arg in translationString.translation.arguments {
+            if !arg.isPositionExplicit && translationString.translation.arguments.count > 1 {
+                problemReporter.report(
+                    StringHasImplicitPosition(
+                        base: translationString.base.string,
+                        translation: translationString.translation.string,
+                        key: translationString.key,
+                        value: translationString.translation.string,
+                        position: arg.position,
+                        language: translationLanguageName,
+                        suggestion: arg.asExplicit),
+                    path: translationString.path,
+                    lineNumber: translationString.line)
+            }
+
             guard let baseArg = baseArgs.first(where: { $0.position == arg.position }) else {
                 continue // we already logged an error for this above
             }

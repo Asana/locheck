@@ -29,6 +29,8 @@ extension LocalizedStringPair {
         string: String,
         path: String,
         line: Int,
+        basePath: String,
+        baseLineFallback: Int = 0, // Either zero (this is a translation) or a repeat of 'line' (this is the base)
         baseStringMap: [String: FormatString]? = nil) { // only pass for translation strings
         guard
             let match = Expressions.stringPairRegex.lo_matches(in: string).first,
@@ -47,7 +49,7 @@ extension LocalizedStringPair {
         if let base = baseStringMap?[key] {
             self.base = base
         } else {
-            base = FormatString(string: key, path: path, line: line)
+            base = FormatString(string: key, path: basePath, line: baseLineFallback)
         }
         translation = FormatString(string: String(valueSequence), path: path, line: line)
     }

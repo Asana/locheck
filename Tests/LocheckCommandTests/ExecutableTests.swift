@@ -55,6 +55,23 @@ class ExecutableTests: XCTestCase {
         Summary:
         Examples/Demo_Base.strings
           ERROR: 'duplicate key' appears twice (duplicate_entries)
+          %@ %@ - %@:
+            WARNING: Argument 1 in '%@ %@ - %@' has an implicit position. Use an explicit position for safety (%$1@). (string_has_implicit_position)
+              Base: %@ %@ - %@
+              Translation: %@ %@ - %@
+            WARNING: Argument 2 in '%@ %@ - %@' has an implicit position. Use an explicit position for safety (%$2@). (string_has_implicit_position)
+              Base: %@ %@ - %@
+              Translation: %@ %@ - %@
+            WARNING: Argument 3 in '%@ %@ - %@' has an implicit position. Use an explicit position for safety (%$3@). (string_has_implicit_position)
+              Base: %@ %@ - %@
+              Translation: %@ %@ - %@
+          mismatch %@ types %d:
+            WARNING: Argument 1 in 'mismatch %@ types %d' has an implicit position. Use an explicit position for safety (%$1@). (string_has_implicit_position)
+              Base: mismatch %@ types %d
+              Translation: mismatch %@ types %d
+            WARNING: Argument 2 in 'mismatch %@ types %d' has an implicit position. Use an explicit position for safety (%$2d). (string_has_implicit_position)
+              Base: mismatch %@ types %d
+              Translation: mismatch %@ types %d
           missing:
             WARNING: 'missing' is missing from Demo_Translation (key_missing_from_translation)
         Examples/Demo_Translation.strings
@@ -80,7 +97,7 @@ class ExecutableTests: XCTestCase {
             ERROR: Specifier for argument 1 does not match (should be @, is d) (string_has_invalid_argument)
               Base: mismatch %@ types %d
               Translation: mismatch %2$@ types %1$d
-        4 warnings, 5 errors
+        9 warnings, 5 errors
         Errors found
 
         """)
@@ -89,9 +106,14 @@ class ExecutableTests: XCTestCase {
         Examples/Demo_Base.strings:12: error: 'duplicate key' appears twice (duplicate_entries)
         Examples/Demo_Translation.strings:10: error: 'duplicate key' appears twice (duplicate_entries)
         Examples/Demo_Base.strings:3: warning: 'missing' is missing from Demo_Translation (key_missing_from_translation)
+        Examples/Demo_Base.strings:1: warning: Argument 1 in '%@ %@ - %@' has an implicit position. Use an explicit position for safety (%$1@). (string_has_implicit_position)
+        Examples/Demo_Base.strings:1: warning: Argument 2 in '%@ %@ - %@' has an implicit position. Use an explicit position for safety (%$2@). (string_has_implicit_position)
+        Examples/Demo_Base.strings:1: warning: Argument 3 in '%@ %@ - %@' has an implicit position. Use an explicit position for safety (%$3@). (string_has_implicit_position)
         Examples/Demo_Translation.strings:3: warning: 'bad pos %ld %@' does not include argument(s) at 1 (string_has_missing_arguments)
         Examples/Demo_Translation.strings:3: warning: Some arguments appear more than once in this translation (string_has_duplicate_arguments)
         Examples/Demo_Translation.strings:3: error: Specifier for argument 2 does not match (should be @, is ld) (string_has_invalid_argument)
+        Examples/Demo_Base.strings:7: warning: Argument 1 in 'mismatch %@ types %d' has an implicit position. Use an explicit position for safety (%$1@). (string_has_implicit_position)
+        Examples/Demo_Base.strings:7: warning: Argument 2 in 'mismatch %@ types %d' has an implicit position. Use an explicit position for safety (%$2d). (string_has_implicit_position)
         Examples/Demo_Translation.strings:5: error: Specifier for argument 2 does not match (should be d, is @) (string_has_invalid_argument)
         Examples/Demo_Translation.strings:5: error: Specifier for argument 1 does not match (should be @, is d) (string_has_invalid_argument)
         Examples/Demo_Translation.strings:7: warning: 'bad position %d' does not include argument(s) at 1 (string_has_missing_arguments)
@@ -125,25 +147,25 @@ class ExecutableTests: XCTestCase {
             WARNING: '%d/%d Completed' is missing from Demo_Translation (key_missing_from_translation)
           %s added %d task(s) to 's':
             WARNING: '%s added %d task(s) to 's'' is missing from Demo_Translation (key_missing_from_translation)
-            WARNING: Argument 1 in permutation '%s added %d tasks and %d milestones to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety. (stringsdict_entry_has_implicit_position)
-            WARNING: Argument 2 in permutation '%s added %d tasks and %d milestones to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety. (stringsdict_entry_has_implicit_position)
-            WARNING: Argument 3 in permutation '%s added %d tasks and %d milestones to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety. (stringsdict_entry_has_implicit_position)
+            WARNING: Argument 1 in permutation '%s added %d tasks and %d milestones to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety (%$1s). (stringsdict_entry_has_implicit_position)
+            WARNING: Argument 2 in permutation '%s added %d tasks and %d milestones to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety (%$2d). (stringsdict_entry_has_implicit_position)
+            WARNING: Argument 3 in permutation '%s added %d tasks and %d milestones to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety (%$3d). (stringsdict_entry_has_implicit_position)
             ERROR: Two permutations of '%s added %d task(s) to 's'' contain different format specifiers at position 3. '%s added %d tasks and %d milestones to %3$s' uses 'd', and '%s added %d tasks and %d milestones to %3$s' uses 's'. (stringsdict_entry_permutations_have_conflicting_specifiers)
-            WARNING: Argument 1 in permutation '%s added %d tasks and a milestone to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety. (stringsdict_entry_has_implicit_position)
-            WARNING: Argument 2 in permutation '%s added %d tasks and a milestone to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety. (stringsdict_entry_has_implicit_position)
+            WARNING: Argument 1 in permutation '%s added %d tasks and a milestone to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety (%$1s). (stringsdict_entry_has_implicit_position)
+            WARNING: Argument 2 in permutation '%s added %d tasks and a milestone to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety (%$2d). (stringsdict_entry_has_implicit_position)
             ERROR: Two permutations of '%s added %d task(s) to 's'' contain different format specifiers at position 3. '%s added %d tasks and %d milestones to %3$s' uses 'd', and '%s added %d tasks and a milestone to %3$s' uses 's'. (stringsdict_entry_permutations_have_conflicting_specifiers)
-            WARNING: Argument 1 in permutation '%s added a task and %d milestones to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety. (stringsdict_entry_has_implicit_position)
-            WARNING: Argument 2 in permutation '%s added a task and %d milestones to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety. (stringsdict_entry_has_implicit_position)
+            WARNING: Argument 1 in permutation '%s added a task and %d milestones to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety (%$1s). (stringsdict_entry_has_implicit_position)
+            WARNING: Argument 2 in permutation '%s added a task and %d milestones to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety (%$2d). (stringsdict_entry_has_implicit_position)
             ERROR: Two permutations of '%s added %d task(s) to 's'' contain different format specifiers at position 3. '%s added %d tasks and %d milestones to %3$s' uses 'd', and '%s added a task and %d milestones to %3$s' uses 's'. (stringsdict_entry_permutations_have_conflicting_specifiers)
-            WARNING: Argument 1 in permutation '%s added a task and a milestone to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety. (stringsdict_entry_has_implicit_position)
+            WARNING: Argument 1 in permutation '%s added a task and a milestone to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety (%$1s). (stringsdict_entry_has_implicit_position)
             ERROR: Two permutations of '%s added %d task(s) to 's'' contain different format specifiers at position 3. '%s added %d tasks and %d milestones to %3$s' uses 'd', and '%s added a task and a milestone to %3$s' uses 's'. (stringsdict_entry_permutations_have_conflicting_specifiers)
           Every %d week(s) on %lu days:
-            WARNING: Argument 1 in permutation 'Every %d weeks on %2$lu days' of 'Every %d week(s) on %lu days' has an implicit position. Use an explicit position for safety. (stringsdict_entry_has_implicit_position)
+            WARNING: Argument 1 in permutation 'Every %d weeks on %2$lu days' of 'Every %d week(s) on %lu days' has an implicit position. Use an explicit position for safety (%$1d). (stringsdict_entry_has_implicit_position)
           missing from translation:
             WARNING: 'missing from translation' is missing from Demo_Translation (key_missing_from_translation)
         Examples/Demo_Translation.stringsdict
           Every %d week(s) on %lu days:
-            WARNING: Argument 1 in permutation '%2$lu jours toutes les %d semaines' of 'Every %d week(s) on %lu days' has an implicit position. Use an explicit position for safety. (stringsdict_entry_has_implicit_position)
+            WARNING: Argument 1 in permutation '%2$lu jours toutes les %d semaines' of 'Every %d week(s) on %lu days' has an implicit position. Use an explicit position for safety (%$1d). (stringsdict_entry_has_implicit_position)
           missing from base:
             WARNING: 'missing from base' is missing from the base translation (key_missing_from_base)
         14 warnings, 4 errors
@@ -156,20 +178,20 @@ class ExecutableTests: XCTestCase {
         Examples/Demo_Base.stringsdict:81: warning: '%s added %d task(s) to 's'' is missing from Demo_Translation (key_missing_from_translation)
         Examples/Demo_Base.stringsdict:63: warning: 'missing from translation' is missing from Demo_Translation (key_missing_from_translation)
         Examples/Demo_Translation.stringsdict:22: warning: 'missing from base' is missing from the base translation (key_missing_from_base)
-        Examples/Demo_Base.stringsdict:6: warning: Argument 1 in permutation 'Every %d weeks on %2$lu days' of 'Every %d week(s) on %lu days' has an implicit position. Use an explicit position for safety. (stringsdict_entry_has_implicit_position)
-        Examples/Demo_Base.stringsdict:81: warning: Argument 1 in permutation '%s added %d tasks and %d milestones to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety. (stringsdict_entry_has_implicit_position)
-        Examples/Demo_Base.stringsdict:81: warning: Argument 2 in permutation '%s added %d tasks and %d milestones to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety. (stringsdict_entry_has_implicit_position)
-        Examples/Demo_Base.stringsdict:81: warning: Argument 3 in permutation '%s added %d tasks and %d milestones to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety. (stringsdict_entry_has_implicit_position)
+        Examples/Demo_Base.stringsdict:6: warning: Argument 1 in permutation 'Every %d weeks on %2$lu days' of 'Every %d week(s) on %lu days' has an implicit position. Use an explicit position for safety (%$1d). (stringsdict_entry_has_implicit_position)
+        Examples/Demo_Base.stringsdict:81: warning: Argument 1 in permutation '%s added %d tasks and %d milestones to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety (%$1s). (stringsdict_entry_has_implicit_position)
+        Examples/Demo_Base.stringsdict:81: warning: Argument 2 in permutation '%s added %d tasks and %d milestones to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety (%$2d). (stringsdict_entry_has_implicit_position)
+        Examples/Demo_Base.stringsdict:81: warning: Argument 3 in permutation '%s added %d tasks and %d milestones to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety (%$3d). (stringsdict_entry_has_implicit_position)
         Examples/Demo_Base.stringsdict:81: error: Two permutations of '%s added %d task(s) to 's'' contain different format specifiers at position 3. '%s added %d tasks and %d milestones to %3$s' uses 'd', and '%s added %d tasks and %d milestones to %3$s' uses 's'. (stringsdict_entry_permutations_have_conflicting_specifiers)
-        Examples/Demo_Base.stringsdict:81: warning: Argument 1 in permutation '%s added %d tasks and a milestone to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety. (stringsdict_entry_has_implicit_position)
-        Examples/Demo_Base.stringsdict:81: warning: Argument 2 in permutation '%s added %d tasks and a milestone to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety. (stringsdict_entry_has_implicit_position)
+        Examples/Demo_Base.stringsdict:81: warning: Argument 1 in permutation '%s added %d tasks and a milestone to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety (%$1s). (stringsdict_entry_has_implicit_position)
+        Examples/Demo_Base.stringsdict:81: warning: Argument 2 in permutation '%s added %d tasks and a milestone to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety (%$2d). (stringsdict_entry_has_implicit_position)
         Examples/Demo_Base.stringsdict:81: error: Two permutations of '%s added %d task(s) to 's'' contain different format specifiers at position 3. '%s added %d tasks and %d milestones to %3$s' uses 'd', and '%s added %d tasks and a milestone to %3$s' uses 's'. (stringsdict_entry_permutations_have_conflicting_specifiers)
-        Examples/Demo_Base.stringsdict:81: warning: Argument 1 in permutation '%s added a task and %d milestones to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety. (stringsdict_entry_has_implicit_position)
-        Examples/Demo_Base.stringsdict:81: warning: Argument 2 in permutation '%s added a task and %d milestones to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety. (stringsdict_entry_has_implicit_position)
+        Examples/Demo_Base.stringsdict:81: warning: Argument 1 in permutation '%s added a task and %d milestones to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety (%$1s). (stringsdict_entry_has_implicit_position)
+        Examples/Demo_Base.stringsdict:81: warning: Argument 2 in permutation '%s added a task and %d milestones to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety (%$2d). (stringsdict_entry_has_implicit_position)
         Examples/Demo_Base.stringsdict:81: error: Two permutations of '%s added %d task(s) to 's'' contain different format specifiers at position 3. '%s added %d tasks and %d milestones to %3$s' uses 'd', and '%s added a task and %d milestones to %3$s' uses 's'. (stringsdict_entry_permutations_have_conflicting_specifiers)
-        Examples/Demo_Base.stringsdict:81: warning: Argument 1 in permutation '%s added a task and a milestone to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety. (stringsdict_entry_has_implicit_position)
+        Examples/Demo_Base.stringsdict:81: warning: Argument 1 in permutation '%s added a task and a milestone to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety (%$1s). (stringsdict_entry_has_implicit_position)
         Examples/Demo_Base.stringsdict:81: error: Two permutations of '%s added %d task(s) to 's'' contain different format specifiers at position 3. '%s added %d tasks and %d milestones to %3$s' uses 'd', and '%s added a task and a milestone to %3$s' uses 's'. (stringsdict_entry_permutations_have_conflicting_specifiers)
-        Examples/Demo_Translation.stringsdict:6: warning: Argument 1 in permutation '%2$lu jours toutes les %d semaines' of 'Every %d week(s) on %lu days' has an implicit position. Use an explicit position for safety. (stringsdict_entry_has_implicit_position)
+        Examples/Demo_Translation.stringsdict:6: warning: Argument 1 in permutation '%2$lu jours toutes les %d semaines' of 'Every %d week(s) on %lu days' has an implicit position. Use an explicit position for safety (%$1d). (stringsdict_entry_has_implicit_position)
 
         """)
     }
