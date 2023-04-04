@@ -64,10 +64,10 @@ class ValidateStringsTests: XCTestCase {
         XCTAssertEqual(
             problemReporter.problems.map(\.messageForXcode),
             [
-                ":0: warning: Argument 1 in \'present %d %@\' has an implicit position. Use an explicit position for safety (%$1d). (string_has_implicit_position)",
-                ":0: warning: Argument 2 in \'present %d %@\' has an implicit position. Use an explicit position for safety (%$2@). (string_has_implicit_position)",
-                "def:0: warning: Argument 1 in translation of \'present %d %@\' (\'%d %@\') has an implicit position. Use an explicit position for safety (%$1d). (string_has_implicit_position)",
-                "def:0: warning: Argument 2 in translation of \'present %d %@\' (\'%d %@\') has an implicit position. Use an explicit position for safety (%$2@). (string_has_implicit_position)",
+                ":0: warning: Argument 1 in \'present %d %@\' has an implicit position. Use an explicit position for safety (%1$d). (string_has_implicit_position)",
+                ":0: warning: Argument 2 in \'present %d %@\' has an implicit position. Use an explicit position for safety (%2$@). (string_has_implicit_position)",
+                "def:0: warning: Argument 1 in translation of \'present %d %@\' (\'%d %@\') has an implicit position. Use an explicit position for safety (%1$d). (string_has_implicit_position)",
+                "def:0: warning: Argument 2 in translation of \'present %d %@\' (\'%d %@\') has an implicit position. Use an explicit position for safety (%2$@). (string_has_implicit_position)",
             ])
     }
 
@@ -98,11 +98,11 @@ class ValidateStringsTests: XCTestCase {
         XCTAssertEqual(
             problemReporter.problems.map(\.messageForXcode),
             [
-                ":0: warning: Argument 1 in \'present %d %@\' has an implicit position. Use an explicit position for safety (%$1d). (string_has_implicit_position)",
-                ":0: warning: Argument 2 in \'present %d %@\' has an implicit position. Use an explicit position for safety (%$2@). (string_has_implicit_position)",
-                "def:0: warning: Argument 1 in translation of \'present %d %@\' (\'%@ %d tneserp\') has an implicit position. Use an explicit position for safety (%$1@). (string_has_implicit_position)",
+                ":0: warning: Argument 1 in \'present %d %@\' has an implicit position. Use an explicit position for safety (%1$d). (string_has_implicit_position)",
+                ":0: warning: Argument 2 in \'present %d %@\' has an implicit position. Use an explicit position for safety (%2$@). (string_has_implicit_position)",
+                "def:0: warning: Argument 1 in translation of \'present %d %@\' (\'%@ %d tneserp\') has an implicit position. Use an explicit position for safety (%1$@). (string_has_implicit_position)",
                 "def:0: error: Specifier for argument 1 does not match (should be d, is @) (string_has_invalid_argument)",
-                "def:0: warning: Argument 2 in translation of \'present %d %@\' (\'%@ %d tneserp\') has an implicit position. Use an explicit position for safety (%$2d). (string_has_implicit_position)",
+                "def:0: warning: Argument 2 in translation of \'present %d %@\' (\'%@ %d tneserp\') has an implicit position. Use an explicit position for safety (%2$d). (string_has_implicit_position)",
                 "def:0: error: Specifier for argument 2 does not match (should be @, is d) (string_has_invalid_argument)",
             ])
     }
