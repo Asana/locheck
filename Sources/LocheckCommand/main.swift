@@ -11,7 +11,7 @@ import Files
 import Foundation
 import LocheckLogic
 
-let version = "0.9.9"
+let version = "0.9.10"
 
 struct Locheck: ParsableCommand {
     static let configuration = CommandConfiguration(
