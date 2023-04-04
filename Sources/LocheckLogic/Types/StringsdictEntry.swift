@@ -69,7 +69,7 @@ public struct StringsdictEntry: Equatable {
 
         for string in permutations {
             for arg in string.arguments {
-                if !arg.isPositionExplicit {
+                if !arg.isPositionExplicit && string.arguments.count > 1 {
                     report(
                         StringsdictEntryHasImplicitPosition(
                             key: key,
