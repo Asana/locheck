@@ -41,6 +41,13 @@ class ValidateStringsTests: XCTestCase {
         let problemReporter = ProblemReporter(log: false)
         validateStrings(
             baseStrings: [
+                // Don't report errors on just one arg
+                LocalizedStringPair(
+                    string: "\"%d\" = \"%d\";",
+                    path: "abc",
+                    line: 0,
+                    basePath: "",
+                    baseLineFallback: 0)!,
                 LocalizedStringPair(
                     string: "\"present %d %@\" = \"present %d %@\";",
                     path: "abc",
@@ -49,6 +56,12 @@ class ValidateStringsTests: XCTestCase {
                     baseLineFallback: 0)!,
             ],
             translationStrings: [
+                LocalizedStringPair(
+                    string: "\"%d\" = \"%d\";",
+                    path: "abc",
+                    line: 0,
+                    basePath: "",
+                    baseLineFallback: 0)!,
                 LocalizedStringPair(
                     string: "\"present %d %@\" = \"%d %@\";",
                     path: "def",
