@@ -15,7 +15,7 @@ public struct FormatArgument: Equatable, Hashable {
     let position: Int
     let isPositionExplicit: Bool
 
-    var asExplicit: String { "%$\(position)\(specifier)" }
+    var asExplicit: String { "%\(position)$\(specifier)" }
 }
 
 extension FormatArgument {
