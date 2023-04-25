@@ -145,6 +145,8 @@ class ExecutableTests: XCTestCase {
         Examples/Demo_Base.stringsdict
           %d/%d Completed:
             WARNING: '%d/%d Completed' is missing from Demo_Translation (key_missing_from_translation)
+            WARNING: Argument 1 in permutation '%d/%d Completed' of '%d/%d Completed' has an implicit position. Use an explicit position for safety (%1$d). (stringsdict_entry_has_implicit_position)
+            WARNING: Argument 2 in permutation '%d/%d Completed' of '%d/%d Completed' has an implicit position. Use an explicit position for safety (%2$d). (stringsdict_entry_has_implicit_position)
           %s added %d task(s) to 's':
             WARNING: '%s added %d task(s) to 's'' is missing from Demo_Translation (key_missing_from_translation)
             WARNING: Argument 1 in permutation '%s added %d tasks and %d milestones to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety (%1$s). (stringsdict_entry_has_implicit_position)
@@ -168,7 +170,7 @@ class ExecutableTests: XCTestCase {
             WARNING: Argument 1 in permutation '%2$lu jours toutes les %d semaines' of 'Every %d week(s) on %lu days' has an implicit position. Use an explicit position for safety (%1$d). (stringsdict_entry_has_implicit_position)
           missing from base:
             WARNING: 'missing from base' is missing from the base translation (key_missing_from_base)
-        14 warnings, 4 errors
+        16 warnings, 4 errors
         Errors found
 
         """)
@@ -179,6 +181,8 @@ class ExecutableTests: XCTestCase {
         Examples/Demo_Base.stringsdict:63: warning: 'missing from translation' is missing from Demo_Translation (key_missing_from_translation)
         Examples/Demo_Translation.stringsdict:22: warning: 'missing from base' is missing from the base translation (key_missing_from_base)
         Examples/Demo_Base.stringsdict:6: warning: Argument 1 in permutation 'Every %d weeks on %2$lu days' of 'Every %d week(s) on %lu days' has an implicit position. Use an explicit position for safety (%1$d). (stringsdict_entry_has_implicit_position)
+        Examples/Demo_Base.stringsdict:22: warning: Argument 1 in permutation '%d/%d Completed' of '%d/%d Completed' has an implicit position. Use an explicit position for safety (%1$d). (stringsdict_entry_has_implicit_position)
+        Examples/Demo_Base.stringsdict:22: warning: Argument 2 in permutation '%d/%d Completed' of '%d/%d Completed' has an implicit position. Use an explicit position for safety (%2$d). (stringsdict_entry_has_implicit_position)
         Examples/Demo_Base.stringsdict:81: warning: Argument 1 in permutation '%s added %d tasks and %d milestones to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety (%1$s). (stringsdict_entry_has_implicit_position)
         Examples/Demo_Base.stringsdict:81: warning: Argument 2 in permutation '%s added %d tasks and %d milestones to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety (%2$d). (stringsdict_entry_has_implicit_position)
         Examples/Demo_Base.stringsdict:81: warning: Argument 3 in permutation '%s added %d tasks and %d milestones to %3$s' of '%s added %d task(s) to 's'' has an implicit position. Use an explicit position for safety (%3$d). (stringsdict_entry_has_implicit_position)
