@@ -78,7 +78,7 @@ struct Expressions {
         pattern: Expressions.nativeArgumentExpression,
         options: [])
 
-    private static let stringsdictArgumentExpression = #"%#@(?<name>.+?)@"#
+    private static let stringsdictArgumentExpression = #"%[0-9]*\$?#@(?<name>.+?)@"#
     static let stringsdictArgumentRegex = try! NSRegularExpression(
         pattern: Expressions.stringsdictArgumentExpression,
         options: [])
