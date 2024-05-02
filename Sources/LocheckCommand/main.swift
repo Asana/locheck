@@ -6,10 +6,15 @@
 //
 
 import ArgumentParser
-import Darwin
 import Files
 import Foundation
 import LocheckLogic
+
+#if os(Linux) || os(FreeBSD)
+    import func Glibc.exit
+#else
+    import func Darwin.exit
+#endif
 
 let version = "0.9.11"
 
@@ -42,7 +47,7 @@ private func withProblemReporter(
     block(problemReporter)
     if problemReporter.hasError || (treatWarningsAsErrors && problemReporter.hasWarning) {
         print("Errors found")
-        Darwin.exit(1)
+        exit(1)
     }
     print("Finished validating")
 }
