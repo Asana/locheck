@@ -82,6 +82,18 @@ struct KeyMissingFromTranslation: Problem, StringsProblem, Equatable {
     var message: String { "'\(key)' is missing from \(language)" }
 }
 
+struct TranslationSameAsBase: Problem, StringsProblem, Equatable {
+    var kindIdentifier: String { "translation_same_as_base" }
+    var uniquifyingInformation: String { "\(language)-\(key)" }
+    var severity: Severity { .warning }
+    var base: String? { nil }
+    var translation: String? { nil }
+    let key: String
+    let language: String
+
+    var message: String { "'\(key)' is same as \(language)" }
+}
+
 struct LprojFileMissingFromTranslation: Problem, Equatable {
     var kindIdentifier: String { "lproj_file_missing_from_translation" }
     var uniquifyingInformation: String { "\(language)-\(key)" }
