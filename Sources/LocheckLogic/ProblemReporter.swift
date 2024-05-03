@@ -5,9 +5,15 @@
 //  Created by Steve Landey on 8/18/21.
 //
 
-import func Darwin.fputs
-import var Darwin.stderr
 import Foundation
+
+#if os(Linux) || os(FreeBSD)
+    import func Glibc.fputs
+    import var Glibc.stderr
+#else
+    import func Darwin.fputs
+    import var Darwin.stderr
+#endif
 
 private struct StderrOutputStream: TextOutputStream {
     mutating func write(_ string: String) {

@@ -2,9 +2,18 @@ EXECUTABLE_NAME = locheck
 REPO = https://github.com/Asana/locheck
 VERSION = 0.9.11
 
+UNAME_S := $(shell uname -s)
+
+ifeq ($(UNAME_S), Darwin)
+	BUILD_PATH_PREFIX := .build/apple/Products/Release
+endif
+ifeq ($(UNAME_S), Linux)
+	BUILD_PATH_PREFIX := .build/release
+endif
+
 PREFIX = /usr/local
 INSTALL_PATH = $(PREFIX)/bin/$(EXECUTABLE_NAME)
-BUILD_PATH = .build/apple/Products/Release/$(EXECUTABLE_NAME)
+BUILD_PATH = $(BUILD_PATH_PREFIX)/$(EXECUTABLE_NAME)
 CURRENT_PATH = $(PWD)
 RELEASE_TAR = $(REPO)/archive/$(VERSION).tar.gz
 GIT_STATUS := $(shell git status -s)
