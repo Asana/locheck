@@ -6,8 +6,7 @@ UNAME_S := $(shell uname -s)
 
 ifeq ($(UNAME_S), Darwin)
 	BUILD_PATH_PREFIX := .build/apple/Products/Release
-endif
-ifeq ($(UNAME_S), Linux)
+else ifeq ($(UNAME_S), Linux)
 	BUILD_PATH_PREFIX := .build/release
 endif
 
@@ -25,7 +24,11 @@ install: build
 	cp -f $(BUILD_PATH) $(INSTALL_PATH)
 
 build:
+ifeq ($(UNAME_S), Darwin) 
 	swift build --disable-sandbox -c release --arch arm64 --arch x86_64
+else ifeq ($(UNAME_S), Linux) 
+	swift build --disable-sandbox -c release
+endif
 
 uninstall:
 	rm -f $(INSTALL_PATH)
