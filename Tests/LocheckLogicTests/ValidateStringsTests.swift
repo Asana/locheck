@@ -181,4 +181,39 @@ class ValidateStringsTests: XCTestCase {
                 "abc:1: warning: 'missing' is missing from trnsltn (key_missing_from_translation)",
             ])
     }
+    
+    func testExtraKeyInTranslation() {
+        let problemReporter = ProblemReporter(log: false)
+        validateStrings(
+            baseStrings: [
+                LocalizedStringPair(
+                    string: "\"present\" = \"present\";",
+                    path: "abc",
+                    line: 0,
+                    basePath: "",
+                    baseLineFallback: 0)!,
+            ],
+            translationStrings: [
+                LocalizedStringPair(
+                    string: "\"present\" = \"tneserp\";",
+                    path: "def",
+                    line: 0,
+                    basePath: "",
+                    baseLineFallback: 0)!,
+                LocalizedStringPair(
+                    string: "\"extra\" = \"%s\";",
+                    path: "abc",
+                    line: 1,
+                    basePath: "",
+                    baseLineFallback: 0)!,
+            ],
+            baseLanguageName: "en",
+            translationLanguageName: "trnsltn",
+            problemReporter: problemReporter)
+
+        XCTAssertEqual(
+            problemReporter.problems.map(\.messageForXcode), [
+                "abc:1: warning: 'extra' is missing from the base translation (key_missing_from_base)",
+            ])
+    }
 }

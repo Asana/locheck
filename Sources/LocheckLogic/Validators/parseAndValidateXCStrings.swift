@@ -83,10 +83,22 @@ func validateStrings(
             path: baseString.path,
             lineNumber: baseString.line)
     }
+        
+    let baseStringsKeys = Set(baseStrings.map(\.key))
+        
+    var missingInBaseKeys: Set<String> = []
+    for translationString in translationStrings where !baseStringsKeys.contains(translationString.key) {
+        problemReporter.report(
+            KeyMissingFromBase(
+                key: translationString.key),
+            path: translationString.path,
+            lineNumber: translationString.line)
+        missingInBaseKeys.insert(translationString.key)
+    }
 
     // MARK: Validate arguments
 
-    for translationString in translationStrings {
+    for translationString in translationStrings where !missingInBaseKeys.contains(translationString.key) {
         let baseArgumentPositions = Set(translationString.base.arguments.map(\.position))
         let translationArgumentPositions = Set(translationString.translation.arguments.map(\.position))
 
