@@ -16,7 +16,7 @@ import LocheckLogic
     import func Darwin.exit
 #endif
 
-let version = "0.9.11"
+let version = "0.9.12"
 
 struct Locheck: ParsableCommand {
     static let configuration = CommandConfiguration(
