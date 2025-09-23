@@ -25,6 +25,22 @@ struct LocalizedStringPair: Equatable {
 }
 
 extension LocalizedStringPair {
+    // Initializer for string catalog entries
+    init(
+        key: String,
+        baseString: String,
+        translationString: String,
+        path: String,
+        line: Int
+    ) {
+        self.key = key
+        self.string = "\"\(key)\" = \"\(translationString)\";"
+        self.path = path
+        self.line = line
+        self.base = FormatString(string: baseString, path: path, line: line)
+        self.translation = FormatString(string: translationString, path: path, line: line)
+    }
+
     init?(
         string: String,
         path: String,

@@ -31,6 +31,7 @@ struct Locheck: ParsableCommand {
             DiscoverValues.self,
             Lproj.self,
             XCStrings.self,
+            StringCatalog.self,
             Stringsdict.self,
             AndroidStrings.self,
             Version.self,
@@ -114,6 +115,45 @@ struct XCStrings: HasIgnoreWithShorthand, ParsableCommand {
                         translationLanguageName: translationFile.nameExcludingExtension,
                         problemReporter: problemReporter)
                 }
+                problemReporter.printSummary()
+            }
+    }
+}
+
+struct StringCatalog: HasIgnoreWithShorthand, ParsableCommand {
+    static let configuration = CommandConfiguration(
+        commandName: "stringcatalog",
+        abstract: "Validate String Catalog (.xcstrings) files")
+
+    @Argument(help: "A String Catalog (.xcstrings) file to validate")
+    var catalogFile: FileArg
+
+    @Option(help: ignoreHelpText)
+    fileprivate var ignore = [String]()
+
+    @Flag(help: ignoreMissingHelpText)
+    fileprivate var ignoreMissing = false
+
+    @Flag(help: ignoreWarningsHelpText)
+    fileprivate var ignoreWarnings = false
+
+    @Flag(help: treatWarningsAsErrorsHelpText)
+    fileprivate var treatWarningsAsErrors = false
+
+    func validate() throws {
+        try catalogFile.validate(ext: "xcstrings")
+    }
+
+    func run() {
+        withProblemReporter(
+            root: "",
+            ignore: ignoreWithShorthand,
+            ignoreWarnings: ignoreWarnings,
+            treatWarningsAsErrors: treatWarningsAsErrors) { problemReporter in
+                let catalogFile = try! File(path: self.catalogFile.argument)
+                parseAndValidateStringCatalog(
+                    stringCatalogFile: catalogFile,
+                    problemReporter: problemReporter)
                 problemReporter.printSummary()
             }
     }

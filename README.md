@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://opensource.org/licenses/MIT)
 [![Build](https://github.com/stevelandeyasana/locheck/actions/workflows/tests.yml/badge.svg)](https://github.com/stevelandeyasana/locheck/actions/workflows/tests.yml)
 
-An Xcode and Android localization file validator. Make sure your `.strings`, `.stringsdict`, and `strings.xml` files do not have any errors!
+An Xcode and Android localization file validator. Make sure your `.strings`, `.stringsdict`, `.xcstrings`, and `strings.xml` files do not have any errors!
 
 ## What does it do?
 
@@ -92,6 +92,21 @@ The simplest way to use Locheck on Android is to use `discovervalues` and point 
 ```sh
 locheck discovervalues ./app/src/main/res
 ```
+
+### `stringcatalog`
+
+The easiest way to validate String Catalog files (.xcstrings) is to use the `stringcatalog` command:
+
+```sh
+locheck stringcatalog MyApp/Localizable.xcstrings
+```
+
+This will validate the string catalog for:
+- Missing format arguments in translations
+- Invalid format specifiers (e.g., using `%@` instead of `%d`)
+- Inconsistent plural forms across languages
+- Translations marked as "needs work"
+- Missing required plural forms
 
 ### Other ways
 

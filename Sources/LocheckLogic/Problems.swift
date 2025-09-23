@@ -399,3 +399,41 @@ struct XMLSchemaProblem: Problem, Equatable {
     var translation: String? { nil }
     let message: String
 }
+
+// MARK: - String Catalog Problems
+
+struct InvalidFile: Problem, Equatable {
+    var kindIdentifier: String { "invalid_file" }
+    var uniquifyingInformation: String { details }
+    var severity: Severity { .error }
+    var base: String? { nil }
+    var translation: String? { nil }
+    let details: String
+
+    var message: String { "Invalid file: \(details)" }
+}
+
+struct TranslationNeedsWork: Problem, StringsProblem, Equatable {
+    var kindIdentifier: String { "translation_needs_work" }
+    var uniquifyingInformation: String { "\(language)-\(key)" }
+    var severity: Severity { .warning }
+    var base: String? { nil }
+    var translation: String? { nil }
+    let key: String
+    let language: String
+
+    var message: String { "Translation of '\(key)' in \(language) is marked as 'needs work'" }
+}
+
+struct MissingPluralForm: Problem, StringsProblem, Equatable {
+    var kindIdentifier: String { "missing_plural_form" }
+    var uniquifyingInformation: String { "\(language)-\(key)-\(form)" }
+    var severity: Severity { .warning }
+    var base: String? { nil }
+    var translation: String? { nil }
+    let key: String
+    let language: String
+    let form: String
+
+    var message: String { "Missing plural form '\(form)' for '\(key)' in \(language)" }
+}
