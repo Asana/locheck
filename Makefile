@@ -1,6 +1,6 @@
 EXECUTABLE_NAME = locheck
 REPO = https://github.com/Asana/locheck
-VERSION = 0.9.11
+VERSION = 0.9.12
 
 UNAME_S := $(shell uname -s)
 
