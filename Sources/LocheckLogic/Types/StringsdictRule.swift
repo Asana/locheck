@@ -23,7 +23,7 @@ extension StringsdictRule {
     init?(key: String, node: XML.Element, path: String, problemReporter: ProblemReporter) {
         line = node.lineNumberStart
 
-        let report = { (problem: Problem) -> Void in
+        let report = { (problem: Problem) in
             problemReporter.report(problem, path: path, lineNumber: node.lineNumberStart)
         }
 

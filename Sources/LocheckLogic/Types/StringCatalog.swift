@@ -89,39 +89,37 @@ extension StringEntry {
     func getLocalizedStringPairs(
         key: String,
         basePath: String,
-        sourceLanguage: String
-    ) -> [LocalizedStringPair] {
+        sourceLanguage: String) -> [LocalizedStringPair] {
         var pairs: [LocalizedStringPair] = []
-        
+
         guard let sourceLocalization = localizations[sourceLanguage] else {
             return pairs
         }
-        
+
         let sourceString = sourceLocalization.stringUnit?.value ?? key
-        
+
         for (language, localization) in localizations {
             if language == sourceLanguage {
                 continue // Skip source language for validation
             }
-            
+
             if let stringUnit = localization.stringUnit {
                 let pair = LocalizedStringPair(
                     key: key,
                     baseString: sourceString,
                     translationString: stringUnit.value,
                     path: basePath,
-                    line: 1
-                )
+                    line: 1)
                 pairs.append(pair)
             }
-            
+
             if let variations = localization.variations {
                 // Handle plural variations
                 if let pluralForms = variations.plural {
                     // Get source plural form for comparison (use "other" as fallback)
                     let sourcePlurals = sourceLocalization.variations?.plural
                     let fallbackSource = sourcePlurals?["other"]?.stringUnit.value ?? sourceString
-                    
+
                     for (pluralForm, pluralVariation) in pluralForms {
                         let sourceForPluralForm = sourcePlurals?[pluralForm]?.stringUnit.value ?? fallbackSource
                         let pair = LocalizedStringPair(
@@ -129,13 +127,12 @@ extension StringEntry {
                             baseString: sourceForPluralForm,
                             translationString: pluralVariation.stringUnit.value,
                             path: basePath,
-                            line: 1
-                        )
+                            line: 1)
                         pairs.append(pair)
                     }
                 }
-                
-                // Handle device variations  
+
+                // Handle device variations
                 if let deviceForms = variations.device {
                     for (deviceType, deviceVariation) in deviceForms {
                         let pair = LocalizedStringPair(
@@ -143,14 +140,13 @@ extension StringEntry {
                             baseString: sourceString,
                             translationString: deviceVariation.stringUnit.value,
                             path: basePath,
-                            line: 1
-                        )
+                            line: 1)
                         pairs.append(pair)
                     }
                 }
             }
         }
-        
+
         return pairs
     }
 }

@@ -31,14 +31,13 @@ extension LocalizedStringPair {
         baseString: String,
         translationString: String,
         path: String,
-        line: Int
-    ) {
+        line: Int) {
         self.key = key
-        self.string = "\"\(key)\" = \"\(translationString)\";"
+        string = "\"\(key)\" = \"\(translationString)\";"
         self.path = path
         self.line = line
-        self.base = FormatString(string: baseString, path: path, line: line)
-        self.translation = FormatString(string: translationString, path: path, line: line)
+        base = FormatString(string: baseString, path: path, line: line)
+        translation = FormatString(string: translationString, path: path, line: line)
     }
 
     init?(

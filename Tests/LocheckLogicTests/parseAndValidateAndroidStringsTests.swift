@@ -38,11 +38,11 @@ class ParseAndValidateAndroidStringsTests: XCTestCase {
             "phrase_has_missing_arguments",
             "string_has_missing_arguments", // %lu not recognized as valid Android specifier
             "string_has_missing_arguments",
-            "string_has_invalid_argument",  // %,d vs %d
-            "string_has_invalid_argument",  // %+d vs % d
-            "string_has_invalid_argument",  // %10d vs %5d (wrong width)
-            "string_has_invalid_argument",  // %.2f vs %.4f (wrong precision)
-            "string_has_invalid_argument",  // %8.3f vs %10.2f (wrong width and precision)
+            "string_has_invalid_argument", // %,d vs %d
+            "string_has_invalid_argument", // %+d vs % d
+            "string_has_invalid_argument", // %10d vs %5d (wrong width)
+            "string_has_invalid_argument", // %.2f vs %.4f (wrong precision)
+            "string_has_invalid_argument", // %8.3f vs %10.2f (wrong width and precision)
             "string_array_item_count_mismatch",
         ])
 

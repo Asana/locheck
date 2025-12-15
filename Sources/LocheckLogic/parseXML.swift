@@ -11,7 +11,7 @@ import SwiftyXMLParser
 
 func parseXML(file: File, problemReporter: ProblemReporter) -> XML.Accessor? {
     do {
-        return XML.parse(try file.read())
+        return try XML.parse(file.read())
     } catch {
         problemReporter.report(
             XMLErrorProblem(message: error.localizedDescription),

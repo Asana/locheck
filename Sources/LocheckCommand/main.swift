@@ -150,7 +150,7 @@ struct StringCatalog: HasIgnoreWithShorthand, ParsableCommand {
             ignore: ignoreWithShorthand,
             ignoreWarnings: ignoreWarnings,
             treatWarningsAsErrors: treatWarningsAsErrors) { problemReporter in
-                let catalogFile = try! File(path: self.catalogFile.argument)
+                let catalogFile = try! File(path: catalogFile.argument)
                 parseAndValidateStringCatalog(
                     stringCatalogFile: catalogFile,
                     problemReporter: problemReporter)

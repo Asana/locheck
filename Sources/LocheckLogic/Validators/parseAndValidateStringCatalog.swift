@@ -14,39 +14,36 @@ import Foundation
 public func parseAndValidateStringCatalog(
     stringCatalogFile: File,
     problemReporter: ProblemReporter) {
-    
     guard let stringCatalog = StringCatalog(path: stringCatalogFile.path, problemReporter: problemReporter) else {
         return
     }
-    
+
     var allPairs: [LocalizedStringPair] = []
-    
+
     // Extract all localized string pairs from the catalog
     for (key, entry) in stringCatalog.strings {
         let pairs = entry.getLocalizedStringPairs(
             key: key,
             basePath: stringCatalogFile.path,
-            sourceLanguage: stringCatalog.sourceLanguage
-        )
+            sourceLanguage: stringCatalog.sourceLanguage)
         allPairs.append(contentsOf: pairs)
     }
-    
+
     // Group by language for validation
     let pairsByLanguage = Dictionary(grouping: allPairs) { pair in
         // Extract language from validation context - we need to infer this from the translation
         // For now, we'll validate all pairs together as they already contain base/translation comparison
-        return "all"
+        "all"
     }
-    
+
     // Validate each language group
     for (_, pairs) in pairsByLanguage {
         validateStringCatalogPairs(
             pairs: pairs,
             sourceLanguage: stringCatalog.sourceLanguage,
-            problemReporter: problemReporter
-        )
+            problemReporter: problemReporter)
     }
-    
+
     // Additional string catalog specific validations
     validateStringCatalogStructure(stringCatalog: stringCatalog, problemReporter: problemReporter)
 }
@@ -58,7 +55,6 @@ private func validateStringCatalogPairs(
     pairs: [LocalizedStringPair],
     sourceLanguage: String,
     problemReporter: ProblemReporter) {
-    
     for pair in pairs {
         // Check for format argument consistency
         let baseArgumentPositions = Set(pair.base.arguments.map(\.position))
@@ -134,9 +130,8 @@ private func validateStringCatalogPairs(
 private func validateStringCatalogStructure(
     stringCatalog: StringCatalog,
     problemReporter: ProblemReporter) {
-    
     let sourceLanguage = stringCatalog.sourceLanguage
-    
+
     // Check that source language exists in all entries
     for (key, entry) in stringCatalog.strings {
         if entry.localizations[sourceLanguage] == nil {
@@ -147,14 +142,14 @@ private func validateStringCatalogStructure(
                 path: "StringCatalog",
                 lineNumber: 1)
         }
-        
+
         // Check for incomplete translations
         let sourceLocalization = entry.localizations[sourceLanguage]
         for (language, localization) in entry.localizations {
             if language == sourceLanguage {
                 continue
             }
-            
+
             // Check if translation is marked as needs work
             if let stringUnit = localization.stringUnit,
                stringUnit.state == "needs_work" {
@@ -163,11 +158,10 @@ private func validateStringCatalogStructure(
                     path: "StringCatalog",
                     lineNumber: 1)
             }
-            
+
             // Check plural consistency
             if let sourcePlurals = sourceLocalization?.variations?.plural,
                let translationPlurals = localization.variations?.plural {
-                
                 // Ensure critical plural forms are present
                 let requiredForms = ["one", "other"]
                 for form in requiredForms {
