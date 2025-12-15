@@ -88,12 +88,12 @@ public extension AndroidStringsFile {
                     strings.append(
                         AndroidString(
                             key: key,
-                            value: FormatString(string: string, path: path, line: element.lineNumberStart)))
+                            value: FormatString(string: string, path: path, line: element.lineNumberStart, platform: .android)))
                 } else {
                     strings.append(
                         AndroidString(
                             key: key,
-                            value: FormatString(string: element.text ?? "", path: path, line: element.lineNumberStart)))
+                            value: FormatString(string: element.text ?? "", path: path, line: element.lineNumberStart, platform: .android)))
                 }
             case "string-array":
                 var values = [String]()
@@ -143,7 +143,7 @@ public extension AndroidStringsFile {
                             lineNumber: element.lineNumberStart)
                         continue
                     }
-                    values[childKey] = FormatString(string: child.text ?? "", path: path, line: element.lineNumberStart)
+                    values[childKey] = FormatString(string: child.text ?? "", path: path, line: element.lineNumberStart, platform: .android)
                 }
                 plurals.append(AndroidPlural(key: key, line: element.lineNumberStart, values: values))
             default:

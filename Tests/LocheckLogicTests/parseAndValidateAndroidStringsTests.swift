@@ -25,7 +25,7 @@ class ParseAndValidateAndroidStringsTests: XCTestCase {
             translationLanguageName: "demo",
             problemReporter: problemReporter)
 
-        XCTAssertEqual(problemReporter.problems.count, 10)
+        XCTAssertEqual(problemReporter.problems.count, 15)
         let problems = problemReporter.problems.map(\.problem)
 
         XCTAssertEqual(problems.map(\.kindIdentifier), [
@@ -36,8 +36,13 @@ class ParseAndValidateAndroidStringsTests: XCTestCase {
             "key_missing_from_translation",
             "key_missing_from_base",
             "phrase_has_missing_arguments",
-            "string_has_invalid_argument",
+            "string_has_missing_arguments", // %lu not recognized as valid Android specifier
             "string_has_missing_arguments",
+            "string_has_invalid_argument",  // %,d vs %d
+            "string_has_invalid_argument",  // %+d vs % d
+            "string_has_invalid_argument",  // %10d vs %5d (wrong width)
+            "string_has_invalid_argument",  // %.2f vs %.4f (wrong precision)
+            "string_has_invalid_argument",  // %8.3f vs %10.2f (wrong width and precision)
             "string_array_item_count_mismatch",
         ])
 

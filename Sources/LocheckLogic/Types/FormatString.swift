@@ -9,12 +9,17 @@ import Foundation
 
 /**
  Represents a string containing format specifiers. This type is shared by the iOS
- and Android validators because they use the same syntax for these kinds of strings.
+ and Android validators, but uses platform-specific parsing for format specifiers.
  */
 struct FormatString: Equatable {
     enum Kind: Equatable {
         case native // Xcode, Android 1st party
         case phrase // https://github.com/square/phrase
+    }
+
+    enum Platform: Equatable {
+        case ios
+        case android
     }
 
     let string: String
@@ -23,13 +28,15 @@ struct FormatString: Equatable {
     let path: String
     let line: Int
     let kind: Kind
+    let platform: Platform
 
-    init(string: String, path: String, line: Int) {
+    init(string: String, path: String, line: Int, platform: Platform = .ios) {
         self.string = string
         self.path = path
         self.line = line
+        self.platform = platform
 
-        let nativeArguments = parseNativeArguments(string: string)
+        let nativeArguments = parseNativeArguments(string: string, platform: platform)
         arguments = nativeArguments
         if nativeArguments.isEmpty {
             // Only use Phrase format if native syntax is not present
@@ -43,10 +50,18 @@ struct FormatString: Equatable {
 }
 
 /// Transform a single string into parsed `FormatSpecifier` objects
-private func parseNativeArguments(string: String) -> [FormatArgument] {
+private func parseNativeArguments(string: String, platform: FormatString.Platform) -> [FormatArgument] {
     var nextImplicitPosition = 1
 
-    return Expressions.nativeArgumentRegex
+    let regex: NSRegularExpression
+    switch platform {
+    case .ios:
+        regex = Expressions.iosArgumentRegex
+    case .android:
+        regex = Expressions.androidArgumentRegex
+    }
+
+    return regex
         .lo_matches(in: string)
         .enumerated()
         .compactMap { (i: Int, match: NSTextCheckingResult) -> FormatArgument? in
