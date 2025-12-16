@@ -36,7 +36,7 @@ class ParseAndValidateAndroidStringsTests: XCTestCase {
             "key_missing_from_translation",
             "key_missing_from_base",
             "phrase_has_missing_arguments",
-            "string_has_missing_arguments", // %lu not recognized as valid Android specifier
+            "string_has_missing_arguments",
             "string_has_missing_arguments",
             "string_has_invalid_argument", // %,d vs %d
             "string_has_invalid_argument", // %+d vs % d
