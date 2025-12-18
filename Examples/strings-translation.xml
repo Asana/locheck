@@ -21,6 +21,29 @@
     <string name="translation_has_invalid_specifier">%s %lu</string>
     <string name="translation_has_missing_arg">%s</string>
 
+    <!-- Format specifier flags -->
+    <string name="points_with_comma">Tienes %,d puntos</string>
+    <string name="change_with_sign">Cambio: %+d</string>
+    <string name="code_zero_padded">Código: %05d</string>
+    <string name="price_with_precision">Precio: %.2f</string>
+    <string name="value_with_width_precision">Valor: %10.2f</string>
+    <string name="combined_flags">Total: %+,d</string>
+    <string name="translation_missing_comma_flag">Puntos: %d</string>
+    <string name="translation_wrong_flag">Cantidad: % d</string>
+    <string name="translation_wrong_minus_flag">Cantidad: %-d</string>
+
+    <!-- Width and precision test cases (correct translations) -->
+    <string name="width_only">Valor: %10d</string>
+    <string name="precision_only">Precio: %.4f</string>
+    <string name="width_and_precision">Cantidad: %8.2f</string>
+    <string name="width_with_flag">Total: %+10d</string>
+    <!-- Incorrect: wrong width (5 instead of 10) -->
+    <string name="translation_wrong_width">Cuenta: %5d</string>
+    <!-- Incorrect: wrong precision (.4 instead of .2) -->
+    <string name="translation_wrong_precision">Tasa: %.4f</string>
+    <!-- Incorrect: wrong width and precision (10.2 instead of 8.3) -->
+    <string name="translation_wrong_width_precision">Puntuación: %10.2f</string>
+
     <!-- Missing from base -->
     <string name="missing_from_base">Missing from base</string>
 

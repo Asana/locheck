@@ -18,7 +18,7 @@ public struct StringsdictEntry: Equatable {
     let rules: [String: StringsdictRule] // derived from XML
 
     func validateRuleVariables(problemReporter: ProblemReporter) {
-        let checkRule = { (ruleKey: String, variables: [String]) -> Void in
+        let checkRule = { (ruleKey: String, variables: [String]) in
             for variable in variables where rules[variable] == nil {
                 problemReporter.report(
                     StringsdictEntryHasMissingVariable(
@@ -57,7 +57,7 @@ public struct StringsdictEntry: Equatable {
         // but that would require us to remember which span of each string maps back to which variable,
         // which is a lot of extra bookkeeping to do at this stage of the project.
 
-        let report = { (problem: Problem, line: Int) -> Void in
+        let report = { (problem: Problem, line: Int) in
             problemReporter.report(problem, path: path, lineNumber: line)
         }
 
@@ -249,7 +249,7 @@ extension StringsdictEntry {
         line = node.lineNumberStart
         self.path = path
 
-        let report = { (problem: Problem, line: Int) -> Void in
+        let report = { (problem: Problem, line: Int) in
             problemReporter.report(problem, path: path, lineNumber: line)
         }
 

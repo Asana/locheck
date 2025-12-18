@@ -21,6 +21,26 @@
     <string name="translation_has_invalid_specifier">%s %d</string>
     <string name="translation_has_missing_arg">%s %d</string>
 
+    <!-- Format specifier flags -->
+    <string name="points_with_comma">You have %,d points</string>
+    <string name="change_with_sign">Change: %+d</string>
+    <string name="code_zero_padded">Code: %05d</string>
+    <string name="price_with_precision">Price: %.2f</string>
+    <string name="value_with_width_precision">Value: %10.2f</string>
+    <string name="combined_flags">Total: %+,d</string>
+    <string name="translation_missing_comma_flag">Points: %,d</string>
+    <string name="translation_wrong_flag">Amount: %+d</string>
+    <string name="translation_wrong_minus_flag">Amount: %+d</string>
+
+    <!-- Width and precision test cases -->
+    <string name="width_only">Value: %10d</string>
+    <string name="precision_only">Price: %.4f</string>
+    <string name="width_and_precision">Amount: %8.2f</string>
+    <string name="width_with_flag">Total: %+10d</string>
+    <string name="translation_wrong_width">Count: %10d</string>
+    <string name="translation_wrong_precision">Rate: %.2f</string>
+    <string name="translation_wrong_width_precision">Score: %8.3f</string>
+
     <!-- Non-translatable (missing from translation, will not show warning) -->
     <string name="photos_icon_content_description" translatable="false">Photos</string>
 
