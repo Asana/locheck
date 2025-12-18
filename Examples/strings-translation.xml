@@ -30,6 +30,7 @@
     <string name="combined_flags">Total: %+,d</string>
     <string name="translation_missing_comma_flag">Puntos: %d</string>
     <string name="translation_wrong_flag">Cantidad: % d</string>
+    <string name="translation_wrong_minus_flag">Cantidad: %-d</string>
 
     <!-- Width and precision test cases (correct translations) -->
     <string name="width_only">Valor: %10d</string>

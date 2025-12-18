@@ -117,11 +117,13 @@ struct Expressions {
     ]
     private static let androidSpecifierExpression = androidSpecifiers.joined(separator: "|")
 
-    // Android/Java Formatter flags: '-', '+', ' ', '0', ',', '(', '#'
+    // Android/Java Formatter flags: '-', '+', '0', ',', '(', '#'
     // https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Formatter.html
-    // Flags: '-' (left-justify), '+' (include sign), ' ' (space for positive),
-    // '0' (zero-pad), ',' (grouping separator), '(' (negative in parens), '#' (alternate form)
-    private static let androidFlagsExpression = "[-+0, (#]*"
+    // Flags: '-' (left-justify), '+' (include sign), '0' (zero-pad),
+    // ',' (grouping separator), '(' (negative in parens), '#' (alternate form)
+    // Note: Space flag (' ') is intentionally omitted - it's rarely used in localized
+    // strings and causes false positives with patterns like "80% off" or "%% done"
+    private static let androidFlagsExpression = "[-+0,(#]*"
     private static let androidWidthExpression = "\\d*"
     private static let androidPrecisionExpression = "(?:\\.\\d+)?"
 

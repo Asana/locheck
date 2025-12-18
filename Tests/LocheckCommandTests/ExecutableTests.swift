@@ -292,9 +292,13 @@ class ExecutableTests: XCTestCase {
               Base: Points: %,d
               Translation: Puntos: %d
           translation_wrong_flag:
-            ERROR: Specifier for argument 1 does not match (should be +d, is  d) (string_has_invalid_argument)
+            WARNING: 'translation_wrong_flag' does not include argument(s) at 1 (string_has_missing_arguments)
               Base: Amount: %+d
               Translation: Cantidad: % d
+          translation_wrong_minus_flag:
+            ERROR: Specifier for argument 1 does not match (should be +d, is -d) (string_has_invalid_argument)
+              Base: Amount: %+d
+              Translation: Cantidad: %-d
           translation_wrong_precision:
             ERROR: Specifier for argument 1 does not match (should be .2f, is .4f) (string_has_invalid_argument)
               Base: Rate: %.2f
@@ -307,27 +311,28 @@ class ExecutableTests: XCTestCase {
             ERROR: Specifier for argument 1 does not match (should be 8.3f, is 10.2f) (string_has_invalid_argument)
               Base: Score: %8.3f
               Translation: Puntuación: %10.2f
-        7 warnings, 8 errors
+        8 warnings, 8 errors
         Errors found
 
         """)
 
         XCTAssertEqual(stderr!, """
-        Examples/strings-base.xml:51: error: 'duplicate_entry' appears twice (duplicate_entries)
-        Examples/strings-translation.xml:51: error: 'duplicate_entry' appears twice (duplicate_entries)
-        Examples/strings-base.xml:47: warning: 'missing_from_translation' is missing from Examples (key_missing_from_translation)
-        Examples/strings-translation.xml:47: warning: 'missing_from_base' is missing from the base translation (key_missing_from_base)
-        Examples/strings-base.xml:59: warning: 'translation_missing_string_array' is missing from Examples (key_missing_from_translation)
-        Examples/strings-translation.xml:59: warning: 'base_missing_string_array' is missing from the base translation (key_missing_from_base)
+        Examples/strings-base.xml:52: error: 'duplicate_entry' appears twice (duplicate_entries)
+        Examples/strings-translation.xml:52: error: 'duplicate_entry' appears twice (duplicate_entries)
+        Examples/strings-base.xml:48: warning: 'missing_from_translation' is missing from Examples (key_missing_from_translation)
+        Examples/strings-translation.xml:48: warning: 'missing_from_base' is missing from the base translation (key_missing_from_base)
+        Examples/strings-base.xml:60: warning: 'translation_missing_string_array' is missing from Examples (key_missing_from_translation)
+        Examples/strings-translation.xml:60: warning: 'base_missing_string_array' is missing from the base translation (key_missing_from_base)
         Examples/strings-translation.xml:17: error: 'translation_has_missing_phrase' does not include argument(s): object_name (phrase_has_missing_arguments)
         Examples/strings-translation.xml:21: warning: 'translation_has_invalid_specifier' does not include argument(s) at 2 (string_has_missing_arguments)
         Examples/strings-translation.xml:22: warning: 'translation_has_missing_arg' does not include argument(s) at 2 (string_has_missing_arguments)
         Examples/strings-translation.xml:31: error: Specifier for argument 1 does not match (should be ,d, is d) (string_has_invalid_argument)
-        Examples/strings-translation.xml:32: error: Specifier for argument 1 does not match (should be +d, is  d) (string_has_invalid_argument)
-        Examples/strings-translation.xml:40: error: Specifier for argument 1 does not match (should be 10d, is 5d) (string_has_invalid_argument)
-        Examples/strings-translation.xml:42: error: Specifier for argument 1 does not match (should be .2f, is .4f) (string_has_invalid_argument)
-        Examples/strings-translation.xml:44: error: Specifier for argument 1 does not match (should be 8.3f, is 10.2f) (string_has_invalid_argument)
-        Examples/strings-translation.xml:64: warning: 'string_array_wrong_item_count' item count mismatch in Examples: 2 (should be 1) (string_array_item_count_mismatch)
+        Examples/strings-translation.xml:32: warning: 'translation_wrong_flag' does not include argument(s) at 1 (string_has_missing_arguments)
+        Examples/strings-translation.xml:33: error: Specifier for argument 1 does not match (should be +d, is -d) (string_has_invalid_argument)
+        Examples/strings-translation.xml:41: error: Specifier for argument 1 does not match (should be 10d, is 5d) (string_has_invalid_argument)
+        Examples/strings-translation.xml:43: error: Specifier for argument 1 does not match (should be .2f, is .4f) (string_has_invalid_argument)
+        Examples/strings-translation.xml:45: error: Specifier for argument 1 does not match (should be 8.3f, is 10.2f) (string_has_invalid_argument)
+        Examples/strings-translation.xml:65: warning: 'string_array_wrong_item_count' item count mismatch in Examples: 2 (should be 1) (string_array_item_count_mismatch)
 
         """)
     }
