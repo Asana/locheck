@@ -44,9 +44,9 @@ final class StringCatalogTests: XCTestCase {
         XCTAssertEqual(catalog.strings.count, 1)
         
         let helloWorldEntry = catalog.strings["hello_world"]!
-        XCTAssertEqual(helloWorldEntry.localizations.count, 2)
-        XCTAssertEqual(helloWorldEntry.localizations["en"]?.stringUnit?.value, "Hello, World!")
-        XCTAssertEqual(helloWorldEntry.localizations["de"]?.stringUnit?.value, "Hallo, Welt!")
+        XCTAssertEqual(helloWorldEntry.localizations?.count, 2)
+        XCTAssertEqual(helloWorldEntry.localizations?["en"]?.stringUnit?.value, "Hello, World!")
+        XCTAssertEqual(helloWorldEntry.localizations?["de"]?.stringUnit?.value, "Hallo, Welt!")
     }
     
     func testStringCatalogWithPluralForms() {
@@ -104,8 +104,8 @@ final class StringCatalogTests: XCTestCase {
         let catalog = try! JSONDecoder().decode(StringCatalog.self, from: data)
         
         let itemCountEntry = catalog.strings["item_count"]!
-        let enPlurals = itemCountEntry.localizations["en"]?.variations?.plural
-        let dePlurals = itemCountEntry.localizations["de"]?.variations?.plural
+        let enPlurals = itemCountEntry.localizations?["en"]?.variations?.plural
+        let dePlurals = itemCountEntry.localizations?["de"]?.variations?.plural
         
         XCTAssertNotNil(enPlurals)
         XCTAssertNotNil(dePlurals)

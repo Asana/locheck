@@ -44,6 +44,8 @@ final class StringCatalogCommandTests: XCTestCase {
                   }
                 }
               }
+            },
+            "empty_key" : {
             }
           },
           "version" : "1.0"

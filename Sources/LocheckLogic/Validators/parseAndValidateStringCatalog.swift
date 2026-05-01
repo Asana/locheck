@@ -139,7 +139,7 @@ private func validateStringCatalogStructure(
     
     // Check that source language exists in all entries
     for (key, entry) in stringCatalog.strings {
-        if entry.localizations[sourceLanguage] == nil {
+        if entry.localizations?[sourceLanguage] == nil {
             problemReporter.report(
                 KeyMissingFromTranslation(
                     key: key,
@@ -149,8 +149,8 @@ private func validateStringCatalogStructure(
         }
         
         // Check for incomplete translations
-        let sourceLocalization = entry.localizations[sourceLanguage]
-        for (language, localization) in entry.localizations {
+        let sourceLocalization = entry.localizations?[sourceLanguage]
+        for (language, localization) in entry.localizations ?? [:] {
             if language == sourceLanguage {
                 continue
             }
