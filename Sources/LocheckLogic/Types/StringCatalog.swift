@@ -21,7 +21,7 @@ struct StringCatalog: Codable {
  */
 struct StringEntry: Codable {
     let extractionState: String?
-    let localizations: [String: Localization]
+    let localizations: [String: Localization]?
     let comment: String?
 }
 
@@ -74,7 +74,7 @@ extension StringCatalog {
             self = try decoder.decode(StringCatalog.self, from: data)
         } catch {
             problemReporter.report(
-                InvalidFile(details: "Failed to parse string catalog: \(error.localizedDescription)"),
+                InvalidFile(details: "Failed to parse string catalog: \(error)"),
                 path: path,
                 lineNumber: 0)
             return nil
@@ -93,13 +93,13 @@ extension StringEntry {
     ) -> [LocalizedStringPair] {
         var pairs: [LocalizedStringPair] = []
         
-        guard let sourceLocalization = localizations[sourceLanguage] else {
+        guard let sourceLocalization = localizations?[sourceLanguage] else {
             return pairs
         }
         
         let sourceString = sourceLocalization.stringUnit?.value ?? key
         
-        for (language, localization) in localizations {
+        for (language, localization) in localizations ?? [:] {
             if language == sourceLanguage {
                 continue // Skip source language for validation
             }
